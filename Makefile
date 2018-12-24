@@ -1,4 +1,8 @@
-debug:
-	go run cmd/main.go -O usr-MRiIUq7M -R appv-tzssw6ay -f app/app.tar.gz
+SHELL := /bin/bash
+
+build-tool:
+	go build -o bin/appcenter-cli cmd/main.go
 build:
-	go build -o bin/upload-app cmd/main.go
+	./scripts/build.sh
+build-nokvm:
+	./scripts/build.sh --no-kvm
