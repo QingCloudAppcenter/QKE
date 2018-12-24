@@ -152,7 +152,7 @@
                 "label": "Memory",
                 "description": "memory of each node (in MB)",
                 "type": "integer",
-                "default": 8192,
+                "default": 2048,
                 "range": [
                   2048,
                   4096,
@@ -170,7 +170,7 @@
                 "label": "count",
                 "description": "Number of nodes for the cluster to create",
                 "type": "integer",
-                "default": 2,
+                "default": 1,
                 "min":0,
                 "max":100,
                 "required": "yes",
@@ -292,7 +292,7 @@
                 "label": "count",
                 "description": "Number of log nodes for the cluster to create, set it to zero if you want to use external ELK service",
                 "type": "integer",
-                "default": 2,
+                "default": 0,
                 "range":[0,2,3,4,5],
                 "required": "yes"
               },

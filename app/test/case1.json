@@ -1,0 +1,61 @@
+{
+    "cluster": {
+        "name": "my k8s cluster",
+        "description": "my k8s cluster",
+        "master": {
+            "cpu": 4,
+            "memory": 4096,
+            "count": 1,
+            "instance_class": 0,
+            "volume_size": 20
+        },
+        "node": {
+            "cpu": 4,
+            "memory": 2048,
+            "count": 1,
+            "volume_size": 50
+        },
+        "ssd_node": {
+            "cpu": 4,
+            "memory": 4096,
+            "count": 0,
+            "volume_size": 50
+        },
+        "log": {
+            "cpu": 4,
+            "memory": 4096,
+            "count": 0,
+            "instance_class": 0,
+            "volume_size": 100
+        },
+        "client": {
+            "cpu": 1,
+            "memory": 1024,
+            "instance_class": 0
+        },
+        "vxnet": "vxnet-lddzg8e",
+        "global_uuid": "07152219565374498"
+    },
+    "version": "appv-tzssw6ay",
+    "resource_group": "Basic",
+    "env": {
+        "access_key_id": "TVFFJOIOCGCKYSJQFBKK",
+        "secret_access_key": "8ftq9s3WQnYThNuqglRstNLeqSVUVw9KPmo2pFkL",
+        "pod_vxnets": "vxnet-lddzg8e",
+        "api_external_domain": "k8s.cluster.local",
+        "cluster_port_range": "30000-32767",
+        "max_pods": 60,
+        "network_plugins": "calico",
+        "registry-mirrors": "https://registry.docker-cn.com",
+        "insecure-registries": "",
+        "private-registry": "",
+        "dockerhub_username": "",
+        "docker_bip": "172.30.0.1/16",
+        "keep_log_days": 3,
+        "kube_log_level": 0,
+        "fluent_forward_server": "",
+        "es_server": "",
+        "enable_istio": "no",
+        "enable_helm": "yes"
+    }
+}

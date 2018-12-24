@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 swapoff -a
 sysctl net.bridge.bridge-nf-call-iptables=1
@@ -59,3 +59,11 @@ docker pull quay.io/calico/typha:v3.3.2
 docker pull quay.io/calico/node:v3.3.2
 docker pull quay.io/calico/cni:v3.3.2
 
+##install agent
+echo "install agent"
+wget -qO- http://appcenter-docs.qingcloud.com/developer-guide/scripts/app-agent-linux-amd64.tar.gz | tar -xvz
+cd app-agent-linux-amd64
+./install.sh
+cd ../
+rm -rf app-agent-linux-amd64
+echo "DONE"
