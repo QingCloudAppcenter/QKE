@@ -20,9 +20,9 @@ mustcacheFile="../app/config/cluster.json.mustache"
 configFile="../app/config/config.json"
 #create machine
 if [ $# -lt 1 ] || [ $1 != "--no-kvm" ]; then
-    ./create_kvm.sh master img-tpdrop6w $timestamp
-    ./create_kvm.sh node   img-52wzuboe $timestamp
-    ./create_kvm.sh client img-r9jrufcb $timestamp
+    ./create_kvm.sh master img-acj1tpkc $timestamp
+    ./create_kvm.sh node   img-siy0h6rn $timestamp
+    ./create_kvm.sh client img-8begmb7y $timestamp
 fi
 
 master=`cat master_image_id`

@@ -1,4 +1,4 @@
 .DS_store
 vendor
-app.tar.gz
+*.tar.gz
 appcenter-cli

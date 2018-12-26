@@ -47,6 +47,7 @@ systemctl restart docker
 docker pull k8s.gcr.io/kube-proxy:v1.13.1
 docker pull k8s.gcr.io/pause:3.1
 docker pull k8s.gcr.io/coredns:1.2.6
+docker pull gcr.io/google_containers/hyperkube-amd64:v1.12.4
 
 ##pull CNI image
 mkdir -p CNI/flannel

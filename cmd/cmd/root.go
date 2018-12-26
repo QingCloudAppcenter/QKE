@@ -21,6 +21,8 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/yunify/qingcloud-sdk-go/config"
+	"github.com/yunify/qingcloud-sdk-go/service"
 )
 
 var (
@@ -89,4 +91,17 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func GetAppService() *service.AppService {
+	c, _ := config.NewDefault()
+	c.LoadConfigFromFilepath(viper.ConfigFileUsed())
+	// c.LogLevel = "info"
+	qcService, err := service.Init(c)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	ap2aapp, _ := qcService.App(c.Zone)
+	return ap2aapp
 }

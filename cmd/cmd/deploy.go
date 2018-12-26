@@ -20,8 +20,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/yunify/qingcloud-sdk-go/config"
 	"github.com/yunify/qingcloud-sdk-go/service"
 )
 
@@ -53,6 +51,7 @@ func init() {
 }
 
 func deployApp(cmd *cobra.Command, args []string) {
+	app := GetAppService()
 	input := &service.DeployAppVersionInput{}
 	input.VersionID = &resourceID
 	input.Debug = &debug
@@ -63,14 +62,6 @@ func deployApp(cmd *cobra.Command, args []string) {
 	}
 	str := string(bytes)
 	input.Conf = &str
-	c, _ := config.NewDefault()
-	c.LoadConfigFromFilepath(viper.ConfigFileUsed())
-	qcService, err := service.Init(c)
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	app, _ := qcService.App(c.Zone)
 	output, err := app.DeployAppVersion(input)
 	if err != nil {
 		fmt.Println(err.Error())

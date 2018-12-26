@@ -47,6 +47,7 @@ systemctl restart docker
 kubeadm config images list
 kubeadm config images pull
 
+docker pull gcr.io/google_containers/hyperkube-amd64:v1.12.4
 ##pull CNI image
 mkdir -p CNI/flannel
 wget https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml -O CNI/flannel/kube-flannel.yml

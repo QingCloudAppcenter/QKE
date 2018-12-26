@@ -8,8 +8,6 @@ import (
 	"path"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/yunify/qingcloud-sdk-go/config"
 	"github.com/yunify/qingcloud-sdk-go/service"
 )
 
@@ -30,16 +28,8 @@ var uploadAPPCmd = &cobra.Command{
 	Short: "upload configs to appcenter",
 	Long:  `All software has versions. This is Hugo's`,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, _ := config.NewDefault()
-		c.LoadConfigFromFilepath(viper.ConfigFileUsed())
-		// c.LogLevel = "info"
-		qcService, err := service.Init(c)
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-		ap2aapp, _ := qcService.App(c.Zone)
 
+		ap2aapp := GetAppService()
 		//get detail of appversion
 		o, err := describeVersion(resourceID, ap2aapp)
 		if err != nil {
