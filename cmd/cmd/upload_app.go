@@ -56,7 +56,6 @@ var uploadAPPCmd = &cobra.Command{
 			fmt.Println("[Error]" + *resp.Message)
 			os.Exit(1)
 		}
-		fmt.Println("OK")
 	},
 }
 

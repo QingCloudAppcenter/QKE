@@ -8,8 +8,7 @@ function RUN(){
 
     source "${K8S_HOME}/script/common.sh"
 
-    #ensure_dir
-    
+    ensure_dir
     kubeadm init --pod-network-cidr=192.168.0.0/16
 
     HOME=/root
@@ -18,7 +17,7 @@ function RUN(){
     chown $(id -u):$(id -g) $HOME/.kube/config
 
     #apply network
-    kubectl apply -f $HOME/CNI/calico/
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f $HOME/CNI/calico/
 
     wait_kubelet  
     #wait_apiserver

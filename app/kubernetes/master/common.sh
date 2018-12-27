@@ -1,5 +1,5 @@
 #!/bin/bash
-
+alias kubectl='kubectl --kubeconfig=/root/.kube/config'
 function ensure_dir(){
     if [ ! -d /root/.kube ]; then
         mkdir /root/.kube

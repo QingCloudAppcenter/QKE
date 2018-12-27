@@ -45,7 +45,7 @@ while true; do
         break
     else
         echo "Error! Try again"
-        sleep 2s
+        sleep 5s
     fi
 done
 set -e

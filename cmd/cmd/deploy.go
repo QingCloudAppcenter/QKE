@@ -78,5 +78,4 @@ func deployApp(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 	}
-	fmt.Println("OK")
 }

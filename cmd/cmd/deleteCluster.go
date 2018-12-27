@@ -16,6 +16,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/yunify/qingcloud-sdk-go/service"
 
 	"github.com/spf13/cobra"
 )
@@ -38,6 +41,7 @@ var isCease bool
 func init() {
 	deleteClusterCmd.Flags().StringVarP(&clusterId, "cluser-id", "c", "", "ID of the cluster")
 	deleteClusterCmd.Flags().BoolVar(&isCease, "cease", false, "if delete the cluster directly without going to recycle")
+	deleteClusterCmd.MarkFlagRequired("cluster-id")
 	rootCmd.AddCommand(deleteClusterCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -51,5 +55,22 @@ func init() {
 	// deleteClusterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 func deleteCluster(cmd *cobra.Command, args []string) {
-	fmt.Println("deleteCluster called")
+	i := &service.DeleteAPPClusterInput{
+		Clusters: []*string{&clusterId},
+	}
+	if isCease {
+		var cease = 1
+		i.DirectCease = &cease
+	}
+	app := GetAppService()
+	output, err := app.DeleteAPPCluster(i)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	if *output.RetCode != 0 {
+		fmt.Println("Error! Message" + *output.Message)
+		os.Exit(1)
+	}
+	fmt.Println("Delete Cluster succeed")
 }

@@ -68,5 +68,4 @@ func getCluster(cmd *cobra.Command, args []string) {
 		}
 		ioutil.WriteFile(outputJSON, bytes, 0660)
 	}
-	fmt.Println("OK")
 }
