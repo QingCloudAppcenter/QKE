@@ -15,7 +15,7 @@
             "role": "master",
             "container": {
                 "type": "kvm",
-                "image": "img-tpdrop6w",
+                "image": "img-acj1tpkc",
                 "zone": "ap2a"
             },
             "instance_class": {{cluster.master.instance_class}},
@@ -31,33 +31,33 @@
             "services": {
                  "init": {
                     "order": 1,
-                    "cmd": "/opt/kubernetes/script/init-master.sh",
+                    "cmd": "/opt/kubernetes/script/master_init.sh",
                     "timeout": 300
                 },
                 "start": {
                     "order": 1,
-                    "cmd": "/opt/kubernetes/script/start-master.sh",
+                    "cmd": "/opt/kubernetes/script/master_start.sh",
                     "timeout": 300
                 },
                 "stop": {
                     "order": 1,
-                    "cmd": "/opt/kubernetes/script/stop-master.sh",
+                    "cmd": "/opt/kubernetes/script/master_stop.sh",
                     "timeout": 300
                 },
                 "destroy": {
                     "order": 3,
                     "nodes_to_execute_on": 1,
                     "post_stop_service": true,
-                    "cmd": "/opt/kubernetes/script/destroy-master.sh"
+                    "cmd": "/opt/kubernetes/script/master_destroy.sh"
                 },
                 "upgrade": {
-                    "cmd": "/opt/kubernetes/script/upgrade.sh",
+                    "cmd": "/opt/kubernetes/script/master_upgrade.sh",
                     "post_start_service": true,
                     "timeout": 300
                  }
             },
             "custom_metadata": {
-                "cmd":"/opt/kubernetes/script/get-metadata.sh"
+                "cmd":"/opt/kubernetes/script/custom_metadata.sh"
             },
             "health_check": {
                 "enable": true,
@@ -66,12 +66,12 @@
                 "action_timeout_sec": 30,
                 "healthy_threshold": 3,
                 "unhealthy_threshold": 3,
-                "check_cmd": "/opt/kubernetes/script/check-master.sh",
-                "action_cmd": "/opt/kubernetes/script/restart-master.sh"
+                "check_cmd": "/opt/kubernetes/script/master_check.sh",
+                "action_cmd": "/opt/kubernetes/script/master_restart.sh"
             },
             "monitor": {
             "enable": true,
-            "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+            "cmd": "/opt/kubernetes/bin/prom2json  -insecure https://localhost:10250/metrics",
             "items": {
                 "kubelet_running_container_count": {
                     "unit": "",
@@ -97,7 +97,7 @@
                     "role": "node",
                     "container": {
                         "type": "kvm",
-                        "image": "img-52wzuboe",
+                        "image": "img-siy0h6rn",
                         "zone": "ap2a"
                     },
                     "instance_class": 0,
@@ -113,17 +113,17 @@
                     "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_init.sh",
                             "timeout": 300
                         },
                          "start": {
                              "order": 3,
-                             "cmd": "/opt/kubernetes/script/start-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_start.sh",
                              "timeout": 300
                          },
                          "stop": {
                              "order": 3,
-                             "cmd": "/opt/kubernetes/script/stop-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_stop.sh",
                              "timeout": 300
                          },
                          "scale_in": {
@@ -135,11 +135,11 @@
                             "order": 1,
                             "nodes_to_execute_on": 1,
                             "post_stop_service": false,
-                            "cmd": "/opt/kubernetes/script/destroy-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_destroy.sh",
                             "timeout": 86400
                          },
                          "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-node.sh 176",
+                            "cmd": "/opt/kubernetes/script/node_upgrade.sh 176",
                             "timeout": 300
                         }
                     },
@@ -150,12 +150,12 @@
                         "action_timeout_sec": 30,
                         "healthy_threshold": 3,
                         "unhealthy_threshold": 3,
-                        "check_cmd": "/opt/kubernetes/script/check-node.sh",
-                        "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                        "check_cmd": "/opt/kubernetes/script/node_check.sh",
+                        "action_cmd": "/opt/kubernetes/script/node_restart.sh"
                     },
                     "monitor": {
                     "enable": true,
-                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "cmd": "/opt/kubernetes/bin/prom2json  -insecure https://localhost:10250/metrics",
                     "items": {
                         "kubelet_running_container_count": {
                             "unit": "",
@@ -182,7 +182,7 @@
                     "role": "ssd_node",
                     "container": {
                         "type": "kvm",
-                        "image": "img-52wzuboe",
+                        "image": "img-siy0h6rn",
                         "zone": "ap2a"
                     },
                     "instance_class": 1,
@@ -198,17 +198,17 @@
                     "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_init.sh",
                             "timeout": 300
                         },
                          "start": {
                              "order": 3,
-                             "cmd": "/opt/kubernetes/script/start-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_start.sh",
                              "timeout": 300
                          },
                          "stop": {
                              "order": 3,
-                             "cmd": "/opt/kubernetes/script/stop-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_stop.sh",
                              "timeout": 300
                          },
                          "scale_in": {
@@ -220,11 +220,11 @@
                             "order": 1,
                             "nodes_to_execute_on": 1,
                             "post_stop_service": false,
-                            "cmd": "/opt/kubernetes/script/destroy-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_destroy.sh",
                             "timeout": 86400
                          },
                          "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-node.sh 176",
+                            "cmd": "/opt/kubernetes/script/node_upgrade.sh 176",
                             "timeout": 300
                         }
                     },
@@ -236,11 +236,11 @@
                         "healthy_threshold": 3,
                         "unhealthy_threshold": 3,
                         "check_cmd": "/opt/kubernetes/script/check-node.sh",
-                        "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                        "action_cmd": "/opt/kubernetes/script/node_restart.sh"
                     },
                     "monitor": {
                     "enable": true,
-                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "cmd": "/opt/kubernetes/bin/prom2json  -insecure https://localhost:10250/metrics",
                     "items": {
                         "kubelet_running_container_count": {
                             "unit": "",
@@ -267,7 +267,7 @@
                     "role": "log",
                     "container": {
                         "type": "kvm",
-                        "image": "img-52wzuboe",
+                        "image": "img-siy0h6rn",
                         "zone": "ap2a"
                     },
                     "instance_class": {{cluster.log.instance_class}},
@@ -284,17 +284,17 @@
                     "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_init.sh",
                             "timeout": 300
                         },
                          "start": {
                              "order": 2,
-                             "cmd": "/opt/kubernetes/script/start-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_start.sh",
                              "timeout": 300
                          },
                          "stop": {
                              "order": 2,
-                             "cmd": "/opt/kubernetes/script/stop-node.sh",
+                             "cmd": "/opt/kubernetes/script/node_stop.sh",
                              "timeout": 300
                          },
                          "scale_in": {
@@ -306,11 +306,11 @@
                             "order": 2,
                             "nodes_to_execute_on": 1,
                             "post_stop_service": false,
-                            "cmd": "/opt/kubernetes/script/destroy-node.sh",
+                            "cmd": "/opt/kubernetes/script/node_destroy.sh",
                             "timeout": 86400
                          },
                          "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-node.sh 176",
+                            "cmd": "/opt/kubernetes/script/node_upgrade.sh 176",
                             "timeout": 300
                         }
                     },
@@ -322,11 +322,11 @@
                         "healthy_threshold": 3,
                         "unhealthy_threshold": 3,
                         "check_cmd": "/opt/kubernetes/script/check-node.sh",
-                        "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                        "action_cmd": "/opt/kubernetes/script/node_restart.sh"
                     },
                     "monitor": {
                     "enable": true,
-                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "cmd": "/opt/kubernetes/bin/prom2json  -insecure https://localhost:10250/metrics",
                     "items": {
                         "kubelet_running_container_count": {
                             "unit": "",
@@ -352,7 +352,7 @@
                         "role": "client",
                         "container": {
                             "type": "kvm",
-                            "image": "img-r9jrufcb",
+                            "image": "img-8begmb7y",
                             "zone": "ap2a"
                         },
                         "instance_class": {{cluster.client.instance_class}},
@@ -364,14 +364,14 @@
                         "services": {
                              "init": {
                                  "order": 2,
-                                 "cmd": "/opt/kubernetes/script/init-client.sh"
+                                 "cmd": "/opt/kubernetes/script/client_init.sh"
                              },
                              "start": {
                                  "order": 2,
-                                 "cmd": "/opt/kubernetes/script/start-client.sh"
+                                 "cmd": "/opt/kubernetes/script/client_start.sh"
                              },
                              "upgrade": {
-                                 "cmd": "/opt/kubernetes/script/upgrade-client.sh"
+                                 "cmd": "/opt/kubernetes/script/client_upgrade.sh"
                              }
                         }
             }

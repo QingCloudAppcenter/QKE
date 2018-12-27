@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 function CliDoneOrDie(){
     ret_json=$1
@@ -35,8 +35,8 @@ function WaitUntilDoneOrTimeOut(){
     fi
     action=$1
     shift 1
-    local timeout=20
-    t=0
+    local timeout=60
+    local t=0
     local ret_code=-1
     while true; do
        local ret_json=`bash -c "$*"`
@@ -46,6 +46,7 @@ function WaitUntilDoneOrTimeOut(){
           break
        else
           printf "[Will try again]Error in %s! pls check the response: \n%s\n" "$action" "$ret_json"
+          printf "Command is %s\n" "$*"
        fi
        let t=t+4
        sleep 4s
@@ -58,4 +59,8 @@ function WaitUntilDoneOrTimeOut(){
 
 function DoubleQuotes(){
     printf "\"%s\"" "$*"
+}
+
+function DateString(){
+    date '+%Y%m%d-%T'
 }

@@ -1,10 +1,10 @@
-#/bin/bash
+#! /bin/bash
 
 # detect machine exsit
 set -e
 set -u
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 2 ]; then
     printf "Not enough arguments,quit\n"
     exit 1
 fi
@@ -15,7 +15,7 @@ WORKSPACE=$(dirname $BASH_SOURCE)
 cd $WORKSPACE
 
 IAAS_CMD="qingcloud iaas"
-IMAGE_ID=xenial5x64a
+IMAGE_ID=$2
 INSTANCE_NAME=kubesphere_app_$1
 ZONE=ap2a
 TIMEOUT=120
@@ -27,6 +27,7 @@ source common.sh
 
 function cleanup(){
     echo "Do some dirty work"
+    sleep 5s
     set +e
     set +u
     if [ -n $SSHKEY ]; then
@@ -35,7 +36,8 @@ function cleanup(){
         WaitUntilDoneOrTimeOut "Delete SSHKEY"  $IAAS_CMD delete-keypairs -z $ZONE -k $SSHKEY
     fi 
     printf "delete created machine\n"
-    WaitUntilDoneOrTimeOut "Delete machine" $IAAS_CMD terminate-instances -z $ZONE  -z $ZONE -i $MACHINEID
+    WaitUntilDoneOrTimeOut "Delete machine" $IAAS_CMD terminate-instances -z $ZONE -i $MACHINEID -D 1
+    exit $1
 }
 #trap cleanup EXIT
 function GetIP(){
@@ -46,6 +48,8 @@ function GetIP(){
     done
     ip=`Trim $ip`
 }
+
+trap cleanup EXIT SIGINT
 MACHINEID=`$IAAS_CMD describe-instances -W $INSTANCE_NAME -z $ZONE | jq '.instance_set[]|select(.status=="running")|.instance_id'`
 if [ -z $MACHINEID ]; then
     ##create SSH key
@@ -86,9 +90,18 @@ else
     GetIP
 fi
 
+#Prepare
+ssh root@$ip "mkdir -p /opt/kubernetes/script"
 scp -r ../vm-scripts root@$ip:/root/vm-scripts
-ssh root@$ip "chmod +x vm-scripts/*.sh  &  ./vm-scripts/${run_script} & rm -rf vm-scripts & history -c"
+scp ../app/kubernetes/$1/* root@$ip:/opt/kubernetes/script/
+scp -r ../app/bin root@$ip:/opt/kubernetes/bin
 
+ssh root@$ip /bin/bash  << EOF
+chmod +x vm-scripts/*.sh  
+./vm-scripts/$run_script
+rm -rf vm-scripts  
+history -c
+EOF
 $IAAS_CMD stop-instances -z $ZONE -i $MACHINEID
 printf "waiting for %s shutting down\n" $MACHINEID
     ##wait for starting
@@ -107,9 +120,7 @@ if [ $TIMEOUT -le $t ]; then
     exit 1
 fi
 
-ret_json=`$IAAS_CMD capture-instance -z $ZONE -i $MACHINEID -N ks-app-$1`
+ret_json=`$IAAS_CMD capture-instance -z $ZONE -i $MACHINEID -N ks-app-$1:$3`
 IMAGE_ID=`CliDoneOrDie "$ret_json" "capture instance" ".image_id"`
 echo "The image id is ${IMAGE_ID}"
 echo $IMAGE_ID > ${1}_image_id
-
-cleanup

@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 swapoff -a
 sysctl net.bridge.bridge-nf-call-iptables=1
@@ -47,6 +47,7 @@ systemctl restart docker
 docker pull k8s.gcr.io/kube-proxy:v1.13.1
 docker pull k8s.gcr.io/pause:3.1
 docker pull k8s.gcr.io/coredns:1.2.6
+docker pull gcr.io/google_containers/hyperkube-amd64:v1.12.4
 
 ##pull CNI image
 mkdir -p CNI/flannel
@@ -59,3 +60,13 @@ wget https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation
 docker pull quay.io/calico/typha:v3.3.2
 docker pull quay.io/calico/node:v3.3.2
 docker pull quay.io/calico/cni:v3.3.2
+
+
+wget -qO- http://appcenter-docs.qingcloud.com/developer-guide/scripts/app-agent-linux-amd64.tar.gz | tar -xvz
+echo "install agent"
+wget -qO- http://appcenter-docs.qingcloud.com/developer-guide/scripts/app-agent-linux-amd64.tar.gz | tar -xvz
+cd app-agent-linux-amd64
+./install.sh
+cd ../
+rm -rf app-agent-linux-amd64
+echo "DONE"
