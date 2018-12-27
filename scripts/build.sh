@@ -21,13 +21,13 @@ configFile="../app/config/config.json"
 #create machine
 if [ $# -lt 1 ] || [ $1 != "--no-kvm" ]; then
     ./create_kvm.sh master img-acj1tpkc $timestamp
-    ./create_kvm.sh node   img-siy0h6rn $timestamp
-    ./create_kvm.sh client img-8begmb7y $timestamp
+    #./create_kvm.sh node   img-siy0h6rn $timestamp
+    #./create_kvm.sh client img-8begmb7y $timestamp
 fi
 
-master=`cat master_image_id`
-node=`cat node_image_id`
-client=`cat client_image_id`
+master=`cat __master_IMAGE_ID`
+node=`cat __node_IMAGE_ID`
+client=`cat __client_IMAGE_ID`
 
 sed "s/MASTER_IMAGE_REPLACE/$master/g;s/NODE_IMAGE_REPLACE/$node/g;s/NODE_SSD_IMAGE_REPLACE/$node/g;s/LOG_IMAGE_REPLACE/$node/g;s/CLIENT_IMAGE_REPLACE/$client/g" ${mustcacheFile}.tmp >${mustcacheFile}
 

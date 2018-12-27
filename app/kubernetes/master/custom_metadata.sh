@@ -6,4 +6,4 @@ SHA=`openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -o
 
 ip=`curl http://metadata/self/host/ip`
 JOINTOKEN="kubeadm join --token $TOKEN $ip:6443 --discovery-token-ca-cert-hash sha256:$SHA"
-echo '{"join_cmd":"'$JOINTOKEN'"}'
+echo '{"join_cmd":"'$JOINTOKEN'"} 
