@@ -1,4 +1,7 @@
 #!/bin/bash
+vxnet_id=vxnet-lddzg8e
+route_id=rtr-gkubu96i
+appversion=appv-tzssw6ay
 
 function CliDoneOrDie(){
     ret_json=$1
@@ -55,10 +58,6 @@ function WaitUntilDoneOrTimeOut(){
         printf "Error! Timeout wait for %s\n" "$action"
         exit 1
     fi
-}
-
-function DoubleQuotes(){
-    printf "\"%s\"" "$*"
 }
 
 function DateString(){

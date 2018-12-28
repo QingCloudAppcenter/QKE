@@ -58,11 +58,12 @@ func deleteCluster(cmd *cobra.Command, args []string) {
 	i := &service.DeleteAPPClusterInput{
 		Clusters: []*string{&clusterId},
 	}
-	if isCease {
-		var cease = 1
-		i.DirectCease = &cease
-	}
 	app := GetAppService()
+	if isCease {
+		ceaseCluster(app)
+		fmt.Println("Cease Cluster succeed")
+		return
+	}
 	output, err := app.DeleteAPPCluster(i)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -73,4 +74,18 @@ func deleteCluster(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	fmt.Println("Delete Cluster succeed")
+}
+func ceaseCluster(app *service.AppService) {
+	i := &service.CeaseAPPClustersInput{
+		Clusters: []*string{&clusterId},
+	}
+	output, err := app.CeaseAPPClusters(i)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	if *output.RetCode != 0 {
+		fmt.Println("Error! Message" + *output.Message)
+		os.Exit(1)
+	}
 }
