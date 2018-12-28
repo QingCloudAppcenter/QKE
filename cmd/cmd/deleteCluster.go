@@ -16,16 +16,16 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/yunify/qingcloud-sdk-go/service"
+
+	"github.com/spf13/cobra"
 )
 
-// deployCmd represents the deploy command
-var deployCmd = &cobra.Command{
-	Use:   "deploy",
+// deleteClusterCmd represents the deleteCluster command
+var deleteClusterCmd = &cobra.Command{
+	Use:   "delete-cluster",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -33,36 +33,37 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: deployApp,
+	Run: deleteCluster,
 }
 
-var (
-	conf       string
-	debug      = 1
-	outputFile string
-)
+var isCease bool
 
 func init() {
-	deployCmd.Flags().StringVarP(&conf, "user-config", "u", "", "path of config file of cluster")
-	deployCmd.Flags().StringVarP(&outputFile, "output", "o", "", "file that stores cluster-ID")
-	deployCmd.MarkFlagFilename("user-config")
-	deployCmd.MarkFlagRequired("user-config")
-	rootCmd.AddCommand(deployCmd)
-}
+	deleteClusterCmd.Flags().StringVarP(&clusterId, "cluser-id", "c", "", "ID of the cluster")
+	deleteClusterCmd.Flags().BoolVar(&isCease, "cease", false, "if delete the cluster directly without going to recycle")
+	deleteClusterCmd.MarkFlagRequired("cluster-id")
+	rootCmd.AddCommand(deleteClusterCmd)
 
-func deployApp(cmd *cobra.Command, args []string) {
-	app := GetAppService()
-	input := &service.DeployAppVersionInput{}
-	input.VersionID = &resourceID
-	input.Debug = &debug
-	bytes, err := ioutil.ReadFile(conf)
-	if err != nil {
-		fmt.Println("Error in open config file,err:" + err.Error())
-		os.Exit(1)
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// deleteClusterCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// deleteClusterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+func deleteCluster(cmd *cobra.Command, args []string) {
+	i := &service.DeleteAPPClusterInput{
+		Clusters: []*string{&clusterId},
 	}
-	str := string(bytes)
-	input.Conf = &str
-	output, err := app.DeployAppVersion(input)
+	if isCease {
+		var cease = 1
+		i.DirectCease = &cease
+	}
+	app := GetAppService()
+	output, err := app.DeleteAPPCluster(i)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -71,11 +72,5 @@ func deployApp(cmd *cobra.Command, args []string) {
 		fmt.Println("Error! Message" + *output.Message)
 		os.Exit(1)
 	}
-	if outputFile != "" {
-		err = ioutil.WriteFile(outputFile, []byte(*output.ClusterID), 0660)
-		if err != nil {
-			fmt.Printf("Failed to write file,err:%s", err.Error())
-			os.Exit(1)
-		}
-	}
+	fmt.Println("Delete Cluster succeed")
 }

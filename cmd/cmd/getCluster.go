@@ -15,9 +15,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/yunify/qingcloud-sdk-go/service"
 )
 
 // getClusterCmd represents the getCluster command
@@ -33,14 +37,35 @@ to quickly create a Cobra application.`,
 	Run: getCluster,
 }
 var clusterId string
+var outputJSON string
 
 func init() {
 	getClusterCmd.Flags().StringVarP(&clusterId, "cluster-id", "c", "", "The cluster id")
+	getClusterCmd.Flags().StringVarP(&outputJSON, "output", "o", "", "Path of output json file")
 	getClusterCmd.MarkFlagRequired("cluster-id")
 	rootCmd.AddCommand(getClusterCmd)
 }
 
 func getCluster(cmd *cobra.Command, args []string) {
 	app := GetAppService()
-	fmt.Println(app)
+	i := &service.DescribeAPPClustersInput{
+		Clusters: []*string{&clusterId},
+	}
+	o, err := app.DescribeAPPClusters(i)
+	if err != nil {
+		fmt.Println("[Error]" + err.Error())
+		os.Exit(1)
+	}
+	if *o.RetCode != 0 {
+		fmt.Println("[Error]" + *o.Message)
+		os.Exit(1)
+	}
+	if outputJSON != "" {
+		bytes, err := json.Marshal(o)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		ioutil.WriteFile(outputJSON, bytes, 0660)
+	}
 }

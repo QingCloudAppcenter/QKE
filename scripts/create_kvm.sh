@@ -97,6 +97,8 @@ scp ../app/kubernetes/$1/* root@$ip:/opt/kubernetes/script/
 scp -r ../app/bin root@$ip:/opt/kubernetes/bin
 
 ssh root@$ip /bin/bash  << EOF
+chmod +x /opt/kubernetes/script/*
+chmod +x  /opt/kubernetes/bin/*
 chmod +x vm-scripts/*.sh  
 ./vm-scripts/$run_script
 rm -rf vm-scripts  
@@ -123,4 +125,4 @@ fi
 ret_json=`$IAAS_CMD capture-instance -z $ZONE -i $MACHINEID -N ks-app-$1:$3`
 IMAGE_ID=`CliDoneOrDie "$ret_json" "capture instance" ".image_id"`
 echo "The image id is ${IMAGE_ID}"
-echo $IMAGE_ID > ${1}_image_id
+echo $IMAGE_ID > __${1}_IMAGE_ID
