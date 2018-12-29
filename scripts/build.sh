@@ -55,3 +55,4 @@ while true; do
 done
 set -e
 
+echo "New Config files have been uploaded successfully"
