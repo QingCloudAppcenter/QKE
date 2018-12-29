@@ -18,7 +18,7 @@ add-apt-repository \
 
 apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
-apt-get install -y kubelet kubeadm kubectl docker.io
+apt-get install -y kubelet kubeadm kubectl docker.io jq
 apt-mark hold kubelet kubeadm kubectl
 
 ## Install docker ce.

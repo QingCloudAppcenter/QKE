@@ -2,5 +2,4 @@
 vendor
 *.tar.gz
 appcenter-cli
-__*_ID
 __generated

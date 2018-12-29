@@ -5,10 +5,10 @@ cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
-apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common kubectl
+apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common kubectl jq
 echo "source <(kubectl completion bash)" >> ~/.bashrc
 
-echo "install agent"
+echo "install agent now"
 wget -qO- http://appcenter-docs.qingcloud.com/developer-guide/scripts/app-agent-linux-amd64.tar.gz | tar -xvz
 cd app-agent-linux-amd64
 ./install.sh

@@ -18,9 +18,10 @@ add-apt-repository \
 
 apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
-apt-get install -y kubelet kubeadm kubectl docker.io
+apt-get install -y kubelet kubeadm kubectl docker.io jq
 apt-mark hold kubelet kubeadm kubectl
 
+echo "source <(kubectl completion bash)" >> ~/.bashrc
 ## Install docker ce.
 #apt-get install docker-ce=18.06.0~ce~3-0~ubuntu
 
