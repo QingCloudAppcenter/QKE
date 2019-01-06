@@ -1,4 +1,4 @@
-# How to install stacked control plane Kubernetes
+# How to install stacked HA Kubernetes
 
 > https://v1-12.docs.kubernetes.io/docs/setup/independent/high-availability/#stacked-control-plane-nodes
 
@@ -398,10 +398,25 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
     ```
 
 - workload
+    - download
+      ```
+      wget https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+      ```
 
-    ```
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
-    ```
+    - edit L76
+      ```
+      75     {
+      76       "Network": "10.10.0.0/16",
+      77       "Backend": {
+      78         "Type": "vxlan"
+      79       }
+      80     }
+      ```
+
+    - create
+      ```
+      kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+      ```
 
 ## Join Worker Node
 
