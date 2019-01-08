@@ -1,0 +1,60 @@
+{
+        "name": {{cluster.name}},
+        "description": {{cluster.description}},
+        "vxnet": {{cluster.vxnet}},
+        "upgrade_policy": [
+        ],
+        "upgrade_roles": {
+            "add": ["ssd_node"]
+        },
+        "links": {
+            "etcd_service": {{cluster.etcd_service}}
+        },
+        "nodes": [
+            {
+                "role": "client",
+                "container": {
+                    "type": "kvm",
+                    "image": "img-0sbu6qbk",
+                    "zone": "ap2a"
+                },
+                "instance_class": {{cluster.client.instance_class}},
+                "count": 1,
+                "cpu": {{cluster.client.cpu}},
+                "memory": {{cluster.client.memory}},
+                "user_access":true,
+                "passphraseless": "ssh-rsa",
+                "services": {
+                        "init": {
+                            "order": 2,
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-client.sh"
+                        },
+                        "start": {
+                            "order": 2,
+                            "cmd": "/opt/kubernetes/script/ha/runtime/start-client.sh"
+                        },
+                        "upgrade": {
+                            "cmd": "/opt/kubernetes/script/ha/runtime/upgrade-client.sh"
+                        }
+                }
+            }
+        ],
+        "env": {
+            "pod_vxnets":{{env.pod_vxnets}},
+            "access_key_id": {{env.access_key_id}},
+            "api_external_domain": {{env.api_external_domain}},
+            "cluster_port_range": {{env.cluster_port_range}},
+            "max_pods": {{env.max_pods}},
+            "network_plugin": {{env.network_plugin}},
+            "proxy_mode": {{env.proxy_mode}},
+            "host_aliases": {{env.host_aliases}}
+            "registry_mirrors": {{env.registry_mirrors}},
+            "insecure_registries": {{env.insecure_registries}},
+            "private_registry": {{env.private_registry}},
+            "dockerhub_username":{{env.dockerhub_username}},
+            "dockerhub_password":{{env.dockerhub_password}},
+            "docker_bip":{{env.docker_bip}},
+            "keep_log_days":{{env.keep_log_days}},
+            "kube_log_level":{{env.kube_log_level}}
+        }
+}
