@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "*************************"
-echo "install qingcloud cli"
+echo "update qingcloud cli"
 echo "*************************"
 
 apt install python-pip -y

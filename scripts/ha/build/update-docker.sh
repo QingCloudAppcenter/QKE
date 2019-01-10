@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "*************************"
-echo "install docker"
+echo "update docker"
 echo "*************************"
 
 apt-get update

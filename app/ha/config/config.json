@@ -38,7 +38,6 @@
             "default": "",
             "required": "yes"
           },
-
           {
             "key": "etcd_service",
             "label": "etcd service",
@@ -55,30 +54,30 @@
             "type": "array",
             "properties": [
                 {
-                    "key": "load_balancer",
+                    "key": "loadbalancer",
                     "label": "load balancer",
-                    "description": "Choose a loadbalancer service (When you create loadbalancer, you need to select the Internet type. Listener protocol should be TCP)",
+                    "description": "Choose an loadbalancer service to use",
                     "type": "loadbalancer",
                     "port": 6443,
-                    "default": [],
+                    "default": [
+                    ],
                     "required": "yes"
                 },
-              {
-                "key": "count",
-                "label": "count",
-                "description": "Number of master for the cluster to create",
-                "type": "integer",
-                "default": 3,
-                "min":3,
-                "max":3,
-                "required": "yes"
-              },
+                {
+                  "key": "count",
+                  "label": "count",
+                  "description": "Number of master for the cluster to create",
+                  "type": "integer",
+                  "default": 3,
+                  "required": "yes",
+                  "resource_group": [3, 3]
+                },
               {
                 "key": "instance_class",
                 "label": "resource type",
                 "description": "The instance type for the cluster to run, such as high performance, high performance plus",
                 "type": "integer",
-                "default": 1,
+                "default": 0,
                 "range": [
                   0,
                   1
@@ -118,10 +117,6 @@
                 "description": "The volume size for each instance",
                 "type": "integer",
                 "default": 40,
-                "range": [
-                    40,
-                    500
-                  ],
                 "min": 40,
                 "max": 500,
                 "step": 10,
@@ -132,14 +127,14 @@
           },
           {
             "key": "node",
-            "label": "high performance node",
-            "description": "high performance node properties",
+            "label": "node",
+            "description": "node properties",
             "type": "array",
             "properties": [
                  {
                     "key": "count",
                     "label": "count",
-                    "description": "Number of high performance node for the cluster to create",
+                    "description": "Number of nodes for the cluster to create",
                     "type": "integer",
                     "default": 2,
                     "min":0,
@@ -183,10 +178,6 @@
                     "description": "The volume size for each instance",
                     "type": "integer",
                     "default": 40,
-                    "range": [
-                        40,
-                        500
-                      ],
                     "min": 40,
                     "max": 500,
                     "step": 10,
@@ -196,14 +187,14 @@
           },
           {
             "key": "ssd_node",
-            "label": "super high performance node",
-            "description": "super high performance node",
+            "label": "ssd",
+            "description": "ssd node properties",
             "type": "array",
             "properties": [
                 {
                     "key": "count",
                     "label": "count",
-                    "description": "Number of super high performance node for the cluster to create",
+                    "description": "Number of nodes for the cluster to create",
                     "type": "integer",
                     "default": 0,
                     "min":0,
@@ -247,10 +238,6 @@
                     "description": "The volume size for each instance",
                     "type": "integer",
                     "default": 500,
-                    "range": [
-                        40,
-                        500
-                        ],
                     "min": 40,
                     "max": 500,
                     "step": 10,
@@ -267,7 +254,7 @@
             {
                 "key": "instance_class",
                 "label": "resource type",
-                "description": "The instance type for the cluster to run, such as high performance, super high performance",
+                "description": "client properties",
                 "type": "integer",
                 "default": 0,
                 "range": [
@@ -313,8 +300,7 @@
             "key": "access_key_id",
             "label": "Access key id",
             "description": "API access key id",
-            "type": "string",
-            "pattern": "^[A-Z]{20}$",
+            "type": "accesskey",
             "required": "yes"
           },
           {
@@ -322,7 +308,7 @@
             "label": "Api External Domain",
             "description": "The domain of the Kubernetes api server",
             "type": "string",
-            "default": "k8s.cluster.local",
+            "default": "cluster.local",
             "changeable": false,
             "required": "no"
           },
@@ -383,9 +369,9 @@
             "required": "no"
           },
           {
-            "key": "insecure_registries",
-            "label": "Insecure registries",
-            "description": "The insecure docker registries, use a blank to split multi registry",
+            "key": "insecure_registry",
+            "label": "Insecure registry",
+            "description": "The insecure docker registry, use a blank to split multi registry",
             "type": "string",
             "default": "",
             "required": "no"
