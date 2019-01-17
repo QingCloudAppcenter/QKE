@@ -21,7 +21,7 @@ $ swapoff -a
 ### Edit config file
 
 ```
-export MASTER_IP=192.168.1.5
+export MASTER_IP=192.168.1.30
 export MASTER_HOSTNAME=$(hostname)
 ```
 
