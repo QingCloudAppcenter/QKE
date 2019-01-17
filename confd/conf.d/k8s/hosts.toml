@@ -1,0 +1,6 @@
+[template]
+src = "k8s/hosts.tmpl"
+dest = "/etc/hosts"
+keys = [
+    "/",
+]

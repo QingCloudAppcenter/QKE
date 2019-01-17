@@ -1,0 +1,6 @@
+[template]
+src = "k8s/etcd.service.tmpl"
+dest = "/etc/systemd/system/etcd.service"
+keys = [
+    "/",
+]

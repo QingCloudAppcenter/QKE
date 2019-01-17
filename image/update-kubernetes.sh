@@ -5,7 +5,7 @@ echo "update kubernetes binary files [kubeadm, kubelet, kubectl]"
 echo "*************************"
 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
-K8S_HOME=$(dirname $(dirname $(dirname "${SCRIPTPATH}")))
+K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source ${K8S_HOME}/version
 

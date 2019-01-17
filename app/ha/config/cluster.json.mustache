@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bg1qekmb",
+                    "image": "img-ufnjkn33",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -49,7 +49,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bg1qekmb",
+                    "image": "img-ufnjkn33",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -67,14 +67,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-node.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-node.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-node.sh"
                         }
                 }
             },
@@ -82,7 +82,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bg1qekmb",
+                    "image": "img-ufnjkn33",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -100,14 +100,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-node.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-node.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-node.sh"
                         }
                 }
             },
@@ -115,11 +115,11 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bg1qekmb",
+                    "image": "img-ufnjkn33",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
-                "count": 0,
+                "count": 1,
                 "cpu": {{cluster.client.cpu}},
                 "memory": {{cluster.client.memory}},
                 "user_access": true,
@@ -127,14 +127,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-client.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-client.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-master.sh"
+                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-client.sh"
                         }
                 }
             }
