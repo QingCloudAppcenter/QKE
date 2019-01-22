@@ -15,7 +15,7 @@ TimeoutStartSec=0
 ExecStart=/usr/bin/etcd  \
     --advertise-client-urls http://{{getv "/host/ip"}}:2379   \
     --initial-advertise-peer-urls http://{{getv "/host/ip"}}:2380  \
-    --initial-cluster {{range $dir := lsdir "/hosts/master/"}}{{$ipstr := printf "/hosts/master/%s/ip" $dir}}{{$ip := getv $ipstr}}{{printf "%s=http://%s," $dir $ip}}{{end}} \
+    --initial-cluster {{range $dir := lsdir "/hosts/master/"}}{{$ipstr := printf "/hosts/master/%s/ip" $dir}}{{$ip := getv $ipstr}}{{printf "%s=http://%s:2380," $dir $ip}}{{end}} \
     --initial-cluster-state new \
     --listen-client-urls http://{{getv "/host/ip"}}:2379 \
     --listen-peer-urls http://{{getv "/host/ip"}}:2380 \

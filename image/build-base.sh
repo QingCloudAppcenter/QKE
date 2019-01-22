@@ -78,3 +78,7 @@ then
     echo "[ERROR]: Update etcd failed!"
     exit 255
 fi
+
+# disable kubelet
+systemctl stop kubelet
+systemctl disable kubelet

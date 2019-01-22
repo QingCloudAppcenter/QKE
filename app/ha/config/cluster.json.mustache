@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-3l20yk6k",
+                    "image": "img-aje0yh8s",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -34,14 +34,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-master.sh"
+                            "cmd": "/opt/kubernetes/script/init-master.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-master.sh"
+                            "cmd": "/opt/kubernetes/script/start-master.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-master.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-master.sh"
                         }
                 }
             },
@@ -49,7 +49,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-3l20yk6k",
+                    "image": "img-aje0yh8s",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -67,14 +67,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-node.sh"
+                            "cmd": "/opt/kubernetes/script/init-node.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-node.sh"
+                            "cmd": "/opt/kubernetes/script/start-node.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-node.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-node.sh"
                         }
                 }
             },
@@ -82,7 +82,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-3l20yk6k",
+                    "image": "img-aje0yh8s",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -100,14 +100,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-node.sh"
+                            "cmd": "/opt/kubernetes/script/init-node.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-node.sh"
+                            "cmd": "/opt/kubernetes/script/start-node.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-node.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-node.sh"
                         }
                 }
             },
@@ -115,7 +115,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-3l20yk6k",
+                    "image": "img-aje0yh8s",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -127,14 +127,14 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/init-client.sh"
+                            "cmd": "/opt/kubernetes/script/init-client.sh"
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/start-client.sh"
+                            "cmd": "/opt/kubernetes/script/start-client.sh"
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/scripts/ha/runtime/upgrade-client.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-client.sh"
                         }
                 }
             }

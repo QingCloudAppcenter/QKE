@@ -13,4 +13,3 @@ fi
 
 # Copy template files
 cp -r /opt/kubernetes/confd/conf.d /etc/confd/
-cp -r /opt/kubernetes/confd/templates /etc/confd/
