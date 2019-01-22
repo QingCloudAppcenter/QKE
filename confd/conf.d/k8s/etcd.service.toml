@@ -4,3 +4,4 @@ dest = "/etc/systemd/system/etcd.service"
 keys = [
     "/",
 ]
+reload_cmd = "/opt/kubernetes/script/reload-etcd.sh"

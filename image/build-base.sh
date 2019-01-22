@@ -70,3 +70,11 @@ then
     echo "[ERROR]: Update docker images failed!"
     exit 255
 fi
+
+# update etcd
+${K8S_HOME}/image/update-etcd.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update etcd failed!"
+    exit 255
+fi

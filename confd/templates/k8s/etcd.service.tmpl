@@ -1,4 +1,4 @@
-{{if ne (getv "/host/role") "master"}}
+{{if eq (getv "/host/role") "master"}}
 [Unit]
 Description=etcd
 Documentation=https://github.com/coreos/etcd
