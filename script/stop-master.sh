@@ -9,4 +9,4 @@ docker_stop_rm_all
 docker_stop
 
 # stop etcd
-systemctl start etcd
+systemctl stop etcd

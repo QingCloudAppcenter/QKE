@@ -3,6 +3,8 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
+{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/ip" $dir}}
+{{getv $ip}} {{$dir}}{{end}}
 {{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}
 {{getv $ip}} {{$dir}}{{end}}
 {{range $dir := lsdir "/hosts/node/"}}{{$ip := printf "/hosts/node/%s/ip" $dir}}

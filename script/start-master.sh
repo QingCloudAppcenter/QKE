@@ -5,9 +5,8 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 source "${K8S_HOME}/script/common.sh"
 
 swapoff -a
-rm /root/.ssh/authorized_keys
-ln -fs /data/authorized_keys /root/.ssh/authorized_keys
 
 # Start etcd
+systemctl daemon-reload
 retry systemctl restart etcd
 is_systemd_active etcd

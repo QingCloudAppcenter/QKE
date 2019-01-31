@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-aje0yh8s",
+                    "image": "img-tv75z1lk",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -32,24 +32,27 @@
                     "filesystem": "ext4"
                 },
                 "services": {
-                        "init": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-master.sh"
-                        },
-                        "start": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/start-master.sh"
-                        },
-                        "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-master.sh"
-                        }
-                }
+                    "init": {
+                        "order": 1,
+                        "cmd": "/opt/kubernetes/script/init-master.sh"
+                    },
+                    "start": {
+                        "order": 1,
+                        "cmd": "/opt/kubernetes/script/start-master.sh"
+                    },
+                    "upgrade": {
+                        "cmd": "/opt/kubernetes/script/upgrade-master.sh"
+                    },
+                    "stop": {
+                        "cmd": "/opt/kubernetes/script/stop-master.sh"
+                    }
+            }
             },
             {
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-aje0yh8s",
+                    "image": "img-tv75z1lk",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -82,7 +85,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-aje0yh8s",
+                    "image": "img-tv75z1lk",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -115,7 +118,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-aje0yh8s",
+                    "image": "img-tv75z1lk",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -125,17 +128,17 @@
                 "user_access": true,
                 "passphraseless": "ssh-rsa",
                 "services": {
-                        "init": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-client.sh"
-                        },
-                        "start": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/start-client.sh"
-                        },
-                        "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-client.sh"
-                        }
+                    "init": {
+                        "order": 1,
+                        "cmd": "/opt/kubernetes/script/init-client.sh"
+                    },
+                    "start": {
+                        "order": 1,
+                        "cmd": "/opt/kubernetes/script/start-client.sh"
+                    },
+                    "upgrade": {
+                        "cmd": "/opt/kubernetes/script/upgrade-client.sh"
+                    }
                 }
             }
         ],

@@ -64,12 +64,14 @@ function link_dir(){
         mv /var/lib/docker /data/var/lib/
         ln -s /data/var/lib/docker /var/lib/docker
     fi
+
     # Kubelet
     if [ -d "/var/lib/kubelet" ] && [ ! -L "/var/lib/kubelet" ]
     then
         mv /var/lib/kubelet /data/var/lib/
         ln -s /data/var/lib/kubelet /var/lib/kubelet
     fi
+
     # Kubernetes
     if [ -d "/etc/kubernetes" ] && [ ! -L "/etc/kubernetes" ]
     then
@@ -77,11 +79,19 @@ function link_dir(){
         ln -s /data/etc/kubernetes /etc/kubernetes
     fi
     ln -fs /root/.docker /data/root/.docker
+
     # Etcd
     if [ -d "/var/lib/etcd" ] && [ ! -L "/var/lib/etcd" ]
     then
-        mv /var/lib/etcd /data/var
+        mv /var/lib/etcd /data/var/lib/
         ln -s /data/var/lib/etcd /var/lib/etcd
+    fi
+
+    # Authorized keys
+    if [ -f "/root/.ssh/authorized_keys" ] && [ ! -L "/root/.ssh/authorized_keys" ]
+    then
+        mv /root/.ssh/authorized_keys /data/root/
+        ln -fs /data/root/authorized_keys /root/.ssh/authorized_keys
     fi
 }
 
@@ -120,10 +130,8 @@ function docker_stop () {
   retry systemctl stop docker
 }
 
-function copy_access_key(){
+function set_password(){
     echo "root:k8s" |chpasswd
     sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-    mv /root/.ssh/authorized_keys /data/root
-    ln -fs /data/authorized_keys /root/.ssh/authorized_keys
     systemctl restart ssh
 }

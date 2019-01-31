@@ -4,4 +4,5 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-copy_access_key
+link_dir
+set_password
