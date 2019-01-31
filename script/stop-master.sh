@@ -4,5 +4,9 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-ensure_dir
-upgrade_docker
+systemctl stop kubelet
+docker_stop_rm_all
+docker_stop
+
+# stop etcd
+systemctl start etcd

@@ -4,8 +4,4 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-echo "root:k8s" |chpasswd
-sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-mv /root/.ssh/authorized_keys /data/root
-ln -fs /data/authorized_keys /root/.ssh/authorized_keys
-systemctl restart ssh
+copy_access_key

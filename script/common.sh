@@ -84,3 +84,46 @@ function link_dir(){
         ln -s /data/var/lib/etcd /var/lib/etcd
     fi
 }
+
+function upgrade_docker(){
+    #clear old aufs
+    rm -rf /data/var/lib/docker/aufs
+    rm -rf /data/var/lib/docker/image
+    #copy overlays2
+    mv /var/lib/docker/image /data/var/lib/docker/
+    mv /var/lib/docker/overlay2 /data/var/lib/docker/
+    rm -rf /var/lib/docker
+    ln -s /data/var/lib/docker /var/lib/docker
+    ln -s /data/var/lib/kubelet /var/lib/kubelet
+    return 0
+}
+
+function wait_apiserver(){
+    while ! curl --output /dev/null --silent --fail http://localhost:8080/healthz;
+    do
+        echo "waiting k8s api server" && sleep 2
+    done;
+}
+
+function docker_stop_rm_all () {
+    for i in `docker ps -q`
+    do
+        docker stop $i;
+    done
+    for i in `docker ps -aq`
+    do
+        docker rm -f $i;
+    done
+}
+
+function docker_stop () {
+  retry systemctl stop docker
+}
+
+function copy_access_key(){
+    echo "root:k8s" |chpasswd
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+    mv /root/.ssh/authorized_keys /data/root
+    ln -fs /data/authorized_keys /root/.ssh/authorized_keys
+    systemctl restart ssh
+}
