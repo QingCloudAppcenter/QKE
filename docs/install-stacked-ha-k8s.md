@@ -29,9 +29,9 @@ $ swapoff -a
 ```
 
 ```
-export LB_IP=192.168.1.251
+export LB_IP=192.168.1.249
 export LB_NAME=apiserver-lb
-export CP0_IP=192.168.1.20
+export CP0_IP=192.168.1.9
 export CP0_HOSTNAME=$(hostname)
 ```
 
@@ -81,6 +81,17 @@ mode: "ipvs"
 EOF
 ```
 
+#### Pull images
+```
+# kubeadm config images pull --config kubeadm-config.yaml
+[config/images] Pulled gcr.io/google_containers/hyperkube-amd64:v1.12.4
+[config/images] Pulled gcr.io/google_containers/hyperkube-amd64:v1.12.4
+[config/images] Pulled gcr.io/google_containers/hyperkube-amd64:v1.12.4
+[config/images] Pulled gcr.io/google_containers/hyperkube-amd64:v1.12.4
+[config/images] Pulled k8s.gcr.io/pause:3.1
+[config/images] Pulled k8s.gcr.io/coredns:1.2.2
+```
+
 #### Install
 
 ```
@@ -104,15 +115,15 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 You can now join any number of machines by running the following on each node
 as root:
 
-  kubeadm join 192.168.1.251:6443 --token ayq6f1.mk97yupvon67kgdq --discovery-token-ca-cert-hash sha256:0246fa9f804ff9d68134da8c2e43f63a6bb6a8dc586fac8e5bab6d94f04e679b
+  kubeadm join 192.168.1.249:6443 --token 5tgv9l.jmbqozqihz3tjnbg --discovery-token-ca-cert-hash sha256:de6e72af24648755fdb58b4618275d2eca30f0d86eeb9afb2ae52a095d0a3c98
 
 ```
 
 #### Copy Cert files
 
 ```
-export CP1_IP=192.168.1.21
-export CP2_IP=192.168.1.22
+export CP1_IP=192.168.1.10
+export CP2_IP=192.168.1.12
 ```
 
 ```
@@ -140,11 +151,11 @@ swapoff -a
 #### Edit config file
 
 ```
-export LB_IP=192.168.1.251
+export LB_IP=192.168.1.249
 export LB_NAME=apiserver-lb
-export CP0_IP=192.168.1.20
-export CP0_HOSTNAME=i-xwa1hzr9
-export CP1_IP=192.168.1.21
+export CP0_IP=192.168.1.9
+export CP0_HOSTNAME=i-ph9riqey
+export CP1_IP=192.168.1.10
 export CP1_HOSTNAME=$(hostname)
 ```
 
@@ -218,7 +229,7 @@ kubeadm alpha phase certs all --config kubeadm-config.yaml
 kubeadm alpha phase kubelet config write-to-disk --config kubeadm-config.yaml
 kubeadm alpha phase kubelet write-env-file --config kubeadm-config.yaml
 kubeadm alpha phase kubeconfig kubelet --config kubeadm-config.yaml
-systemctl start kubelet
+systemctl restart kubelet
 ```
 
 #### Add Etcd
@@ -248,13 +259,13 @@ swapoff -a
 #### Edit config file
 
 ```
-export LB_IP=192.168.1.251
+export LB_IP=192.168.1.249
 export LB_NAME=apiserver-lb
-export CP0_IP=192.168.1.20
-export CP0_HOSTNAME=i-xwa1hzr9
-export CP1_IP=192.168.1.21
-export CP1_HOSTNAME=i-vrbvckx2
-export CP2_IP=192.168.1.22
+export CP0_IP=192.168.1.9
+export CP0_HOSTNAME=i-ph9riqey
+export CP1_IP=192.168.1.10
+export CP1_HOSTNAME=i-lrykprb5
+export CP2_IP=192.168.1.12
 export CP2_HOSTNAME=$(hostname)
 ```
 
@@ -415,7 +426,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
     - create
       ```
-      kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+      kubectl apply -f kube-flannel.yml
       ```
 
 ## Join Worker Node

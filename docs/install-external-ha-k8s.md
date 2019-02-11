@@ -37,9 +37,9 @@ systemctl restart kubelet
 ### Generate Config file on first node
 
 ```
-export HOST0=192.168.1.6
-export HOST1=192.168.1.7
-export HOST2=192.168.1.8
+export HOST0=192.168.1.3
+export HOST1=192.168.1.4
+export HOST2=192.168.1.5
 
 mkdir -p /tmp/${HOST0}/ /tmp/${HOST1}/ /tmp/${HOST2}/
 
@@ -59,13 +59,13 @@ etcd:
         peerCertSANs:
         - "${HOST}"
         extraArgs:
-            initial-cluster: infra0=https://${ETCDHOSTS[0]}:2380,infra1=https://${ETCDHOSTS[1]}:2380,infra2=https://${ETCDHOSTS[2]}:2380
+            initial-cluster: infra0=http://${ETCDHOSTS[0]}:2380,infra1=http://${ETCDHOSTS[1]}:2380,infra2=http://${ETCDHOSTS[2]}:2380
             initial-cluster-state: new
             name: ${NAME}
-            listen-peer-urls: https://${HOST}:2380
-            listen-client-urls: https://${HOST}:2379
-            advertise-client-urls: https://${HOST}:2379
-            initial-advertise-peer-urls: https://${HOST}:2380
+            listen-peer-urls: http://${HOST}:2380
+            listen-client-urls: http://${HOST}:2379
+            advertise-client-urls: http://${HOST}:2379
+            initial-advertise-peer-urls: http://${HOST}:2380
 EOF
 done
 ```
@@ -107,7 +107,7 @@ find /tmp/${HOST1} -name ca.key -type f -delete
 
 ```
  USER=ubuntu
- HOST=${HOST2}
+ HOST=${HOST}
  scp -r /tmp/${HOST}/* ${USER}@${HOST}:
 ```
 
@@ -261,7 +261,7 @@ kubeadm join 192.168.1.253:6443 --token h0apcb.v6dxkoa7smqclbqz --discovery-toke
 ```
 
 ## Install Network Plugin
-
+ 
 ### Calico
 
 - rbac
