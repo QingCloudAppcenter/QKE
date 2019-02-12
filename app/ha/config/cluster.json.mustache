@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-tv75z1lk",
+                    "image": "img-r70s6dow",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -34,11 +34,11 @@
                 "services": {
                     "init": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/init-master.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     },
                     "start": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/start-master.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     },
                     "upgrade": {
                         "cmd": "/opt/kubernetes/script/upgrade-master.sh"
@@ -46,13 +46,16 @@
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-master.sh"
                     }
-            }
+                }
+                "custom_metadata": {
+                    "cmd": "/opt/kubernetes/script/get-kubeadm-token.sh"
+                },
             },
             {
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-tv75z1lk",
+                    "image": "img-r70s6dow",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -85,7 +88,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-tv75z1lk",
+                    "image": "img-r70s6dow",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -118,7 +121,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-tv75z1lk",
+                    "image": "img-r70s6dow",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -144,6 +147,10 @@
         ],
         "env": {
             "access_key_id": {{env.access_key_id}},
+            "loadbalancer": {{cluster.master.loadbalancer}},
+            "loadbalancer_ip": {{env.loadbalancer_ip}},
+            "pod_subnet": {{env.pod_subnet}},
+            "service_subnet": {{env.service_subnet}},
             "api_external_domain": {{env.api_external_domain}},
             "cluster_port_range": {{env.cluster_port_range}},
             "max_pods": {{env.max_pods}},

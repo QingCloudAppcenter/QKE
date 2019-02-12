@@ -306,6 +306,31 @@
             "required": "yes"
           },
           {
+            "key": "loadbalancer_ip",
+            "label": "loadbalancer ip",
+            "description": "loadbalancer ip",
+            "type": "string",
+            "required": "yes"
+          },
+          {
+            "key": "pod_subnet",
+            "label": "Pod Subnet",
+            "description": "Pod Subnet",
+            "type": "string",
+            "default": "10.10.0.0/16",
+            "changeable": false,
+            "required": "no"
+          },
+          {
+            "key": "service_subnet",
+            "label": "Service Subnet",
+            "description": "Service Subnet",
+            "type": "string",
+            "default": "10.96.0.0/16",
+            "changeable": false,
+            "required": "no"
+          },
+          {
             "key": "api_external_domain",
             "label": "Api External Domain",
             "description": "The domain of the Kubernetes api server",
