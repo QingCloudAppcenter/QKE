@@ -4,14 +4,12 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
 NODE_INIT_LOCK="/data/kubernetes/init.lock"
 
-source "/data/kubernetes/env.sh"
+source "/data/env.sh"
 source "${K8S_HOME}/version"
 
 #set -o errexit
 set -o nounset
 set -o pipefail
-
-
 
 function retry {
   local n=1
@@ -60,6 +58,7 @@ function make_dir(){
     mkdir -p /data/var/lib
     mkdir -p /data/root
     mkdir -p /root/.kube
+    mkdir -p /etc/kubernetes/pki
 }
 
 function link_dir(){
@@ -167,36 +166,6 @@ function join_node(){
 
     echo "Token: ${init_token}"
     retry ${init_token}
-
-    touch ${NODE_INIT_LOCK}
-}
-
-function join_master(){
-    # Join master
-    if [ -f "${NODE_INIT_LOCK}" ];
-    then
-        echo "master has been inited."
-        return
-    fi
-
-    # Get control plane cert files
-    while [ -z "/etc/kubernetes/control-plane-certificates.tar.gz" ]
-    do
-        echo "sleep for wait cert files"
-        sleep 2
-    done
-    tar -xzf /etc/kubernetes/control-plane-certificates.tar.gz -C /etc/kubernetes/pki --strip-components 3
-
-    local init_token=`cat /etc/kubernetes/init_token.metad`
-    while [ -z ${init_token} ]
-    do
-        echo "sleep for wait init_token for 2 second"
-        sleep 2
-        init_token=`cat /etc/kubernetes/init_token.metad`
-    done
-
-    echo "Token: ${init_token}"
-    retry ${init_token} --experimental-control-plane
 
     touch ${NODE_INIT_LOCK}
 }

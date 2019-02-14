@@ -4,8 +4,6 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-link_dir
-swapoff -a
-
-systemctl restart docker
-is_systemd_active docker
+systemctl stop kubelet
+docker_stop_rm_all
+docker_stop

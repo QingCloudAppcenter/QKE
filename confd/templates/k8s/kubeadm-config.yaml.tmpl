@@ -7,6 +7,8 @@ nodeRegistration:
     cgroup-driver: "cgroupfs"
     max-pods: "{{getv "/env/max_pods"}}"
     fail-swap-on: "true"
+    root-dir: “/data/var/lib/kubelet”
+    allow-privileged: "true"
 ---
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: ClusterConfiguration
@@ -33,6 +35,9 @@ controllerManagerExtraArgs:
 schedulerExtraArgs:
   v: "{{getv "/env/kube_log_level"}}"
 certificatesDir: "/etc/kubernetes/pki"
+featureGates:
+  KubeletPluginsWatcher: false
+
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration

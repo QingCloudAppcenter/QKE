@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-r70s6dow",
+                    "image": "img-kxitt7rs",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -34,28 +34,29 @@
                 "services": {
                     "init": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "timeout": 300
                     },
                     "start": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "timeout": 300
                     },
                     "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-master.sh"
+                        "cmd": "/opt/kubernetes/script/upgrade-master.sh",
+                        "timeout": 300
                     },
                     "stop": {
-                        "cmd": "/opt/kubernetes/script/stop-master.sh"
+                        "cmd": "/opt/kubernetes/script/stop-master.sh",
+                        "timeout": 300
                     }
                 }
-                "custom_metadata": {
-                    "cmd": "/opt/kubernetes/script/get-kubeadm-token.sh"
-                },
             },
             {
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-r70s6dow",
+                    "image": "img-kxitt7rs",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -72,15 +73,22 @@
                 },
                 "services": {
                         "init": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-node.sh"
+                            "order": 2,
+                            "cmd": "/opt/kubernetes/script/empty-script.sh",
+                            "timeout": 300
                         },
                         "start": {
-                            "order": 1,
-                            "cmd": "/opt/kubernetes/script/start-node.sh"
+                            "order": 2,
+                            "cmd": "/opt/kubernetes/script/empty-script.sh",
+                            "timeout": 300
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-node.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-node.sh",
+                            "timeout": 300
+                        },
+                        "stop": {
+                            "cmd": "/opt/kubernetes/script/stop-node.sh",
+                            "timeout": 300
                         }
                 }
             },
@@ -88,7 +96,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-r70s6dow",
+                    "image": "img-kxitt7rs",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -106,14 +114,21 @@
                 "services": {
                         "init": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/script/init-node.sh"
+                            "cmd": "/opt/kubernetes/script/empty-script.sh",
+                            "timeout": 300
                         },
                         "start": {
                             "order": 1,
-                            "cmd": "/opt/kubernetes/script/start-node.sh"
+                            "cmd": "/opt/kubernetes/script/empty-script.sh",
+                            "timeout": 300
                         },
                         "upgrade": {
-                            "cmd": "/opt/kubernetes/script/upgrade-node.sh"
+                            "cmd": "/opt/kubernetes/script/upgrade-node.sh",
+                            "timeout": 300
+                        },
+                        "stop": {
+                            "cmd": "/opt/kubernetes/script/stop-node.sh",
+                            "timeout": 300
                         }
                 }
             },
@@ -121,7 +136,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-r70s6dow",
+                    "image": "img-kxitt7rs",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -132,16 +147,22 @@
                 "passphraseless": "ssh-rsa",
                 "services": {
                     "init": {
-                        "order": 1,
-                        "cmd": "/opt/kubernetes/script/init-client.sh"
+                        "order": 3,
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "timeout": 300
                     },
                     "start": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/start-client.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "timeout": 300
                     },
                     "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-client.sh"
+                        "cmd": "/opt/kubernetes/script/upgrade-client.sh",
+                        "timeout": 300
                     }
+                },
+                "custom_metadata": {
+                    "cmd": "/opt/kubernetes/script/empty-script.sh"
                 }
             }
         ],

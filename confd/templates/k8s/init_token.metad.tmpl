@@ -1,1 +1,1 @@
-{{range $dir := lsdir "/hosts/master/"}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{$id:=getv $sid}}{{if eq "1" $id }}{{$token := printf "/hosts/master/%s/token" $dir}}{{getv $token}}{{end}}{{end}}
+{{range $dir := lsdir "/hosts/client/"}}{{$token := printf "/hosts/client/%s/token" $dir}}{{getv $token}}{{end}}
