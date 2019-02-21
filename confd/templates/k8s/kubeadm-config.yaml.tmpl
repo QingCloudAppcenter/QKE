@@ -1,0 +1,44 @@
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: InitConfiguration
+bootstrapTokens:
+- ttl: "0"
+nodeRegistration:
+  kubeletExtraArgs:
+    cgroup-driver: "cgroupfs"
+    max-pods: "{{getv "/env/max_pods"}}"
+    fail-swap-on: "true"
+    root-dir: “/data/var/lib/kubelet”
+    allow-privileged: "true"
+---
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: ClusterConfiguration
+etcd:
+  external:
+    endpoints:
+{{range $dir := lsdir "/hosts/master/"}}{{$tmp := printf "/hosts/master/%s/sid" $dir}}{{$index := getv $tmp}}    - http://{{printf "/hosts/master/%s/ip" $dir | getv}}:2379
+{{end}}
+networking:
+  dnsDomain: "{{getv "/env/api_external_domain"}}"
+  podSubnet: "{{getv "/env/pod_subnet"}}"
+  serviceSubnet: "{{getv "/env/service_subnet"}}"
+kubernetesVersion: "v1.12.4"
+controlPlaneEndpoint: "{{getv "/env/loadbalancer_ip"}}:6443"
+apiServerCertSANs:
+- "loadbalancer"
+imageRepository: "k8s.gcr.io"
+unifiedControlPlaneImage: "gcr.io/google_containers/hyperkube-amd64:v1.12.4"
+apiServerExtraArgs:
+  service-node-port-range: "{{getv "/env/cluster_port_range"}}"
+  v: "{{getv "/env/kube_log_level"}}"
+controllerManagerExtraArgs:
+  v: "{{getv "/env/kube_log_level"}}"
+schedulerExtraArgs:
+  v: "{{getv "/env/kube_log_level"}}"
+certificatesDir: "/etc/kubernetes/pki"
+featureGates:
+  KubeletPluginsWatcher: false
+
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: "{{getv "/env/proxy_mode"}}"

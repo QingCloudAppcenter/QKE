@@ -1,6 +1,0 @@
-[template]
-src = "k8s/kube-apiserver.yaml.tmpl"
-dest = "/etc/kubernetes/manifests/kube-apiserver.yaml"
-keys = [
-    "/",
-]

@@ -1,0 +1,6 @@
+[template]
+src = "k8s/kubeadm-config.yaml.tmpl"
+dest = "/etc/kubernetes/kubeadm-config.yaml"
+keys = [
+    "/",
+]

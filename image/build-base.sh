@@ -79,6 +79,5 @@ then
     exit 255
 fi
 
-# disable kubelet
-systemctl stop kubelet
-systemctl disable kubelet
+# disable and stop process managed by systemd
+${K8S_HOME}/image/update-systemd.sh

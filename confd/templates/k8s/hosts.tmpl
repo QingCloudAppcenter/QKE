@@ -3,10 +3,11 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
+{{getv "/env/loadbalancer_ip"}} loadbalancer
 {{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/ip" $dir}}
-{{getv $ip}} {{$dir}}{{end}}
-{{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}
-{{getv $ip}} {{$dir}}{{end}}
+{{getv $ip}} {{$dir}} client{{end}}
+{{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}
+{{getv $ip}} {{$dir}} master{{getv $sid}}{{end}}
 {{range $dir := lsdir "/hosts/node/"}}{{$ip := printf "/hosts/node/%s/ip" $dir}}
 {{getv $ip}} {{$dir}}{{end}}
 {{range $dir := lsdir "/hosts/ssd_node/"}}{{$ip := printf "/hosts/ssd_node/%s/ip" $dir}}

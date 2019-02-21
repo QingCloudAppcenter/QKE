@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
+KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
+NODE_INIT_LOCK="/data/kubernetes/init.lock"
 
-source "/data/kubernetes/env.sh"
+source "/data/env.sh"
 source "${K8S_HOME}/version"
 
 #set -o errexit
@@ -52,12 +54,15 @@ function ensure_dir(){
     fi
 }
 
-function link_dir(){
-    # Mkdir
+function make_dir(){
     mkdir -p /data/var/lib
-    mkdir -p /data/var/log
-    mkdir -p /data/etc
     mkdir -p /data/root
+    mkdir -p /root/.kube
+    mkdir -p /etc/kubernetes/pki
+}
+
+function link_dir(){
+    make_dir
     # Docker
     if [ -d "/var/lib/docker" ] && [ ! -L "/var/lib/docker" ]
     then
@@ -75,8 +80,8 @@ function link_dir(){
     # Kubernetes
     if [ -d "/etc/kubernetes" ] && [ ! -L "/etc/kubernetes" ]
     then
-        mv /etc/kubernetes /data/etc/
-        ln -s /data/etc/kubernetes /etc/kubernetes
+        mv /etc/kubernetes /data/
+        ln -s /data/kubernetes /etc/kubernetes
     fi
     ln -fs /root/.docker /data/root/.docker
 
@@ -85,13 +90,6 @@ function link_dir(){
     then
         mv /var/lib/etcd /data/var/lib/
         ln -s /data/var/lib/etcd /var/lib/etcd
-    fi
-
-    # Authorized keys
-    if [ -f "/root/.ssh/authorized_keys" ] && [ ! -L "/root/.ssh/authorized_keys" ]
-    then
-        mv /root/.ssh/authorized_keys /data/root/
-        ln -fs /data/root/authorized_keys /root/.ssh/authorized_keys
     fi
 }
 
@@ -134,4 +132,40 @@ function set_password(){
     echo "root:k8s" |chpasswd
     sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
     systemctl restart ssh
+}
+
+function install_network_plugin(){
+    case "${NETWORK_PLUGIN}" in
+    "calico")
+        kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-rbac.yaml
+        kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-deploy.yaml
+        ;;
+    "flannel")
+        kubectl apply -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml
+        ;;
+    *)
+        echo "Invalid network plugin" ${NETWORK_PLUGIN} >&2
+        exit -1
+        ;;
+    esac
+}
+
+function join_node(){
+    if [ -f "${NODE_INIT_LOCK}" ]; then
+        echo "node has bean inited."
+        return
+    fi
+
+    local init_token=`cat /data/kubernetes/init_token.metad`
+    while [ -z ${init_token} ]
+    do
+        echo "sleep for wait init_token for 2 second"
+        sleep 2
+        init_token=`cat /data/kubernetes/init_token.metad`
+    done
+
+    echo "Token: ${init_token}"
+    retry ${init_token}
+
+    touch ${NODE_INIT_LOCK}
 }

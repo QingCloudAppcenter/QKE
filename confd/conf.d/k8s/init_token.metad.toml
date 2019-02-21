@@ -1,0 +1,6 @@
+[template]
+src = "k8s/init_token.metad.tmpl"
+dest = "/etc/kubernetes/init_token.metad"
+keys = [
+    "/",
+]

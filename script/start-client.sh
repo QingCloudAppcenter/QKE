@@ -8,3 +8,4 @@ rm /root/.ssh/authorized_keys
 ln -fs /data/authorized_keys /root/.ssh/authorized_keys
 
 swapoff -a
+
