@@ -1,0 +1,6 @@
+[template]
+src = "k8s/coredns-cm.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml"
+keys = [
+    "/",
+]

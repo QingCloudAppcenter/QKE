@@ -23,6 +23,14 @@ then
     exit 255
 fi
 
+# update helm
+${K8S_HOME}/image/update-helm.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update Helm failed!"
+    exit 255
+fi
+
 # update util tools
 ${K8S_HOME}/image/update-pkg.sh
 if [[ $? != 0 ]]

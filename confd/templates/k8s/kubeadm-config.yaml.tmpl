@@ -7,8 +7,10 @@ nodeRegistration:
     cgroup-driver: "cgroupfs"
     max-pods: "{{getv "/env/max_pods"}}"
     fail-swap-on: "true"
-    root-dir: “/data/var/lib/kubelet”
+    root-dir: "/data/var/lib/kubelet"
     allow-privileged: "true"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
+    pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause-amd64:3.1"
 ---
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: ClusterConfiguration
@@ -21,23 +23,24 @@ networking:
   dnsDomain: "{{getv "/env/api_external_domain"}}"
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
-kubernetesVersion: "v1.12.4"
+kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
 controlPlaneEndpoint: "{{getv "/env/loadbalancer_ip"}}:6443"
 apiServerCertSANs:
 - "loadbalancer"
-imageRepository: "k8s.gcr.io"
-unifiedControlPlaneImage: "gcr.io/google_containers/hyperkube-amd64:v1.12.4"
+imageRepository: "dockerhub.qingcloud.com/google_containers"
+unifiedControlPlaneImage: "dockerhub.qingcloud.com/google_containers/hyperkube-amd64:{{getv "/env/kubernetes_version"}}"
 apiServerExtraArgs:
   service-node-port-range: "{{getv "/env/cluster_port_range"}}"
+  insecure-port: "8080"
+  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
   v: "{{getv "/env/kube_log_level"}}"
 controllerManagerExtraArgs:
+  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
   v: "{{getv "/env/kube_log_level"}}"
 schedulerExtraArgs:
+  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
   v: "{{getv "/env/kube_log_level"}}"
 certificatesDir: "/etc/kubernetes/pki"
-featureGates:
-  KubeletPluginsWatcher: false
-
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
