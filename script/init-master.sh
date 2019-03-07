@@ -6,14 +6,12 @@ source "${K8S_HOME}/script/common.sh"
 
 link_dir
 swapoff -a
-systemctl daemon-reload
-retry systemctl start etcd
-is_systemd_active etcd
-
 systemctl restart docker
 is_systemd_active docker
 
-retry kubeadm config images pull --config ${KUBEADM_CONFIG_PATH}
+systemctl daemon-reload
+retry systemctl start etcd
+is_systemd_active etcd
 
 if [ "${HOST_SID}" == "1" ]
 then
@@ -55,11 +53,26 @@ kubeadm alpha phase kubelet config write-to-disk --config ${KUBEADM_CONFIG_PATH}
 kubeadm alpha phase kubelet write-env-file --config ${KUBEADM_CONFIG_PATH}
 # Write Static Pod manifest
 kubeadm alpha phase controlplane all --config ${KUBEADM_CONFIG_PATH}
+
 # Start Kubelet
 systemctl daemon-reload
-retry systemctl start kubelet
+retry systemctl restart kubelet
 is_systemd_active kubelet
 
-cp /etc/kubernetes/admin.conf /root/.kube/config
+# Create access local apiserver file for kubeadm
+cp /etc/kubernetes/admin.conf ${KUBE_LOCAL_CONF}
+sed -i "s/${LB_IP}/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
+
+retry kubectl get nodes
+
+if [ "${HOST_SID}" == "1" ]
+then
+    # Create a ConfigMap "kubelet-config-1.12" in namespace kube-system with the configuration for the kubelets in the cluster
+    kubeadm alpha phase kubelet config upload --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    # storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+    kubeadm alpha phase upload-config --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    # Create Token
+    kubeadm alpha phase bootstrap-token all --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+fi
 
 systemctl enable kubelet

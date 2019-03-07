@@ -1,0 +1,6 @@
+[template]
+src = "k8s/csi-sc-capacity.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc-capacity.yaml"
+keys = [
+    "/",
+]

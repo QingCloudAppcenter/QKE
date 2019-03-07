@@ -3,7 +3,7 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
 NODE_INIT_LOCK="/data/kubernetes/init.lock"
-
+KUBE_LOCAL_CONF="/data/kubernetes/local.conf"
 source "/data/env.sh"
 source "${K8S_HOME}/version"
 
@@ -13,8 +13,8 @@ set -o pipefail
 
 function retry {
   local n=1
-  local max=5
-  local delay=5
+  local max=20
+  local delay=6
   while true; do
     "$@" && break || {
       if [[ $n -lt $max ]]; then
@@ -157,7 +157,7 @@ function join_node(){
     fi
 
     local init_token=`cat /data/kubernetes/init_token.metad`
-    while [ -z ${init_token} ]
+    while [ -z "${init_token}" ]
     do
         echo "sleep for wait init_token for 2 second"
         sleep 2
@@ -168,4 +168,26 @@ function join_node(){
     retry ${init_token}
 
     touch ${NODE_INIT_LOCK}
+}
+
+function install_csi(){
+    kubectl create configmap csi-qingcloud --from-file=config.yaml=/etc/qingcloud/client.yaml --namespace=kube-system
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-secret.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-rbac.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-rbac.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-sts.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-ds.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc-capacity.yaml
+}
+
+function install_coredns(){
+    kubeadm alpha phase addon coredns
+    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
+}
+
+function install_tiller(){
+    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-sa.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-deploy.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-svc.yaml
 }
