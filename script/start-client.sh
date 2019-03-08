@@ -8,6 +8,8 @@ export KUBECONFIG="/etc/kubernetes/admin.conf"
 rm /root/.ssh/authorized_keys
 ln -fs /data/authorized_keys /root/.ssh/authorized_keys
 
+ensure_dir
+
 swapoff -a
 
 # Install Addons

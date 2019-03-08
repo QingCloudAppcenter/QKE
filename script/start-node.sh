@@ -5,7 +5,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 source "${K8S_HOME}/script/common.sh"
 
 swapoff -a
-link_dir
+ensure_dir
 
 # Start Docker
 retry systemctl restart docker

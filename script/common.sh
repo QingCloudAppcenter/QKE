@@ -4,6 +4,12 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
 NODE_INIT_LOCK="/data/kubernetes/init.lock"
 KUBE_LOCAL_CONF="/data/kubernetes/local.conf"
+ORIGINAL_DIR=("/var/lib/docker" "/root/.docker"
+"/var/lib/etcd" "/var/lib/kubelet" 
+"/etc/kubernetes" "/root/.kube")
+DATA_DIR=("/data/var/lib/docker" "/data/root/.docker"
+"/data/var/lib/etcd" "/data/var/lib/kubelet"
+"/data/kubernetes" "/data/root/.kube")
 source "/data/env.sh"
 source "${K8S_HOME}/version"
 
@@ -36,22 +42,16 @@ function is_systemd_active(){
     retry systemctl is-active $1 > /dev/null 2>&1
 }
 
+# Link dir from data volume
 function ensure_dir(){
-    if [ ! -d /root/.kube ]; then
-        mkdir /root/.kube
-    fi
-    if [ ! -d /data/kubernetes ]; then
-        mkdir -p /data/kubernetes
-    fi
-    if [ ! -d /data/kubernetes/hostnic ]; then
-        mkdir -p /data/kubernetes/hostnic
-    fi
-    if [ ! -d /data/kubernetes/calico ]; then
-        mkdir -p /data/kubernetes/calico
-    fi
-    if [ ! -L /etc/kubernetes ]; then
-      ln -s /data/kubernetes /etc/kubernetes
-    fi
+    for i in "${!ORIGINAL_DIR[@]}"
+    do
+        if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
+        then
+            rm ${ORIGINAL_DIR[$i]}
+        fi
+        ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
+    done
 }
 
 function make_dir(){
@@ -61,36 +61,17 @@ function make_dir(){
     mkdir -p /etc/kubernetes/pki
 }
 
+# Copy dir into data volume
 function link_dir(){
     make_dir
-    # Docker
-    if [ -d "/var/lib/docker" ] && [ ! -L "/var/lib/docker" ]
-    then
-        mv /var/lib/docker /data/var/lib/
-        ln -s /data/var/lib/docker /var/lib/docker
-    fi
-
-    # Kubelet
-    if [ -d "/var/lib/kubelet" ] && [ ! -L "/var/lib/kubelet" ]
-    then
-        mv /var/lib/kubelet /data/var/lib/
-        ln -s /data/var/lib/kubelet /var/lib/kubelet
-    fi
-
-    # Kubernetes
-    if [ -d "/etc/kubernetes" ] && [ ! -L "/etc/kubernetes" ]
-    then
-        mv /etc/kubernetes /data/
-        ln -s /data/kubernetes /etc/kubernetes
-    fi
-    ln -fs /root/.docker /data/root/.docker
-
-    # Etcd
-    if [ -d "/var/lib/etcd" ] && [ ! -L "/var/lib/etcd" ]
-    then
-        mv /var/lib/etcd /data/var/lib/
-        ln -s /data/var/lib/etcd /var/lib/etcd
-    fi
+    for i in "${!ORIGINAL_DIR[@]}"
+    do
+        if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
+        then
+            mv ${ORIGINAL_DIR[$i]} $(dirname ${DATA_DIR[$i]})
+            ln -s ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
+        fi
+    done
 }
 
 function upgrade_docker(){
