@@ -87,5 +87,13 @@ then
     exit 255
 fi
 
+# update kubesphere
+${K8S_HOME}/image/update-kubesphere.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update kubesphere failed!"
+    exit 255
+fi
+
 # disable and stop process managed by systemd
 ${K8S_HOME}/image/update-systemd.sh

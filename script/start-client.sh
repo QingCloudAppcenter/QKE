@@ -33,3 +33,6 @@ install_csi
 # Install Tiller
 echo "Install Tiller"
 install_tiller
+# Install KubeSphere
+#echo "Install KubeSphere"
+#install_kubesphere

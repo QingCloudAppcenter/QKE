@@ -303,12 +303,14 @@
             "label": "Access key id",
             "description": "API access key id",
             "type": "accesskey",
+            "changeable": false,
             "required": "yes"
           },
           {
             "key": "loadbalancer_ip",
             "label": "loadbalancer ip",
             "description": "loadbalancer ip",
+            "changeable": false,
             "type": "string",
             "required": "yes"
           },
@@ -383,7 +385,7 @@
             "label": "host aliases",
             "description": "Set host aliases",
             "type": "string",
-            "changeable": false,
+            "changeable": true,
             "default": "",
             "required": "no"
           },
@@ -392,7 +394,8 @@
             "label": "Registry mirrors",
             "description": "The docker hub registry mirror, use a blank to split multi registry",
             "type": "string",
-            "default": "",
+            "default": "https://registry.docker-cn.com",
+            "changeable": true,
             "required": "no"
           },
           {
@@ -401,6 +404,7 @@
             "description": "The insecure docker registry, use a blank to split multi registry",
             "type": "string",
             "default": "",
+            "changeable": true,
             "required": "no"
           },
           {
@@ -409,6 +413,7 @@
             "description": "The URL of private docker registry",
             "type": "string",
             "default": "",
+            "changeable": true,
             "required": "no"
           },
           {

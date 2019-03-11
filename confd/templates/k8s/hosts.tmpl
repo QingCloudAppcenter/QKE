@@ -12,3 +12,6 @@ ff02::2 ip6-allrouters
 {{getv $ip}} {{$dir}}{{end}}
 {{range $dir := lsdir "/hosts/ssd_node/"}}{{$ip := printf "/hosts/ssd_node/%s/ip" $dir}}
 {{getv $ip}} {{$dir}}{{end}}
+
+{{$records := split (getv "/env/host_aliases") ","}}{{range $records}}{{.}}
+{{end}}

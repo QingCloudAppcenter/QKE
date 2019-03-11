@@ -48,7 +48,7 @@ function ensure_dir(){
     do
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
-            rm ${ORIGINAL_DIR[$i]}
+            rm -rf ${ORIGINAL_DIR[$i]}
         fi
         ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
     done
@@ -69,7 +69,7 @@ function link_dir(){
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
             mv ${ORIGINAL_DIR[$i]} $(dirname ${DATA_DIR[$i]})
-            ln -s ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
+            ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
         fi
     done
 }
@@ -164,11 +164,65 @@ function install_csi(){
 
 function install_coredns(){
     kubeadm alpha phase addon coredns
+    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml
 }
 
 function install_tiller(){
     kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-sa.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-deploy.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-svc.yaml
+}
+
+function docker_login(){
+    if [ ! -z "${ENV_PRIVATE_REGISTRY}" ]
+    then
+        if [ ! -z "${ENV_DOCKERHUB_USERNAME}" ] && [ ! -z "${ENV_DOCKERHUB_PASSWORD}" ]
+        then
+            retry docker login ${ENV_PRIVATE_REGISTRY} -u ${ENV_DOCKERHUB_USERNAME} -p ${ENV_DOCKERHUB_PASSWORD}
+        fi
+    else
+        if [ ! -z "${ENV_DOCKERHUB_USERNAME}" ] && [ ! -z "${ENV_DOCKERHUB_PASSWORD}" ]
+        then
+            retry docker login dockerhub.qingcloud.com -u ${ENV_DOCKERHUB_USERNAME} -p ${ENV_DOCKERHUB_PASSWORD}
+        fi
+    fi
+}
+
+function replace_kv(){
+    filepath=$1
+    key=$2
+    symbolvalue=$3
+    actualvalue=$4
+    if [ -f $1 ]
+    then
+        sed "/${key}/s/${symbolvalue}/${actualvalue}/g" -i ${filepath}
+    fi
+}
+
+function makeup_kubesphere_values(){
+    scp root@master1:/etc/kubernetes/pki/* /etc/kubernetes/pki
+    local kubernetes_token=$(kubectl -n kubesphere-system get secrets $(kubectl -n kubesphere-system get sa kubesphere -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d)
+    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_token SHOULD_BE_REPLACED ${kubernetes_token}
+    local kubernetes_ca_crt=$(cat /etc/kubernetes/pki/ca.crt | base64 | tr -d "\n")
+    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_ca_crt SHOULD_BE_REPLACED ${kubernetes_ca_crt}
+    local kubernetes_ca_key=$(cat /etc/kubernetes/pki/ca.key | base64 | tr -d "\n")
+    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_ca_key SHOULD_BE_REPLACED ${kubernetes_ca_key}
+    local kubernetes_front_proxy_client_crt=$(cat /etc/kubernetes/pki/front-proxy-client.crt | base64 | tr -d "\n")
+    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_front_proxy_client_crt SHOULD_BE_REPLACED ${kubernetes_front_proxy_client_crt}
+    local kubernetes_front_proxy_client_key=$(cat /etc/kubernetes/pki/front-proxy-client.key | base64 | tr -d "\n")
+    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_front_proxy_client_key SHOULD_BE_REPLACED ${kubernetes_front_proxy_client_key}
+}
+
+function install_kubesphere(){
+    helm upgrade --install ks-openpitrix  /opt/kubesphere/openpitrix/  --namespace openpitrix-system
+    helm upgrade --install ks-jenkins jenkins -f custom-values-jenkins.yaml --namespace kubesphere-devops-system
+    helm upgrade --install ks-monitoring  /opt/kubesphere/ks-monitoring/ --namespace kubesphere-monitoring-system
+    helm upgrade --install metrics-server  /opt/kubesphere/metrics-server/ --namespace kube-system
+    kubectl  apply  -f  /opt/kubesphere/init.yaml
+    makeup_kubesphere_values
+    helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
+    kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
+    kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
 }

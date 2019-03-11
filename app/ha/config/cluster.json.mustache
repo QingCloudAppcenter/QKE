@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-e1xtjs09",
+                    "image": "img-bcd55xlg",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -59,7 +59,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-e1xtjs09",
+                    "image": "img-bcd55xlg",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -93,13 +93,14 @@
                             "cmd": "/opt/kubernetes/script/stop-node.sh",
                             "timeout": 300
                         }
-                }
+                },
+                "advanced_actions": ["scale_horizontal"]
             },
             {
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-e1xtjs09",
+                    "image": "img-bcd55xlg",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -133,13 +134,14 @@
                             "cmd": "/opt/kubernetes/script/stop-node.sh",
                             "timeout": 300
                         }
-                }
+                },
+                "advanced_actions": ["scale_horizontal"]
             },
             {
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-e1xtjs09",
+                    "image": "img-bcd55xlg",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
