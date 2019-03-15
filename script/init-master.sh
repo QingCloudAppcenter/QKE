@@ -3,6 +3,7 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
+source "${K8S_HOME}/script/loadbalancer_manager.sh"
 
 link_dir
 swapoff -a
@@ -13,7 +14,7 @@ systemctl daemon-reload
 retry systemctl start etcd
 is_systemd_active etcd
 
-replace_loadbalancer_ip
+create_lb_and_firewall ${CLUSTER_ID} ${CLUSTER_VXNET}
 
 if [ "${HOST_SID}" == "1" ]
 then
@@ -63,7 +64,7 @@ is_systemd_active kubelet
 
 # Create access local apiserver file for kubeadm
 cp /etc/kubernetes/admin.conf ${KUBE_LOCAL_CONF}
-sed -i "s/${LOADBALANCER_IP}/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
+sed -i "s/$(get_loadbalancer_ip)/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
 
 retry kubectl get nodes
 
@@ -74,7 +75,34 @@ then
     # storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
     retry kubeadm alpha phase upload-config --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
     # Create Token
+    echo "Create Token"
     retry kubeadm alpha phase bootstrap-token all --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    # Install Network Plugin
+    echo "Install Network Plugin"
+    retry install_network_plugin
+    echo "Install Coredns"
+    # Install Coredns
+    retry install_coredns
+    # Install Storage Plugin
+    echo "Install CSI"
+    retry install_csi
+    # Install Tiller
+    echo "Install Tiller"
+    retry install_tiller
 fi
 
 retry systemctl enable kubelet
+
+# Install Addons
+echo "Install Kube-Proxy"
+retry kubeadm alpha phase addon kube-proxy --config ${KUBEADM_CONFIG_PATH}
+# Mark Master
+echo "Mark Master"
+kubeadm alpha phase mark-master --node-name ${MASTER_1_INSTANCE_ID}
+kubeadm alpha phase mark-master --node-name ${MASTER_2_INSTANCE_ID}
+kubeadm alpha phase mark-master --node-name ${MASTER_3_INSTANCE_ID}
+
+
+# Install KubeSphere
+#echo "Install KubeSphere"
+#install_kubesphere

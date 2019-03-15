@@ -3,10 +3,13 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
+source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
 link_dir
 set_password
-replace_loadbalancer_ip
+create_lb_and_firewall ${CLUSTER_ID} ${CLUSTER_VXNET}
 
-retry scp root@master1:/etc/kubernetes/admin.conf /root/.kube/config
-cp /root/.kube/config /etc/kubernetes/admin.conf
+#replace_loadbalancer_ip
+
+#retry scp root@master1:/etc/kubernetes/admin.conf /root/.kube/config
+#cp /root/.kube/config /etc/kubernetes/admin.conf

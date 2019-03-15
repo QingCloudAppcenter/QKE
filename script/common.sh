@@ -10,6 +10,7 @@ ORIGINAL_DIR=("/var/lib/docker" "/root/.docker"
 DATA_DIR=("/data/var/lib/docker" "/data/root/.docker"
 "/data/var/lib/etcd" "/data/var/lib/kubelet"
 "/data/kubernetes" "/data/root/.kube")
+PATH=$PATH:/usr/local/bin
 source "/data/env.sh"
 source "${K8S_HOME}/version"
 
@@ -228,14 +229,14 @@ function install_kubesphere(){
 }
 
 function get_loadbalancer_ip(){
-    loadbalancer_id=$(qingcloud iaas describe-loadbalancer-listeners -f /etc/qingcloud/client.yaml -s ${LOADBALANCER_LISTENER_ID} | jq -r ".loadbalancer_listener_set[0].loadbalancer_id")
-    loadbalancer_ip=$(qingcloud iaas describe-loadbalancers -f /etc/qingcloud/client.yaml -l ${loadbalancer_id} | jq -r ".loadbalancer_set[0].vxnet.private_ip")
+    loadbalancer_id=$(/usr/local/bin/qingcloud iaas describe-loadbalancer-listeners -f /etc/qingcloud/client.yaml -s ${LOADBALANCER_LISTENER_ID} | jq -r ".loadbalancer_listener_set[0].loadbalancer_id")
+    loadbalancer_ip=$(/usr/local/bin/qingcloud iaas describe-loadbalancers -f /etc/qingcloud/client.yaml -l ${loadbalancer_id} | jq -r ".loadbalancer_set[0].vxnet.private_ip")
     echo "${loadbalancer_ip}"
 }
 
 function replace_loadbalancer_ip(){
-    replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $LOADBALANCER_IP
-    replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $LOADBALANCER_IP
+    local lb_ip=$(get_loadbalancer_ip)
+    echo lb_ip= ${lb_ip}
+    replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(lb_ip)
+    replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $(lb_ip)
 }
-
-LOADBALANCER_IP=$(get_loadbalancer_ip)
