@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bcd55xlg",
+                    "image": "img-w8vuqzfw",
                     "zone": "ap2a"
                 },
                 "loadbalancer": {{cluster.master.loadbalancer}},
@@ -59,7 +59,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bcd55xlg",
+                    "image": "img-w8vuqzfw",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -100,7 +100,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bcd55xlg",
+                    "image": "img-w8vuqzfw",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -141,7 +141,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-bcd55xlg",
+                    "image": "img-w8vuqzfw",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -171,7 +171,6 @@
         "env": {
             "access_key_id": {{env.access_key_id}},
             "loadbalancer": {{cluster.master.loadbalancer}},
-            "loadbalancer_ip": {{env.loadbalancer_ip}},
             "pod_subnet": {{env.pod_subnet}},
             "service_subnet": {{env.service_subnet}},
             "api_external_domain": {{env.api_external_domain}},

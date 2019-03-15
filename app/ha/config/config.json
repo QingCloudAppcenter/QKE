@@ -307,14 +307,6 @@
             "required": "yes"
           },
           {
-            "key": "loadbalancer_ip",
-            "label": "loadbalancer ip",
-            "description": "loadbalancer ip",
-            "changeable": false,
-            "type": "string",
-            "required": "yes"
-          },
-          {
             "key": "pod_subnet",
             "label": "Pod Subnet",
             "description": "Pod Subnet",

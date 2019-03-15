@@ -3,7 +3,7 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
-{{getv "/env/loadbalancer_ip"}} loadbalancer
+SHOULD_BE_REPLACED loadbalancer
 {{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/ip" $dir}}
 {{getv $ip}} {{$dir}} client{{end}}
 {{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}

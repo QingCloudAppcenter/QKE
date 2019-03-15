@@ -24,7 +24,7 @@ networking:
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
-controlPlaneEndpoint: "{{getv "/env/loadbalancer_ip"}}:6443"
+controlPlaneEndpoint: "SHOULD_BE_REPLACED:6443"
 apiServerCertSANs:
 - "loadbalancer"
 imageRepository: "dockerhub.qingcloud.com/google_containers"

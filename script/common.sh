@@ -217,7 +217,7 @@ function makeup_kubesphere_values(){
 
 function install_kubesphere(){
     helm upgrade --install ks-openpitrix  /opt/kubesphere/openpitrix/  --namespace openpitrix-system
-    helm upgrade --install ks-jenkins jenkins -f custom-values-jenkins.yaml --namespace kubesphere-devops-system
+    helm upgrade --install ks-jenkins /opt/kubesphere/jenkins -f /opt/kubesphere/custom-values-jenkins.yaml --namespace kubesphere-devops-system
     helm upgrade --install ks-monitoring  /opt/kubesphere/ks-monitoring/ --namespace kubesphere-monitoring-system
     helm upgrade --install metrics-server  /opt/kubesphere/metrics-server/ --namespace kube-system
     kubectl  apply  -f  /opt/kubesphere/init.yaml
@@ -226,3 +226,16 @@ function install_kubesphere(){
     kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
     kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
 }
+
+function get_loadbalancer_ip(){
+    loadbalancer_id=$(qingcloud iaas describe-loadbalancer-listeners -f /etc/qingcloud/client.yaml -s ${LOADBALANCER_LISTENER_ID} | jq -r ".loadbalancer_listener_set[0].loadbalancer_id")
+    loadbalancer_ip=$(qingcloud iaas describe-loadbalancers -f /etc/qingcloud/client.yaml -l ${loadbalancer_id} | jq -r ".loadbalancer_set[0].vxnet.private_ip")
+    echo "${loadbalancer_ip}"
+}
+
+function replace_loadbalancer_ip(){
+    replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $LOADBALANCER_IP
+    replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $LOADBALANCER_IP
+}
+
+LOADBALANCER_IP=$(get_loadbalancer_ip)

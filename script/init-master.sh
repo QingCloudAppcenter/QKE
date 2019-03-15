@@ -13,6 +13,8 @@ systemctl daemon-reload
 retry systemctl start etcd
 is_systemd_active etcd
 
+replace_loadbalancer_ip
+
 if [ "${HOST_SID}" == "1" ]
 then
     # Create Common Cert Files
@@ -61,7 +63,7 @@ is_systemd_active kubelet
 
 # Create access local apiserver file for kubeadm
 cp /etc/kubernetes/admin.conf ${KUBE_LOCAL_CONF}
-sed -i "s/${LB_IP}/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
+sed -i "s/${LOADBALANCER_IP}/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
 
 retry kubectl get nodes
 

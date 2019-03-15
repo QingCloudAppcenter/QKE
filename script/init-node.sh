@@ -9,3 +9,5 @@ swapoff -a
 
 systemctl restart docker
 is_systemd_active docker
+
+replace_loadbalancer_ip
