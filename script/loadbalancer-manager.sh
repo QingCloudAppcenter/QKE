@@ -334,6 +334,9 @@ function delete_firewall(){
 #                                  |
 #                              instance
 #
+# Input:
+#   param1: firewall and loadbalancer name
+#   param2: vxnet id
 function create_lb_and_firewall(){
     firewall_name=$1
     loadbalancer_name=$1
@@ -423,6 +426,8 @@ function create_lb_and_firewall(){
     fi
 }
 
+# Input: 
+#   param1 lb name
 function delete_lb_and_firewall(){
     obj_name=${1}
     loadbalancer_id=$(get_loadbalancer_id ${obj_name})

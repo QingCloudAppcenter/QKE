@@ -33,7 +33,7 @@
                 "services": {
                     "init": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-master.sh",
                         "timeout": 500
                     },
                     "start": {
@@ -152,7 +152,7 @@
                 "services": {
                     "init": {
                         "order": 3,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-client.sh",
                         "timeout": 300
                     },
                     "start": {
@@ -170,8 +170,10 @@
                         "cmd": "/opt/kubernetes/script/upgrade-client.sh",
                         "timeout": 300
                     }
-                    
                 }
+            },
+            "custom_metadata": {
+                "cmd": "/opt/kubernetes/script/get-loadbalancer-ip.sh"
             }
         ],
         "env": {

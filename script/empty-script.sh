@@ -4,4 +4,4 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-link_dir
+echo "this is empty script"

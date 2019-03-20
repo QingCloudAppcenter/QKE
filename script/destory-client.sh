@@ -5,4 +5,4 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
-delete_lb_and_firewall
+delete_lb_and_firewall ${CLUSTER_ID}
