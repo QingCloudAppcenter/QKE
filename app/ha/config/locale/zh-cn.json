@@ -79,5 +79,5 @@
       "Premium":"超高性能型",
       "The resource configuration of the service":"请选择合适的预制资源配置类型，快速定义集群配置。也可根据自身需求自定义节点配置。",
       "host aliases": "主机 hosts 记录",
-    "Set host aliases": "设置添加主机 hosts 的记录"
+    "Set host aliases": "设置添加主机 hosts 的记录，多条记录用逗号分割"
   }

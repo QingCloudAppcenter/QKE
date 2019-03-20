@@ -3,10 +3,16 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
-
+echo "===start start master==="
 swapoff -a
 ensure_dir
 
+if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+then
+    cat /etc/kubernetes/kubeadm-config.yaml
+fi
+
+echo "===end start master==="
 # Reload config
 systemctl daemon-reload
 

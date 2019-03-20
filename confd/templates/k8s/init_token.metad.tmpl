@@ -1,1 +1,1 @@
-{{range $dir := lsdir "/hosts/master/"}}{{$token := printf "/hosts/master/%s/token" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{$index := getv $sid}}{{if eq 1 $index}}{{getv $token}}{{end}}{{end}}
+{{range getvs "/host/role" | filter "node.*"}}{{range $dir := lsdir "/hosts/master/"}}{{$token := printf "/hosts/master/%s/token" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{$index := getv $sid}}{{if eq 1 $index}}{{getv $token}}{{end}}{{end}}{{end}}

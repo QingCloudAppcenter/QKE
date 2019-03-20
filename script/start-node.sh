@@ -3,7 +3,7 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
-
+echo "===start start node==="
 swapoff -a
 ensure_dir
 
@@ -28,3 +28,9 @@ is_systemd_active docker
 # Start Kubelet
 retry systemctl restart kubelet
 is_systemd_active kubelet
+
+if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+then
+    cat /etc/kubernetes/kubeadm-config.yaml
+fi
+echo "===end start node==="

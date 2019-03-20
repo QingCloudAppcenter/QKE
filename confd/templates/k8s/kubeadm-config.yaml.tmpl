@@ -11,6 +11,7 @@ nodeRegistration:
     allow-privileged: "true"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
     pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause-amd64:3.1"
+    v: "{{getv "/env/kube_log_level"}}"
 ---
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: ClusterConfiguration
@@ -24,7 +25,7 @@ networking:
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
-controlPlaneEndpoint: "{{if ne (getv "/host/role") "client"}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}:6443"
+controlPlaneEndpoint: "{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}:6443"
 apiServerCertSANs:
 - "loadbalancer"
 imageRepository: "dockerhub.qingcloud.com/google_containers"

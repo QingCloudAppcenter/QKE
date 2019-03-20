@@ -15,10 +15,9 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2u9ongeu",
+                    "image": "img-l2w8g6zo",
                     "zone": "ap2a"
                 },
-                "loadbalancer": {{cluster.master.loadbalancer}},
                 "instance_class": {{cluster.master.instance_class}},
                 "count": {{cluster.master.count}},
                 "cpu": {{cluster.master.cpu}},
@@ -33,7 +32,7 @@
                 },
                 "services": {
                     "init": {
-                        "order": 1,
+                        "order": 2,
                         "cmd": "/opt/kubernetes/script/init-master.sh",
                         "timeout": 500
                     },
@@ -59,7 +58,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-ue58unab",
+                    "image": "img-l2w8g6zo",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -76,7 +75,7 @@
                 },
                 "services": {
                         "init": {
-                            "order": 2,
+                            "order": 3,
                             "cmd": "/opt/kubernetes/script/init-node.sh",
                             "timeout": 300
                         },
@@ -100,7 +99,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-ue58unab",
+                    "image": "img-l2w8g6zo",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -117,7 +116,7 @@
                 },
                 "services": {
                         "init": {
-                            "order": 2,
+                            "order": 3,
                             "cmd": "/opt/kubernetes/script/init-node.sh",
                             "timeout": 300
                         },
@@ -141,7 +140,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-ue58unab",
+                    "image": "img-l2w8g6zo",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -152,7 +151,7 @@
                 "passphraseless": "ssh-rsa",
                 "services": {
                     "init": {
-                        "order": 3,
+                        "order": 1,
                         "cmd": "/opt/kubernetes/script/init-client.sh",
                         "timeout": 300
                     },
@@ -161,16 +160,24 @@
                         "cmd": "/opt/kubernetes/script/start-client.sh",
                         "timeout": 300
                     },
+                    "destroy": {
+                        "order": 1,
+                        "nodes_to_execute_on": 1,
+                        "post_stop_service": true,
+                        "cmd": "/opt/kubernetes/script/destroy-client.sh"
+                    },
                     "upgrade": {
                         "cmd": "/opt/kubernetes/script/upgrade-client.sh",
                         "timeout": 300
                     }
+                },
+                "custom_metadata": {
+                    "cmd": "/opt/kubernetes/script/get-loadbalancer-ip.sh"
                 }
             }
         ],
         "env": {
             "access_key_id": {{env.access_key_id}},
-            "loadbalancer": {{cluster.master.loadbalancer}},
             "pod_subnet": {{env.pod_subnet}},
             "service_subnet": {{env.service_subnet}},
             "api_external_domain": {{env.api_external_domain}},

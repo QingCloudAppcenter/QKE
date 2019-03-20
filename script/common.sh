@@ -2,8 +2,9 @@
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
-NODE_INIT_LOCK="/data/kubernetes/init.lock"
-KUBE_LOCAL_CONF="/data/kubernetes/local.conf"
+KUBECONFIG="/etc/kubernetes/admin.conf"
+NODE_INIT_LOCK="/data/kubernetes/node-init.lock"
+CLIENT_INIT_LOCK="/data/kubernetes/client-init.lock"
 ORIGINAL_DIR=("/var/lib/docker" "/root/.docker"
 "/var/lib/etcd" "/var/lib/kubelet" 
 "/etc/kubernetes" "/root/.kube")
@@ -132,9 +133,17 @@ function install_network_plugin(){
     esac
 }
 
+function install_kube_proxy(){
+    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    replace_kv /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
+}
+
 function join_node(){
     if [ -f "${NODE_INIT_LOCK}" ]; then
-        echo "node has bean inited."
+        echo "node has joined."
         return
     fi
 
@@ -217,6 +226,10 @@ function makeup_kubesphere_values(){
 }
 
 function install_kubesphere(){
+    if [ -f "${CLIENT_INIT_LOCK}" ]; then
+        echo "client has installed KubeSphere"
+        return
+    fi
     helm upgrade --install ks-openpitrix  /opt/kubesphere/openpitrix/  --namespace openpitrix-system
     helm upgrade --install ks-jenkins /opt/kubesphere/jenkins -f /opt/kubesphere/custom-values-jenkins.yaml --namespace kubesphere-devops-system
     helm upgrade --install ks-monitoring  /opt/kubesphere/ks-monitoring/ --namespace kubesphere-monitoring-system
@@ -226,17 +239,20 @@ function install_kubesphere(){
     helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
     kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
     kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
+    touch ${CLIENT_INIT_LOCK}
 }
 
 function get_loadbalancer_ip(){
-    loadbalancer_id=$(/usr/local/bin/qingcloud iaas describe-loadbalancer-listeners -f /etc/qingcloud/client.yaml -s ${LOADBALANCER_LISTENER_ID} | jq -r ".loadbalancer_listener_set[0].loadbalancer_id")
-    loadbalancer_ip=$(/usr/local/bin/qingcloud iaas describe-loadbalancers -f /etc/qingcloud/client.yaml -l ${loadbalancer_id} | jq -r ".loadbalancer_set[0].vxnet.private_ip")
-    echo "${loadbalancer_ip}"
+    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    echo "${lb_ip}"
 }
 
-function replace_loadbalancer_ip(){
-    local lb_ip=$(get_loadbalancer_ip)
-    echo lb_ip= ${lb_ip}
-    replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(lb_ip)
-    replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $(lb_ip)
+function replace_kubeadm_config_lb_ip(){
+    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $(echo ${lb_ip})
+}
+
+function replace_hosts_lb_ip(){
+    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(echo ${lb_ip})
 }

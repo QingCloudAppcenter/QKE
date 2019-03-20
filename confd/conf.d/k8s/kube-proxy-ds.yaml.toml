@@ -1,0 +1,7 @@
+[template]
+src = "k8s/kube-proxy-ds.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml"
+keys = [
+    "/",
+]
+reload_cmd = "/opt/kubernetes/script/reload-kube-proxy.sh"

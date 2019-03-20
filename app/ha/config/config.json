@@ -54,16 +54,6 @@
             "type": "array",
             "properties": [
                 {
-                    "key": "loadbalancer",
-                    "label": "load balancer",
-                    "description": "Choose an loadbalancer service to use",
-                    "type": "loadbalancer",
-                    "port": 6443,
-                    "default": [
-                    ],
-                    "required": "yes"
-                },
-                {
                   "key": "count",
                   "label": "count",
                   "description": "Number of master for the cluster to create",
