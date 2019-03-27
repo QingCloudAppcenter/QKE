@@ -185,6 +185,10 @@ function install_tiller(){
     kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-svc.yaml
 }
 
+function install_cloud_controller_manager(){
+    cp /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml /etc/kubernetes/manifest
+}
+
 function docker_login(){
     if [ ! -z "${ENV_PRIVATE_REGISTRY}" ]
     then

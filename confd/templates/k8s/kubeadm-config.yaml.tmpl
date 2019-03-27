@@ -9,6 +9,7 @@ nodeRegistration:
     fail-swap-on: "true"
     root-dir: "/data/var/lib/kubelet"
     allow-privileged: "true"
+    cloud-provider: "external"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
     pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause-amd64:3.1"
     v: "{{getv "/env/kube_log_level"}}"
@@ -38,6 +39,7 @@ apiServerExtraArgs:
 controllerManagerExtraArgs:
   feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
   v: "{{getv "/env/kube_log_level"}}"
+  cloud-provider: "external"
 schedulerExtraArgs:
   feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
   v: "{{getv "/env/kube_log_level"}}"

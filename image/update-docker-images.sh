@@ -18,6 +18,7 @@ docker pull dockerhub.qingcloud.com/calico/node:v3.3.3
 docker pull dockerhub.qingcloud.com/calico/cni:v3.3.3
 docker pull dockerhub.qingcloud.com/calico/kube-controllers:v3.1.3
 docker pull dockerhub.qingcloud.com/coreos/flannel:v0.10.0-amd64
+docker pull dockerhub.qingcloud.com/qingcloud/qingcloud-cloud-controller-manager:v1.1.3
 
 # QingCloud CSI
 docker pull dockerhub.qingcloud.com/k8scsi/csi-provisioner:v0.2.1

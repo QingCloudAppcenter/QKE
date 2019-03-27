@@ -1,0 +1,7 @@
+[template]
+src = "k8s/cloud-controller-manager.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml"
+keys = [
+    "/",
+]
+reload_cmd = "/opt/kubernetes/script/reload-cloud-controller-manager.sh"
