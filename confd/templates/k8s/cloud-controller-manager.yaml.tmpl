@@ -12,7 +12,7 @@ spec:
   containers:
   - command:
     - /bin/qingcloud-cloud-controller-manager
-    - --v=${KUBE_LOG_LEVEL}
+    - --v={{getv "/env/kube_log_level"}}
     - --cloud-provider=qingcloud
     - --leader-elect=true
     - --cloud-config=/etc/kubernetes/qingcloud.conf

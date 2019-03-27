@@ -19,9 +19,12 @@ then
 fi
 echo "===end init master==="
 
-systemctl daemon-reload
-retry systemctl start etcd
-is_systemd_active etcd
+if [ "${CLUSTER_ETCD_ID}" == "null" ]
+then
+    systemctl daemon-reload
+    retry systemctl start etcd
+    is_systemd_active etcd
+fi
 
 if [ "${HOST_SID}" == "1" ]
 then

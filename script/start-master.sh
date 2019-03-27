@@ -17,8 +17,11 @@ echo "===end start master==="
 systemctl daemon-reload
 
 # Start etcd
-retry systemctl start etcd
-is_systemd_active etcd
+if [ "${CLUSTER_ETCD_ID}" == "null" ]
+then
+    retry systemctl start etcd
+    is_systemd_active etcd
+fi
 
 # Start Docker
 retry systemctl restart docker

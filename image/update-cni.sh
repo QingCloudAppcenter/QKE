@@ -9,6 +9,9 @@ echo "*************************"
 
 source ${K8S_HOME}/version
 
+# install cni through apt
+# apt install kubernetes-cni=0.6.0-00
+
 CNI_VERSION=v0.6.0
 CNI_PLUGINS_VERSION=v0.7.1
 

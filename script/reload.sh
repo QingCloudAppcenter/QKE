@@ -4,10 +4,4 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${HOST_ROLE}" == "master" ]
-then
-    if [ "${HOST_SID}" == "1" ]
-    then
-        install_cloud_controller_manager
-    fi
-fi
+kubelet_active && systemctl restart kubelet

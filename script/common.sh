@@ -169,7 +169,6 @@ function install_csi(){
     kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-sts.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-ds.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc-capacity.yaml
 }
 
 function install_coredns(){
@@ -186,7 +185,7 @@ function install_tiller(){
 }
 
 function install_cloud_controller_manager(){
-    cp /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml /etc/kubernetes/manifest
+    cp /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml /etc/kubernetes/manifests
 }
 
 function docker_login(){

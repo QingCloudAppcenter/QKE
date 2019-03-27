@@ -19,8 +19,9 @@ kind: ClusterConfiguration
 etcd:
   external:
     endpoints:
-{{range $dir := lsdir "/hosts/master/"}}{{$tmp := printf "/hosts/master/%s/sid" $dir}}{{$index := getv $tmp}}    - http://{{printf "/hosts/master/%s/ip" $dir | getv}}:2379
-{{end}}
+{{if exists "/links/etcd_service/cluster/cluster_id"}}{{range $index,$value := gets "/links/etcd_service/hosts/etcd_node/*/ip"}}    - http://{{print .Value}}:2379
+{{end}}{{else}}{{range $index,$value := gets "/hosts/master/*/ip"}}    - http://{{print .Value}}:2379
+{{end}}{{end}}
 networking:
   dnsDomain: "{{getv "/env/api_external_domain"}}"
   podSubnet: "{{getv "/env/pod_subnet"}}"
