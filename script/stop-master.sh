@@ -9,4 +9,7 @@ docker_stop_rm_all
 docker_stop
 
 # stop etcd
-systemctl stop etcd
+if [ "${CLUSTER_ETCD_ID}" == "null" ]
+then
+    systemctl stop etcd
+fi

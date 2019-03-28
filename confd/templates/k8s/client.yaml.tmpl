@@ -2,9 +2,6 @@ qy_access_key_id: "{{getv "/env/access_key_id/access_key_id"}}"
 qy_secret_access_key: "{{getv "/env/access_key_id/secret_access_key"}}"
 zone: "{{getv "/cluster/zone"}}"
 {{- $kube_log_level := getv "/env/kube_log_level" }}
-log_level: {{if gt $kube_log_level "1" }}debug{{else}}{{if eq $kube_log_level "0"}}warn{{else}}info{{end}}{{end}}
-connection_retries: 1
-connection_timeout: 5
 host: "{{getv "/cluster/api_server/host"}}"
 port: {{getv "/cluster/api_server/port"}}
 protocol: "{{getv "/cluster/api_server/protocol"}}"

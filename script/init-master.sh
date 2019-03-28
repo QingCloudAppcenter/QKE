@@ -3,15 +3,28 @@ SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
+source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
+echo "===start init master==="
 link_dir
 swapoff -a
 systemctl restart docker
 is_systemd_active docker
 
-systemctl daemon-reload
-retry systemctl start etcd
-is_systemd_active etcd
+replace_kubeadm_config_lb_ip
+replace_hosts_lb_ip
+if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+then
+    cat /etc/kubernetes/kubeadm-config.yaml
+fi
+echo "===end init master==="
+
+if [ "${CLUSTER_ETCD_ID}" == "null" ]
+then
+    systemctl daemon-reload
+    retry systemctl start etcd
+    is_systemd_active etcd
+fi
 
 if [ "${HOST_SID}" == "1" ]
 then
@@ -59,20 +72,36 @@ systemctl daemon-reload
 retry systemctl restart kubelet
 is_systemd_active kubelet
 
-# Create access local apiserver file for kubeadm
-cp /etc/kubernetes/admin.conf ${KUBE_LOCAL_CONF}
-sed -i "s/${LB_IP}/${HOST_IP}/g" ${KUBE_LOCAL_CONF}
-
 retry kubectl get nodes
 
 if [ "${HOST_SID}" == "1" ]
 then
     # Create a ConfigMap "kubelet-config-1.12" in namespace kube-system with the configuration for the kubelets in the cluster
-    kubeadm alpha phase kubelet config upload --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    retry kubeadm alpha phase kubelet config upload --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     # storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
-    kubeadm alpha phase upload-config --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    retry kubeadm alpha phase upload-config --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     # Create Token
-    kubeadm alpha phase bootstrap-token all --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBE_LOCAL_CONF}
+    echo "Create Token"
+    retry kubeadm alpha phase bootstrap-token all --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
+    # Install Addons
+    echo "Install Kube-Proxy"
+    retry install_kube_proxy
+    # Install Network Plugin
+    echo "Install Network Plugin"
+    retry install_network_plugin
+    echo "Install Coredns"
+    # Install Coredns
+    retry install_coredns
+    # Install Storage Plugin
+    echo "Install CSI"
+    retry install_csi
+    # Install Tiller
+    echo "Install Tiller"
+    retry install_tiller
+    echo "Install Cloud Controller Manager"
+    retry install_cloud_controller_manager
 fi
 
-systemctl enable kubelet
+# Mark Master
+echo "Mark Master"
+kubeadm alpha phase mark-master --node-name ${HOST_INSTANCE_ID}

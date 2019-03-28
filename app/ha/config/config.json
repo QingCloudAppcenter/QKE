@@ -54,16 +54,6 @@
             "type": "array",
             "properties": [
                 {
-                    "key": "loadbalancer",
-                    "label": "load balancer",
-                    "description": "Choose an loadbalancer service to use",
-                    "type": "loadbalancer",
-                    "port": 6443,
-                    "default": [
-                    ],
-                    "required": "yes"
-                },
-                {
                   "key": "count",
                   "label": "count",
                   "description": "Number of master for the cluster to create",
@@ -303,13 +293,7 @@
             "label": "Access key id",
             "description": "API access key id",
             "type": "accesskey",
-            "required": "yes"
-          },
-          {
-            "key": "loadbalancer_ip",
-            "label": "loadbalancer ip",
-            "description": "loadbalancer ip",
-            "type": "string",
+            "changeable": false,
             "required": "yes"
           },
           {
@@ -383,7 +367,7 @@
             "label": "host aliases",
             "description": "Set host aliases",
             "type": "string",
-            "changeable": false,
+            "changeable": true,
             "default": "",
             "required": "no"
           },
@@ -392,7 +376,8 @@
             "label": "Registry mirrors",
             "description": "The docker hub registry mirror, use a blank to split multi registry",
             "type": "string",
-            "default": "",
+            "default": "https://registry.docker-cn.com",
+            "changeable": true,
             "required": "no"
           },
           {
@@ -401,6 +386,7 @@
             "description": "The insecure docker registry, use a blank to split multi registry",
             "type": "string",
             "default": "",
+            "changeable": true,
             "required": "no"
           },
           {
@@ -409,6 +395,7 @@
             "description": "The URL of private docker registry",
             "type": "string",
             "default": "",
+            "changeable": true,
             "required": "no"
           },
           {

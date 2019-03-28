@@ -4,4 +4,10 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-echo "this is empty script"
+if [ "${HOST_ROLE}" == "master" ]
+then
+    if [ "${HOST_SID}" == "1" ]
+    then
+        install_cloud_controller_manager
+    fi
+fi

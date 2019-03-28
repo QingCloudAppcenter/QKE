@@ -1,0 +1,66 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: kube-proxy
+    addonmanager.kubernetes.io/mode: Reconcile
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kube-proxy
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-proxy
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      containers:
+      - name: kube-proxy
+        image: dockerhub.qingcloud.com/google_containers/hyperkube-amd64:{{getv "/env/kubernetes_version"}}
+        imagePullPolicy: IfNotPresent
+        command:
+        - kube-proxy
+        - --v={{getv "/env/kube_log_level"}}
+        - --masquerade-all
+        - --feature-gates=AllAlpha=true,DynamicKubeletConfig=false,RotateKubeletServerCertificate=false,RotateKubeletClientCertificate=false,SupportIPVSProxyMode=true
+        - --proxy-mode={{getv "/env/proxy_mode"}}
+        - --kubeconfig=/var/lib/kube-proxy/kubeconfig.conf
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/lib/kube-proxy
+          name: kube-proxy
+        # TODO: Make this a file hostpath mount
+        - mountPath: /run/xtables.lock
+          name: xtables-lock
+          readOnly: false
+        - mountPath: /lib/modules
+          name: lib-modules
+          readOnly: true
+      hostNetwork: true
+      serviceAccountName: kube-proxy
+      volumes:
+      - name: kube-proxy
+        configMap:
+          name: kube-proxy
+      - name: xtables-lock
+        hostPath:
+          path: /run/xtables.lock
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: "dedicated"
+        operator: "Exists"
+      - key: "node-role.kubernetes.io/master"
+        effect: NoSchedule
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        effect: NoSchedule
+        value: "true"

@@ -4,3 +4,4 @@ dest = "/etc/hosts"
 keys = [
     "/",
 ]
+reload_cmd = "/opt/kubernetes/script/reload-hosts.sh"

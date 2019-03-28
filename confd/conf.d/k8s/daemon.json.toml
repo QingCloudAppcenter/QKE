@@ -1,0 +1,7 @@
+[template]
+src = "k8s/daemon.json.tmpl"
+dest = "/etc/docker/daemon.json"
+keys = [
+    "/",
+]
+reload_cmd = "/opt/kubernetes/script/reload-docker.sh"

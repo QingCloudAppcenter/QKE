@@ -4,4 +4,6 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-echo "this is empty script"
+# Reload config
+systemctl daemon-reload
+systemctl restart docker
