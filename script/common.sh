@@ -36,6 +36,11 @@ function retry {
   done
 }
 
+function get_node_status(){
+    local status=$(kubectl get nodes/${HOST_INSTANCE_ID} --kubeconfig /etc/kubernetes/kubelet.conf -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+    echo ${status}
+}
+
 function wait_etcd(){
     is_systemd_active etcd
 }
