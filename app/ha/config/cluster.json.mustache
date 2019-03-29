@@ -15,7 +15,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2iv2j3d9",
+                    "image": "img-ts2icyhy",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -91,7 +91,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2iv2j3d9",
+                    "image": "img-ts2icyhy",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -165,7 +165,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2iv2j3d9",
+                    "image": "img-ts2icyhy",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -239,7 +239,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2iv2j3d9",
+                    "image": "img-ts2icyhy",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -292,6 +292,7 @@
             "dockerhub_password":{{env.dockerhub_password}},
             "docker_bip":{{env.docker_bip}},
             "keep_log_days":{{env.keep_log_days}},
+            "docker_prune_days":{{env.docker_prune_days}},
             "kube_log_level":{{env.kube_log_level}},
             "kubernetes_version": "v1.12.4"
         }

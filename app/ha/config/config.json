@@ -376,7 +376,7 @@
             "label": "Registry mirrors",
             "description": "The docker hub registry mirror, use a blank to split multi registry",
             "type": "string",
-            "default": "https://registry.docker-cn.com",
+            "default": "",
             "changeable": true,
             "required": "no"
           },
@@ -429,6 +429,17 @@
             "key": "keep_log_days",
             "label": "Keep log days",
             "description": "Keep log on log node for x days, 0 indicates that the log is not cleared",
+            "type": "integer",
+            "default": 3,
+            "min":0,
+            "max":30,
+            "changeable": true,
+            "required": "no"
+          },
+          {
+            "key": "docker_prune_days",
+            "label": "Docker prune days",
+            "description": "Keep docker for x days, 0 indicates that the log is not cleared",
             "type": "integer",
             "default": 3,
             "min":0,
