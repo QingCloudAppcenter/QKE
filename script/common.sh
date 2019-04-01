@@ -141,6 +141,7 @@ function install_network_plugin(){
 function install_kube_proxy(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
     replace_kv /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
+    replace_kube_proxy_ds
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
@@ -177,7 +178,7 @@ function install_csi(){
 }
 
 function install_coredns(){
-    kubeadm alpha phase addon coredns
+    kubeadm alpha phase addon coredns --config ${KUBEADM_CONFIG_PATH}
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml
@@ -215,7 +216,7 @@ function replace_kv(){
     actualvalue=$4
     if [ -f $1 ]
     then
-        sed "/${key}/s/${symbolvalue}/${actualvalue}/g" -i ${filepath}
+        sed "/${key}/s@${symbolvalue}@${actualvalue}@g" -i ${filepath}
     fi
 }
 
@@ -263,4 +264,9 @@ function replace_kubeadm_config_lb_ip(){
 function replace_hosts_lb_ip(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
     replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(echo ${lb_ip})
+}
+
+function replace_kube_proxy_ds(){
+    replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml cluster-cidr SHOULD_BE_REPLACED ${POD_SUBNET}
+    replace_kv /etc/confd/templates/k8s/kube-proxy-ds.yaml.tmpl cluster-cidr SHOULD_BE_REPLACED ${POD_SUBNET}
 }

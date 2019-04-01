@@ -30,6 +30,7 @@ spec:
         - --feature-gates=AllAlpha=true,DynamicKubeletConfig=false,RotateKubeletServerCertificate=false,RotateKubeletClientCertificate=false,SupportIPVSProxyMode=true
         - --proxy-mode={{getv "/env/proxy_mode"}}
         - --kubeconfig=/var/lib/kube-proxy/kubeconfig.conf
+        - --cluster-cidr=SHOULD_BE_REPLACED
         securityContext:
           privileged: true
         volumeMounts:
