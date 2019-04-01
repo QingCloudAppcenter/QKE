@@ -248,6 +248,12 @@ function install_kubesphere(){
     helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
     kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
     kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
+    # install logging
+    helm upgrade --install elasticsearch-logging /opt/kubesphere/elasticsearch/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-curator /opt/kubesphere/elasticsearch-curator/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-kibana /opt/kubesphere/kibana/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-fluentbit /opt/kubesphere/fluent-bit/  --namespace kubesphere-logging-system
+    kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
     touch ${CLIENT_INIT_LOCK}
 }
 

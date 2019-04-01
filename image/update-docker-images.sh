@@ -8,7 +8,7 @@ echo "*************************"
 docker login -u guest -p guest dockerhub.qingcloud.com
 
 # Basic
-docker pull dockerhub.qingcloud.com/google_containers/hyperkube-amd64:v1.12.4
+docker pull dockerhub.qingcloud.com/google_containers/hyperkube-amd64:v1.12.7
 docker pull dockerhub.qingcloud.com/google_containers/pause-amd64:3.1
 
 # Network
@@ -24,7 +24,7 @@ docker pull dockerhub.qingcloud.com/qingcloud/qingcloud-cloud-controller-manager
 docker pull dockerhub.qingcloud.com/k8scsi/csi-provisioner:v0.2.1
 docker pull dockerhub.qingcloud.com/k8scsi/csi-attacher:v0.2.0
 docker pull dockerhub.qingcloud.com/k8scsi/driver-registrar:v0.2.0
-docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.0
+docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.1
 
 # KubeSphere
 docker pull dockerhub.qingcloud.com/kubesphere/ks-console:advanced-1.0.1
@@ -68,3 +68,8 @@ docker pull dockerhub.qingcloud.com/coreos/addon-resizer:1.0
 docker pull redis:4.0            
 docker pull nginx:1.14-alpine    
 docker pull docker:18.06.1-ce-dind
+
+# logging
+docker pull dockerhub.qingcloud.com/elasticsearch/elasticsearch-oss:6.4.2
+docker pull dockerhub.qingcloud.com/kibana/kibana-oss:6.4.2
+docker pull dockerhub.qingcloud.com/fluent/fluent-bit:0.14.7

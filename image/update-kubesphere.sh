@@ -4,6 +4,10 @@ echo "*************************"
 echo "update kubesphere"
 echo "*************************"
 
-curl -o /opt/kubesphere-chart-1.0.1-test.tar.gz -O -k https://139.198.5.33/test/kubesphere-chart-1.0.1-test.tar.gz -u kubesphere:Qcloud@123 
-tar -xf /opt/kubesphere-chart-1.0.1-test.tar.gz -C /opt
-mv /opt/kubesphere-chart-1.0.1 /opt/kubesphere
+pushd /tmp
+wget -c https://kubesphere-app.pek3b.qingstor.com/kubesphere-charts/kubesphere-chart-advanced-1.0.1-beta1.tar.gz
+tar -zxvf kubesphere-chart-advanced-1.0.1-beta1.tar.gz -C /opt
+mv /opt/kubesphere-chart-advanced-1.0.1 /opt/kubesphere
+rm kubesphere-chart-advanced-1.0.1-beta1.tar.gz
+
+popd

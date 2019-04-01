@@ -23,6 +23,14 @@ then
     exit 255
 fi
 
+# update docker
+${K8S_HOME}/image/update-cni.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update cni failed!"
+    exit 255
+fi
+
 # update helm
 ${K8S_HOME}/image/update-helm.sh
 if [[ $? != 0 ]]

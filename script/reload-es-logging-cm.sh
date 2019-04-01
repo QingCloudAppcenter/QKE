@@ -8,7 +8,6 @@ if [ "${HOST_ROLE}" == "master" ]
 then
     if [ "${HOST_SID}" == "1" ]
     then
-        replace_kube_proxy_ds
-        kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
+        kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
     fi
 fi
