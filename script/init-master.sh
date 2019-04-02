@@ -11,8 +11,12 @@ swapoff -a
 systemctl restart docker
 is_systemd_active docker
 
-replace_kubeadm_config_lb_ip
-replace_hosts_lb_ip
+if [ "${MASTER_COUNT}" == "3" ]
+then
+    replace_kubeadm_config_lb_ip
+    replace_hosts_lb_ip
+fi
+
 if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
 then
     cat /etc/kubernetes/kubeadm-config.yaml
@@ -42,8 +46,11 @@ then
 /etc/kubernetes/pki/front-proxy-ca.key
 EOF
     tar -czf /etc/kubernetes/control-plane-certificates.tar.gz -T /etc/kubernetes/certificate_files.txt
-    scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_2_INSTANCE_ID}:/etc/kubernetes
-    scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_3_INSTANCE_ID}:/etc/kubernetes
+    if [ "${MASTER_COUNT}" == "3" ]
+    then
+        scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_2_INSTANCE_ID}:/etc/kubernetes
+        scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_3_INSTANCE_ID}:/etc/kubernetes
+    fi
 else
     # Get control plane cert files
     while [ -z "/etc/kubernetes/control-plane-certificates.tar.gz" ]

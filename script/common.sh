@@ -271,8 +271,3 @@ function replace_hosts_lb_ip(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
     replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(echo ${lb_ip})
 }
-
-function replace_kube_proxy_ds(){
-    replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml cluster-cidr SHOULD_BE_REPLACED ${POD_SUBNET}
-    replace_kv /etc/confd/templates/k8s/kube-proxy-ds.yaml.tmpl cluster-cidr SHOULD_BE_REPLACED ${POD_SUBNET}
-}

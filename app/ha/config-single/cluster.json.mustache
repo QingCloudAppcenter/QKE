@@ -32,12 +32,12 @@
                 "services": {
                     "init": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/init-master.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 500
                     },
                     "start": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/start-master.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 500
                     },
                     "upgrade": {
@@ -50,40 +50,7 @@
                     }
                 },
                 "custom_metadata": {
-                    "cmd": "/opt/kubernetes/script/get-kubeadm-token.sh"
-                },
-                "health_check": {
-                    "enable": true,
-                    "interval_sec": 60,
-                    "timeout_sec": 10,
-                    "action_timeout_sec": 30,
-                    "healthy_threshold": 3,
-                    "unhealthy_threshold": 3,
-                    "check_cmd": "/opt/kubernetes/script/check-master.sh",
-                    "action_cmd": "/opt/kubernetes/script/restart-master.sh"
-                },
-                "monitor": {
-                    "enable": true,
-                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
-                    "items": {
-                        "kubelet_running_container_count": {
-                            "unit": "",
-                            "value_type": "int",
-                            "statistics_type": "latest",
-                            "scale_factor_when_display": 0.001
-                        },
-                        "kubelet_running_pod_count": {
-                            "unit": "",
-                            "value_type": "int",
-                            "statistics_type": "latest",
-                            "scale_factor_when_display": 0.001
-                        }
-                    },
-                    "groups": {
-                        "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
-                    },
-                    "display": ["kubelet"],
-                    "alarm": ["kubelet_running_container_count"]
+                    "cmd": "/opt/kubernetes/script/empty-script.sh"
                 }
             },
             {
@@ -107,12 +74,12 @@
                 "services": {
                     "init": {
                         "order": 3,
-                        "cmd": "/opt/kubernetes/script/init-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     },
                     "start": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/start-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 500
                     },
                     "upgrade": {
@@ -123,39 +90,6 @@
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
                         "timeout": 300
                     }
-                },
-                "health_check": {
-                    "enable": true,
-                    "interval_sec": 60,
-                    "timeout_sec": 10,
-                    "action_timeout_sec": 30,
-                    "healthy_threshold": 3,
-                    "unhealthy_threshold": 3,
-                    "check_cmd": "/opt/kubernetes/script/check-node.sh",
-                    "action_cmd": "/opt/kubernetes/script/restart-node.sh"
-                },
-                "monitor": {
-                "enable": true,
-                "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
-                "items": {
-                    "kubelet_running_container_count": {
-                        "unit": "",
-                        "value_type": "int",
-                        "statistics_type": "latest",
-                        "scale_factor_when_display": 0.001
-                    },
-                    "kubelet_running_pod_count": {
-                        "unit": "",
-                        "value_type": "int",
-                        "statistics_type": "latest",
-                        "scale_factor_when_display": 0.001
-                    }
-                },
-                "groups": {
-                    "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
-                },
-                "display": ["kubelet"],
-                "alarm": ["kubelet_running_container_count"]
                 },
                 "advanced_actions": ["scale_horizontal"]
             },
@@ -180,55 +114,22 @@
                 "services": {
                     "init": {
                         "order": 3,
-                        "cmd": "/opt/kubernetes/script/init-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     },
                     "start": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/start-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 500
                     },
                     "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     },
                     "stop": {
-                        "cmd": "/opt/kubernetes/script/stop-node.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     }
-                },
-                "health_check": {
-                    "enable": true,
-                    "interval_sec": 60,
-                    "timeout_sec": 10,
-                    "action_timeout_sec": 30,
-                    "healthy_threshold": 3,
-                    "unhealthy_threshold": 3,
-                    "check_cmd": "/opt/kubernetes/script/check-node.sh",
-                    "action_cmd": "/opt/kubernetes/script/restart-node.sh"
-                },
-                "monitor": {
-                    "enable": true,
-                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
-                    "items": {
-                        "kubelet_running_container_count": {
-                            "unit": "",
-                            "value_type": "int",
-                            "statistics_type": "latest",
-                            "scale_factor_when_display": 0.001
-                        },
-                        "kubelet_running_pod_count": {
-                            "unit": "",
-                            "value_type": "int",
-                            "statistics_type": "latest",
-                            "scale_factor_when_display": 0.001
-                        }
-                    },
-                    "groups": {
-                        "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
-                    },
-                    "display": ["kubelet"],
-                    "alarm": ["kubelet_running_container_count"]
                 },
                 "advanced_actions": ["scale_horizontal"]
             },
@@ -248,19 +149,19 @@
                 "services": {
                     "init": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/init-client.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     },
                     "start": {
                         "order": 3,
-                        "cmd": "/opt/kubernetes/script/start-client.sh",
+                        "cmd": "/opt/kubernetes/script/empty-script.sh",
                         "timeout": 300
                     },
                     "destroy": {
                         "order": 1,
                         "nodes_to_execute_on": 1,
                         "post_stop_service": true,
-                        "cmd": "/opt/kubernetes/script/destroy-client.sh"
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     },
                     "upgrade": {
                         "cmd": "/opt/kubernetes/script/upgrade-client.sh",
@@ -268,7 +169,7 @@
                     }
                 },
                 "custom_metadata": {
-                    "cmd": "/opt/kubernetes/script/get-loadbalancer-ip.sh"
+                    "cmd": "/opt/kubernetes/script/empty-script.sh"
                 }
             }
         ],
