@@ -73,3 +73,4 @@ docker pull docker:18.06.1-ce-dind
 docker pull dockerhub.qingcloud.com/elasticsearch/elasticsearch-oss:6.4.2
 docker pull dockerhub.qingcloud.com/kibana/kibana-oss:6.4.2
 docker pull dockerhub.qingcloud.com/fluent/fluent-bit:0.14.7
+docker pull dockerhub.qingcloud.com/pires/docker-elasticsearch-curator:5.5.4
