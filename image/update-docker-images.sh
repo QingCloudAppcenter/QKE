@@ -14,8 +14,9 @@ docker pull dockerhub.qingcloud.com/google_containers/pause-amd64:3.1
 # Network
 docker pull dockerhub.qingcloud.com/google_containers/coredns:1.2.6
 docker pull dockerhub.qingcloud.com/google_containers/coredns:1.2.2
-docker pull dockerhub.qingcloud.com/calico/node:v3.3.3
-docker pull dockerhub.qingcloud.com/calico/cni:v3.3.3
+docker pull dockerhub.qingcloud.com/calico/typha:v3.3.6
+docker pull dockerhub.qingcloud.com/calico/node:v3.3.6
+docker pull dockerhub.qingcloud.com/calico/cni:v3.3.6
 docker pull dockerhub.qingcloud.com/calico/kube-controllers:v3.1.3
 docker pull dockerhub.qingcloud.com/coreos/flannel:v0.10.0-amd64
 docker pull dockerhub.qingcloud.com/qingcloud/qingcloud-cloud-controller-manager:v1.1.3
@@ -66,7 +67,9 @@ docker pull dockerhub.qingcloud.com/coreos/flannel-cni:v0.3.0
 docker pull dockerhub.qingcloud.com/coreos/configmap-reload:v0.0.1                      
 docker pull dockerhub.qingcloud.com/coreos/addon-resizer:1.0                         
 docker pull redis:4.0            
-docker pull nginx:1.14-alpine    
+docker pull nginx:1.14-alpine
+docker pull nginx
+docker pull busybox
 docker pull docker:18.06.1-ce-dind
 
 # logging

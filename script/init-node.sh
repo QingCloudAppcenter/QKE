@@ -6,6 +6,7 @@ source "${K8S_HOME}/script/common.sh"
 echo "===start init node==="
 link_dir
 swapoff -a
+touch /etc/kubernetes/loadbalancer_ip
 
 systemctl restart docker
 is_systemd_active docker

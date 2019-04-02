@@ -12,7 +12,7 @@ data:
     clusters:
     - cluster:
         certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        server: https://SHOULD_BE_REPLACED:6443
+        server: https://{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443
       name: default
     contexts:
     - context:

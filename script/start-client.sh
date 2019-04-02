@@ -18,6 +18,6 @@ scp root@master1:/etc/kubernetes/admin.conf /root/.kube/config
 cp /root/.kube/config /etc/kubernetes/admin.conf
 
 echo "Install KubeSphere"
-# install_kubesphere
+install_kubesphere
 
 echo "===end start client==="

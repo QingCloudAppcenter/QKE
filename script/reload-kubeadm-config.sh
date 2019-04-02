@@ -4,7 +4,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${MASTER_COUNT}" == "3" ]
+if [ "${ENV_MASTER_COUNT}" == "3" ]
 then
     replace_kubeadm_config_lb_ip
 fi

@@ -8,10 +8,11 @@ source "${K8S_HOME}/script/loadbalancer-manager.sh"
 echo "===start init master==="
 link_dir
 swapoff -a
+touch /etc/kubernetes/loadbalancer_ip
 systemctl restart docker
 is_systemd_active docker
 
-if [ "${MASTER_COUNT}" == "3" ]
+if [ "${ENV_MASTER_COUNT}" == "3" ]
 then
     replace_kubeadm_config_lb_ip
     replace_hosts_lb_ip
@@ -46,7 +47,7 @@ then
 /etc/kubernetes/pki/front-proxy-ca.key
 EOF
     tar -czf /etc/kubernetes/control-plane-certificates.tar.gz -T /etc/kubernetes/certificate_files.txt
-    if [ "${MASTER_COUNT}" == "3" ]
+    if [ "${ENV_MASTER_COUNT}" == "3" ]
     then
         scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_2_INSTANCE_ID}:/etc/kubernetes
         scp /etc/kubernetes/control-plane-certificates.tar.gz root@${MASTER_3_INSTANCE_ID}:/etc/kubernetes

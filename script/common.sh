@@ -139,10 +139,12 @@ function install_network_plugin(){
 }
 
 function install_kube_proxy(){
-    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
-    replace_kv /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
-    replace_kube_proxy_ds
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml
+    if [ "${ENV_MASTER_COUNT}" == "3" ]
+    then
+        lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+        replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
+    fi
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
 }

@@ -27,9 +27,9 @@ networking:
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
-controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}:6443"
+controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServerCertSANs:
-- "loadbalancer"
+- "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
 imageRepository: "dockerhub.qingcloud.com/google_containers"
 unifiedControlPlaneImage: "dockerhub.qingcloud.com/google_containers/hyperkube-amd64:{{getv "/env/kubernetes_version"}}"
 apiServerExtraArgs:
