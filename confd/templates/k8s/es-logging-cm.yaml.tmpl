@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  action_file.yml: "---\nactions:\n  1:\n    action: delete_indices\n    description:
+    \"Clean up ES by deleting old indices\"\n    options:\n      timeout_override:\n
+    \     continue_if_exception: False\n      disable_action: False\n      ignore_empty_list:
+    True\n    filters:\n    - filtertype: age\n      source: name\n      direction:
+    older\n      timestring: '%Y.%m.%d'\n      unit: days\n      unit_count: {{getv "/env/keep_log_days"}} \n
+    \     field:\n      stats_result:\n      epoch:\n      exclude: False"
+  config.yml: "client:\n  hosts: \n    -  elasticsearch-logging-data.kubesphere-logging-system.svc
+    \n  port: 9200\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2019-04-01T09:31:16Z
+  labels:
+    app: elasticsearch-curator
+    chart: elasticsearch-curator-0.4.2
+    heritage: Tiller
+    release: elasticsearch-logging-curator
+  name: elasticsearch-logging-curator-elasticsearch-curator-config
+  namespace: kubesphere-logging-system

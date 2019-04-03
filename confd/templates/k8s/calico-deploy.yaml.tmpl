@@ -1,8 +1,8 @@
-# Calico Version v3.3.3
-# https://docs.projectcalico.org/v3.3/releases#v3.3.3
+# Calico Version v3.3.6
+# https://docs.projectcalico.org/v3.3/releases#v3.3.6
 # This manifest includes the following component versions:
-#   calico/node:v3.3.3
-#   calico/cni:v3.3.3
+#   calico/node:v3.3.6
+#   calico/cni:v3.3.6
 
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -117,7 +117,7 @@ spec:
       # as a host-networked pod.
       serviceAccountName: calico-node
       containers:
-      - image: calico/typha:v3.3.3
+      - image: dockerhub.qingcloud.com/calico/typha:v3.3.6
         name: calico-typha
         ports:
         - containerPort: 5473
@@ -231,7 +231,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: dockerhub.qingcloud.com/calico/node:v3.3.3
+          image: dockerhub.qingcloud.com/calico/node:v3.3.6
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
@@ -326,7 +326,7 @@ spec:
         # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: dockerhub.qingcloud.com/calico/cni:v3.3.3
+          image: dockerhub.qingcloud.com/calico/cni:v3.3.6
           command: ["/install-cni.sh"]
           env:
             # Name of the CNI config file to create.
@@ -520,4 +520,3 @@ spec:
     kind: NetworkPolicy
     plural: networkpolicies
     singular: networkpolicy
-

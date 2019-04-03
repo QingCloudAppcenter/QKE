@@ -3,7 +3,7 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
-{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}} loadbalancer
+{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}} loadbalancer{{end}}
 {{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/ip" $dir}}
 {{getv $ip}} {{$dir}} client{{end}}
 {{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}

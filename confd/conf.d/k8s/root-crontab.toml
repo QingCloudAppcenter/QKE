@@ -1,0 +1,6 @@
+[template]
+src = "k8s/root-crontab.tmpl"
+dest = "/var/spool/cron/crontabs/root"
+keys = [
+    "/",
+]

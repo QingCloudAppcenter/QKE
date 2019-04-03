@@ -4,7 +4,10 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-replace_kubeadm_config_lb_ip
+if [ "${ENV_MASTER_COUNT}" == "3" ]
+then
+    replace_kubeadm_config_lb_ip
+fi
 # Write kubelet configuration to file "/var/lib/kubelet/config.yaml"
 kubeadm alpha phase kubelet config write-to-disk --config ${KUBEADM_CONFIG_PATH}
 # Write kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"

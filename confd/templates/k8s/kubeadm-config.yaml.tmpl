@@ -27,9 +27,9 @@ networking:
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
-controlPlaneEndpoint: "{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}:6443"
+controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServerCertSANs:
-- "loadbalancer"
+- "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
 imageRepository: "dockerhub.qingcloud.com/google_containers"
 unifiedControlPlaneImage: "dockerhub.qingcloud.com/google_containers/hyperkube-amd64:{{getv "/env/kubernetes_version"}}"
 apiServerExtraArgs:
@@ -49,3 +49,21 @@ certificatesDir: "/etc/kubernetes/pki"
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 mode: "{{getv "/env/proxy_mode"}}"
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+address: 0.0.0.0
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: true
+  webhook:
+    cacheTTL: 2m0s
+    enabled: true
+  x509:
+    clientCAFile: /etc/kubernetes/pki/ca.crt
+authorization:
+  mode: AlwaysAllow
+  webhook:
+    cacheAuthorizedTTL: 5m0s
+    cacheUnauthorizedTTL: 30s

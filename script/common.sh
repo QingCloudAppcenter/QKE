@@ -36,6 +36,11 @@ function retry {
   done
 }
 
+function get_node_status(){
+    local status=$(kubectl get nodes/${HOST_INSTANCE_ID} --kubeconfig /etc/kubernetes/kubelet.conf -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+    echo ${status}
+}
+
 function wait_etcd(){
     is_systemd_active etcd
 }
@@ -134,9 +139,12 @@ function install_network_plugin(){
 }
 
 function install_kube_proxy(){
-    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
-    replace_kv /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/configmap.yaml
+    if [ "${ENV_MASTER_COUNT}" == "3" ]
+    then
+        lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+        replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
+    fi
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
 }
@@ -172,7 +180,7 @@ function install_csi(){
 }
 
 function install_coredns(){
-    kubeadm alpha phase addon coredns
+    kubeadm alpha phase addon coredns --config ${KUBEADM_CONFIG_PATH}
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml
@@ -210,7 +218,7 @@ function replace_kv(){
     actualvalue=$4
     if [ -f $1 ]
     then
-        sed "/${key}/s/${symbolvalue}/${actualvalue}/g" -i ${filepath}
+        sed "/${key}/s@${symbolvalue}@${actualvalue}@g" -i ${filepath}
     fi
 }
 
@@ -242,6 +250,12 @@ function install_kubesphere(){
     helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
     kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
     kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
+    # install logging
+    helm upgrade --install elasticsearch-logging /opt/kubesphere/elasticsearch/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-curator /opt/kubesphere/elasticsearch-curator/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-kibana /opt/kubesphere/kibana/  --namespace kubesphere-logging-system
+    helm upgrade --install elasticsearch-logging-fluentbit /opt/kubesphere/fluent-bit/  --namespace kubesphere-logging-system
+    kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
     touch ${CLIENT_INIT_LOCK}
 }
 
