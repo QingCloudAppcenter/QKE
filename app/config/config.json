@@ -116,12 +116,12 @@
               "label": "volume size",
               "description": "The volume size for each instance",
               "type": "integer",
-              "default": 40,
+              "default": 80,
               "min": 40,
               "max": 500,
               "step": 10,
               "required": "yes",
-              "resource_group": [40, 500,40, 500]
+              "resource_group": [80, 200,80, 200]
             }
           ]
         },
@@ -140,7 +140,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [2, 0,2, 0]
+                  "resource_group": [3, 0,3, 0]
                 },
                 {
                   "key": "cpu",
@@ -177,7 +177,7 @@
                   "label": "volume size",
                   "description": "The volume size for each instance",
                   "type": "integer",
-                  "default": 40,
+                  "default": 80,
                   "min": 40,
                   "max": 500,
                   "step": 10,
@@ -200,7 +200,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [0, 2,0, 2]
+                  "resource_group": [0, 3,0, 3]
               },
               {
                   "key": "cpu",
@@ -237,7 +237,7 @@
                   "label": "volume size",
                   "description": "The volume size for each instance",
                   "type": "integer",
-                  "default": 500,
+                  "default": 200,
                   "min": 40,
                   "max": 500,
                   "step": 10,

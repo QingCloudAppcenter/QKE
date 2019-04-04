@@ -1,28 +1,32 @@
 # 构建虚拟机镜像
 
-* base ubuntu 16.04.4
-* switch to root 
+- 基于 Ubuntu 16.04.4 构建，切换到 root 用户
 
+- 下载代码仓库
 ```bash
-gitBranch=$1
 apt-get install -y git
 git clone https://github.com/QingCloudAppcenter/kubesphere.git /opt/kubesphere
 cd /opt/kubesphere
-if [ -n "$gitBranch" ]
-then
-  git fetch origin $gitBranch:$gitBranch
-  git checkout $gitBranch
-  git branch --set-upstream-to=origin/$gitBranch $gitBranch
-  git pull
-fi
-/opt/kubesphere/image/build-1.sh
-
 ```
 
-# 安装 Kubelet, Kubeadm
+- 下载所需内容
 
-- apt-get install kubeadm=1.12.7-00 kubelet=1.12.7-00 kubectl=1.12.7-00 kubernetes-cni=0.7.5-00
+```bash
+image/build-base.sh
+```
 
-# 构建之后
-- 手动修改 vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-- Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --anonymous-auth=true --authorization-mode=AlwaysAllow"
+- 拷贝 confd 文件
+
+```
+cp -r /opt/kubernetes/confd/conf.d /etc/confd/
+cp -r /opt/kubernetes/confd/templates /etc/confd/
+```
+
+- 修改 Kubelet 启动 service 文件
+
+添加参数，为健康检查用。待 Kubeadm 能够正常添加参数，此步可删去。
+
+```
+vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --anonymous-auth=true --authorization-mode=AlwaysAllow"
+```

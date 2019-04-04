@@ -15,8 +15,8 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rzjadof8",
-                    "zone": "sh1b"
+                    "image": "img-knpa6q6p",
+                    "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
                 "count": {{cluster.master.count}},
@@ -39,10 +39,6 @@
                         "order": 1,
                         "cmd": "/opt/kubernetes/script/start-master.sh",
                         "timeout": 500
-                    },
-                    "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-master.sh",
-                        "timeout": 300
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-master.sh",
@@ -90,8 +86,8 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rzjadof8",
-                    "zone": "sh1b"
+                    "image": "img-knpa6q6p",
+                    "zone": "ap2a"
                 },
                 "instance_class": 0,
                 "count": {{cluster.node.count}},
@@ -114,10 +110,6 @@
                         "order": 2,
                         "cmd": "/opt/kubernetes/script/start-node.sh",
                         "timeout": 500
-                    },
-                    "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-node.sh",
-                        "timeout": 300
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
@@ -163,8 +155,8 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rzjadof8",
-                    "zone": "sh1b"
+                    "image": "img-knpa6q6p",
+                    "zone": "ap2a"
                 },
                 "instance_class": 1,
                 "count": {{cluster.ssd_node.count}},
@@ -187,10 +179,6 @@
                         "order": 2,
                         "cmd": "/opt/kubernetes/script/start-node.sh",
                         "timeout": 500
-                    },
-                    "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-node.sh",
-                        "timeout": 300
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
@@ -236,8 +224,8 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rzjadof8",
-                    "zone": "sh1b"
+                    "image": "img-knpa6q6p",
+                    "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
                 "count": 1,
@@ -262,8 +250,8 @@
                         "post_stop_service": true,
                         "cmd": "/opt/kubernetes/script/destroy-client.sh"
                     },
-                    "upgrade": {
-                        "cmd": "/opt/kubernetes/script/upgrade-client.sh",
+                    "scale_in":{
+                        "cmd": "/opt/kubernetes/script/scale-in.sh",
                         "timeout": 300
                     }
                 },
