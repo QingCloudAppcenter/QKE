@@ -16,7 +16,7 @@
                 "container": {
                     "type": "kvm",
                     "image": "img-knpa6q6p",
-                    "zone": "ap2a"
+                    "zone": "sh1b"
                 },
                 "instance_class": {{cluster.master.instance_class}},
                 "count": {{cluster.master.count}},
@@ -43,6 +43,11 @@
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-master.sh",
                         "timeout": 300
+                    },
+                    "scale_in":{
+                        "nodes_to_execute_on": 1,
+                        "cmd": "/opt/kubernetes/script/scale-in.sh",
+                        "timeout": 86400
                     }
                 },
                 "custom_metadata": {
@@ -87,7 +92,7 @@
                 "container": {
                     "type": "kvm",
                     "image": "img-knpa6q6p",
-                    "zone": "ap2a"
+                    "zone": "sh1b"
                 },
                 "instance_class": 0,
                 "count": {{cluster.node.count}},
@@ -156,7 +161,7 @@
                 "container": {
                     "type": "kvm",
                     "image": "img-knpa6q6p",
-                    "zone": "ap2a"
+                    "zone": "sh1b"
                 },
                 "instance_class": 1,
                 "count": {{cluster.ssd_node.count}},
@@ -225,7 +230,7 @@
                 "container": {
                     "type": "kvm",
                     "image": "img-knpa6q6p",
-                    "zone": "ap2a"
+                    "zone": "sh1b"
                 },
                 "instance_class": {{cluster.client.instance_class}},
                 "count": 1,
@@ -249,10 +254,6 @@
                         "nodes_to_execute_on": 1,
                         "post_stop_service": true,
                         "cmd": "/opt/kubernetes/script/destroy-client.sh"
-                    },
-                    "scale_in":{
-                        "cmd": "/opt/kubernetes/script/scale-in.sh",
-                        "timeout": 300
                     }
                 },
                 "custom_metadata": {
