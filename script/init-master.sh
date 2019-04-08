@@ -22,7 +22,6 @@ if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
 then
     cat /etc/kubernetes/kubeadm-config.yaml
 fi
-echo "===end init master==="
 
 if [ "${CLUSTER_ETCD_ID}" == "null" ]
 then
@@ -113,3 +112,5 @@ fi
 # Mark Master
 echo "Mark Master"
 kubeadm alpha phase mark-master --node-name ${HOST_INSTANCE_ID}
+
+echo "===end init master==="

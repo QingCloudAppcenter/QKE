@@ -12,7 +12,6 @@ then
     cat /etc/kubernetes/kubeadm-config.yaml
 fi
 
-echo "===end start master==="
 # Reload config
 systemctl daemon-reload
 
@@ -30,5 +29,7 @@ is_systemd_active docker
 # Start Kubelet
 retry systemctl start kubelet
 is_systemd_active kubelet
+
+echo "===end start master==="
 
 
