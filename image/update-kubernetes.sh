@@ -24,3 +24,8 @@ apt-get update
 apt-get install -y kubelet=${KUBE_BIN_VER} kubeadm=${KUBE_BIN_VER} kubectl=${KUBE_BIN_VER}
 
 apt-mark hold kubelet kubeadm kubectl
+
+# Autocompletion
+source /usr/share/bash-completion/bash_completion >> ~/.bashrc
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+kubectl completion bash >/etc/bash_completion.d/kubectl
