@@ -41,6 +41,11 @@ function get_node_status(){
     echo ${status}
 }
 
+function drain_node(){
+    kubectl drain  --kubeconfig /etc/kubernetes/admin.conf  --delete-local-data=true --ignore-daemonsets=true --force $1 
+    return $?
+}
+
 function wait_etcd(){
     is_systemd_active etcd
 }

@@ -4,10 +4,12 @@ echo "*************************"
 echo "update kubesphere"
 echo "*************************"
 
+KUBESPHERE_INSTALL_PACKAGE="kubesphere-chart-advanced-1.0.1-beta2.tar.gz"
+
 pushd /tmp
-wget -c https://kubesphere-app.pek3b.qingstor.com/kubesphere-charts/kubesphere-chart-advanced-1.0.1-beta1.tar.gz
-tar -zxvf kubesphere-chart-advanced-1.0.1-beta1.tar.gz -C /opt
+wget -c https://kubesphere-app.pek3b.qingstor.com/kubesphere-charts/${KUBESPHERE_INSTALL_PACKAGE}
+tar -zxvf ${KUBESPHERE_INSTALL_PACKAGE} -C /opt
 mv /opt/kubesphere-chart-advanced-1.0.1 /opt/kubesphere
-rm kubesphere-chart-advanced-1.0.1-beta1.tar.gz
+rm ${KUBESPHERE_INSTALL_PACKAGE}
 
 popd

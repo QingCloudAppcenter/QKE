@@ -12,6 +12,7 @@ nodeRegistration:
     cloud-provider: "external"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
     pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause-amd64:3.1"
+    node-labels: "{{if eq "node" (getv "/host/role")}}node-role.kubernetes.io/node={{end}}{{if eq "ssd_node" (getv "/host/role")}}node-role.kubernetes.io/ssd_node={{end}}"
     v: "{{getv "/env/kube_log_level"}}"
 ---
 apiVersion: kubeadm.k8s.io/v1alpha3

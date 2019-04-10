@@ -4,4 +4,5 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
+systemctl daemon-reload
 kubelet_active && systemctl restart kubelet

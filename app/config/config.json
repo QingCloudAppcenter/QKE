@@ -40,8 +40,8 @@
         },
         {
           "key": "etcd_service",
-          "label": "etcd service",
-          "description": "Choose an etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal etcd service in Kubernetes cluster",
+          "label": "Etcd service",
+          "description": "Choose an Etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal Etcd service in Kubernetes cluster",
           "type": "service",
           "tag": ["ETCD", "etcd"],
           "default": "",
@@ -116,12 +116,12 @@
               "label": "volume size",
               "description": "The volume size for each instance",
               "type": "integer",
-              "default": 40,
+              "default": 80,
               "min": 40,
               "max": 500,
               "step": 10,
               "required": "yes",
-              "resource_group": [40, 500,40, 500]
+              "resource_group": [80, 200,80, 200]
             }
           ]
         },
@@ -140,7 +140,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [2, 0,2, 0]
+                  "resource_group": [3, 0,3, 0]
                 },
                 {
                   "key": "cpu",
@@ -177,7 +177,7 @@
                   "label": "volume size",
                   "description": "The volume size for each instance",
                   "type": "integer",
-                  "default": 40,
+                  "default": 80,
                   "min": 40,
                   "max": 500,
                   "step": 10,
@@ -200,7 +200,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [0, 2,0, 2]
+                  "resource_group": [0, 3,0, 3]
               },
               {
                   "key": "cpu",
@@ -237,7 +237,7 @@
                   "label": "volume size",
                   "description": "The volume size for each instance",
                   "type": "integer",
-                  "default": 500,
+                  "default": 200,
                   "min": 40,
                   "max": 500,
                   "step": 10,
@@ -365,7 +365,7 @@
         },
         {
           "key": "proxy_mode",
-          "label": "proxy mode",
+          "label": "Proxy Mode",
           "description": "Choose a proxy mode",
           "type": "string",
           "changeable": false,
@@ -385,7 +385,7 @@
         {
           "key": "registry_mirrors",
           "label": "Registry mirrors",
-          "description": "The docker hub registry mirror, use a blank to split multi registry",
+          "description": "The Docker hub registry mirror, use a blank to split multi registry",
           "type": "string",
           "default": "",
           "changeable": true,
@@ -394,7 +394,7 @@
         {
           "key": "insecure_registry",
           "label": "Insecure registry",
-          "description": "The insecure docker registry, use a blank to split multi registry",
+          "description": "The insecure Docker registry, use a blank to split multi registry",
           "type": "string",
           "default": "",
           "changeable": true,
@@ -403,7 +403,7 @@
         {
           "key": "private_registry",
           "label": "Private registry",
-          "description": "The URL of private docker registry",
+          "description": "The URL of private Docker registry",
           "type": "string",
           "default": "",
           "changeable": true,
@@ -411,8 +411,8 @@
         },
         {
           "key": "dockerhub_username",
-          "label": "Username of docker registry",
-          "description": "The username of docker registry, could be dockerhub.qingcloud.com or your private registry",
+          "label": "Username of Docker registry",
+          "description": "The username of Docker registry, could be dockerhub.qingcloud.com or your private registry",
           "type": "string",
           "default": "",
           "changeable": true,
@@ -420,8 +420,8 @@
         },
         {
           "key": "dockerhub_password",
-          "label": "Password of docker registry",
-          "description": "The password of docker registry",
+          "label": "Password of Docker registry",
+          "description": "The password of Docker registry",
           "type": "password",
           "default": "",
           "changeable": true,
@@ -429,8 +429,8 @@
         },
         {
           "key": "docker_bip",
-          "label": "IP address and netmask for docker bridge network",
-          "description": "IP address and netmask for docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24",
+          "label": "IP address and netmask for Docker bridge network",
+          "description": "IP address and netmask for Docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24",
           "type": "string",
           "default": "172.30.0.1/16",
           "changeable": true,
@@ -450,7 +450,7 @@
         {
           "key": "docker_prune_days",
           "label": "Docker prune days",
-          "description": "Keep docker for x days, 0 indicates that the log is not cleared",
+          "description": "Keep Docker for x days, 0 indicates that the log is not cleared",
           "type": "integer",
           "default": 3,
           "min":0,
