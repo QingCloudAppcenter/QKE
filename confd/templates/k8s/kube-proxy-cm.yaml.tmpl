@@ -6,6 +6,9 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
+  config.conf: |-
+    apiVersion: kubeproxy.config.k8s.io/v1alpha1
+    kind: KubeProxyConfiguration
   kubeconfig.conf: |
     apiVersion: v1
     kind: Config

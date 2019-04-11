@@ -8,12 +8,11 @@ echo "*************************"
 docker login -u guest -p guest dockerhub.qingcloud.com
 
 # Basic
-docker pull dockerhub.qingcloud.com/google_containers/hyperkube-amd64:v1.13.5
-docker pull dockerhub.qingcloud.com/google_containers/pause-amd64:3.1
+docker pull dockerhub.qingcloud.com/google_containers/hyperkube:v1.13.5
+docker pull dockerhub.qingcloud.com/google_containers/pause:3.1
 
 # Network
 docker pull dockerhub.qingcloud.com/google_containers/coredns:1.2.6
-docker pull dockerhub.qingcloud.com/google_containers/coredns:1.2.2
 docker pull dockerhub.qingcloud.com/calico/typha:v3.3.6
 docker pull dockerhub.qingcloud.com/calico/node:v3.3.6
 docker pull dockerhub.qingcloud.com/calico/cni:v3.3.6
@@ -55,8 +54,7 @@ docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.1
 #docker pull dockerhub.qingcloud.com/coreos/kube-rbac-proxy:v0.3.1                      
 #docker pull dockerhub.qingcloud.com/prometheus/prometheus:v2.3.1                                            
 #docker pull busybox:1.28.4                      
-#docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.9.1
-#docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.11.0
+docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.11.0
 #docker pull dockerhub.qingcloud.com/coreos/etcd:v3.2.18                     
 #docker pull dockerhub.qingcloud.com/coreos/flannel:v0.10.0                     
 #docker pull minio/minio:RELEASE.2017-12-28T01-21-00Z

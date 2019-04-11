@@ -1,6 +1,0 @@
-[template]
-src = "k8s/scale_in.info.tmpl"
-dest = "/etc/kubernetes/scale_in.info"
-keys = [
-    "/",
-]

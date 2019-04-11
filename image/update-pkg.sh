@@ -5,7 +5,7 @@ echo "*************************"
 
 apt-get update
 
-apt-get install -y ebtables socat jq apt-transport-https bash-completion ntp wget ca-certificates curl software-properties-common tree ipvsadm zip unzip
+apt-get install -y ebtables socat jq apt-transport-https bash-completion ntp wget ca-certificates curl software-properties-common tree ipvsadm zip unzip bridge-utils
 
 apt-get remove -y network-managerupda
 

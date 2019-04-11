@@ -1,6 +1,6 @@
 # Note: This dropin only works with kubeadm and kubelet v1.11+
 [Service]
-Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf  --anonymous-auth=true --authorization-mode=AlwaysAllow {{if eq "node" (getv "/host/role")}}--node-labels=node-role.kubernetes.io/node={{end}}{{if eq "ssd_node" (getv "/host/role")}}--node-labels=node-role.kubernetes.io/ssd_node={{end}}"
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --node-labels=node-role.kubernetes.io/{{getv "/host/role"}}="
 Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
 # This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
 EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env

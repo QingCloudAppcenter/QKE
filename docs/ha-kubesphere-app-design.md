@@ -14,7 +14,7 @@
 ## 其他重要目录
 /data/env.sh
 /etc/kubernetes/kubeadm-config.yaml
-/etc/kubernetes/init_token.metad
+/etc/kubernetes/init-token.metad
 
 # 
 

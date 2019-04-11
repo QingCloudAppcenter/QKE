@@ -9,7 +9,7 @@ echo "===start init client==="
 link_dir
 set_password
 touch /etc/kubernetes/loadbalancer_ip
-if [ "${ENV_MASTER_COUNT}" == "3" ]
+if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
     create_lb_and_firewall ${CLUSTER_ID} ${CLUSTER_VXNET}
     ${K8S_HOME}/script/get-loadbalancer-ip.sh > /etc/kubernetes/loadbalancer_ip

@@ -5,8 +5,10 @@
 - 下载代码仓库
 ```bash
 apt-get install -y git
-git clone https://github.com/QingCloudAppcenter/kubesphere.git /opt/kubesphere
-cd /opt/kubesphere
+git clone https://github.com/QingCloudAppcenter/kubesphere.git /opt/kubernetes
+
+git clone https://github.com/wnxn/kubesphere-1.git /opt/kubernetes
+cd /opt/kubernetes
 ```
 
 - 下载所需内容
