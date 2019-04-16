@@ -144,13 +144,13 @@ function install_network_plugin(){
 }
 
 function install_kube_proxy(){
-    if [ "${ENV_MASTER_COUNT}" == "3" ]
+    if [ ${ENV_MASTER_COUNT} -gt 1 ]
     then
         lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
         replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
     fi
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
+    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
 }
 
@@ -160,16 +160,16 @@ function join_node(){
         return
     fi
 
-    local init_token=`cat /data/kubernetes/init_token.metad`
-    while [ -z "${init_token}" ]
+    local initToken=`cat /data/kubernetes/init-token.metad`
+    while [ -z "${initToken}" ]
     do
-        echo "sleep for wait init_token for 2 second"
+        echo "sleep for wait init token for 2 second"
         sleep 2
-        init_token=`cat /data/kubernetes/init_token.metad`
+        initToken=`cat /data/kubernetes/init-token.metad`
     done
 
-    echo "Token: ${init_token}"
-    retry ${init_token}
+    echo "Token: ${initToken}"
+    retry ${initToken}
 
     touch ${NODE_INIT_LOCK}
 }
@@ -185,7 +185,7 @@ function install_csi(){
 }
 
 function install_coredns(){
-    kubeadm alpha phase addon coredns --config ${KUBEADM_CONFIG_PATH}
+    kubeadm init phase addon coredns --config ${KUBEADM_CONFIG_PATH}
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
     kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml

@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: InitConfiguration
 bootstrapTokens:
 - ttl: "0"
@@ -9,13 +9,13 @@ nodeRegistration:
     fail-swap-on: "true"
     root-dir: "/data/var/lib/kubelet"
     allow-privileged: "true"
-    cloud-provider: "external"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
-    pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause-amd64:3.1"
-    node-labels: "{{if eq "node" (getv "/host/role")}}node-role.kubernetes.io/node={{end}}{{if eq "ssd_node" (getv "/host/role")}}node-role.kubernetes.io/ssd_node={{end}}"
+    pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause:3.1"
+    anonymous-auth: "true"
+    authorization-mode: "AlwaysAllow"
     v: "{{getv "/env/kube_log_level"}}"
 ---
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 etcd:
   external:
@@ -29,23 +29,26 @@ networking:
   serviceSubnet: "{{getv "/env/service_subnet"}}"
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
 controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
-apiServerCertSANs:
-- "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
-imageRepository: "dockerhub.qingcloud.com/google_containers"
-unifiedControlPlaneImage: "dockerhub.qingcloud.com/google_containers/hyperkube-amd64:{{getv "/env/kubernetes_version"}}"
-apiServerExtraArgs:
-  service-node-port-range: "{{getv "/env/cluster_port_range"}}"
-  insecure-port: "8080"
-  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
-  v: "{{getv "/env/kube_log_level"}}"
-controllerManagerExtraArgs:
-  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
-  v: "{{getv "/env/kube_log_level"}}"
-  cloud-provider: "external"
-schedulerExtraArgs:
-  feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
-  v: "{{getv "/env/kube_log_level"}}"
+apiServer:
+  extraArgs:
+    service-node-port-range: "{{getv "/env/cluster_port_range"}}"
+    insecure-port: "8080"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
+    v: "{{getv "/env/kube_log_level"}}"
+  certSANs:
+  - "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
+controllerManager:
+  extraArgs:
+    v: "{{getv "/env/kube_log_level"}}"
+    cloud-provider: "external"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
+scheduler:
+  extraArgs:
+    v: "{{getv "/env/kube_log_level"}}"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
 certificatesDir: "/etc/kubernetes/pki"
+imageRepository: "dockerhub.qingcloud.com/google_containers"
+useHyperKubeImage: true
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
@@ -53,18 +56,3 @@ mode: "{{getv "/env/proxy_mode"}}"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
-address: 0.0.0.0
-apiVersion: kubelet.config.k8s.io/v1beta1
-authentication:
-  anonymous:
-    enabled: true
-  webhook:
-    cacheTTL: 2m0s
-    enabled: true
-  x509:
-    clientCAFile: /etc/kubernetes/pki/ca.crt
-authorization:
-  mode: AlwaysAllow
-  webhook:
-    cacheAuthorizedTTL: 5m0s
-    cacheUnauthorizedTTL: 30s

@@ -8,7 +8,7 @@ source "${K8S_HOME}/script/common.sh"
 echo "===start scale in==="
 
 retry kubectl get nodes --kubeconfig /etc/kubernetes/admin.conf
-for node in $(cat "/etc/kubernetes/scale_in.info")
+for node in $(cat "/etc/kubernetes/scale-in.info")
 do
     n=$(echo $node|tr '\n' ' ')
     if [ "$n" != "" ]

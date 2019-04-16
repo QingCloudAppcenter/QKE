@@ -4,25 +4,24 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${ENV_MASTER_COUNT}" == "3" ]
+if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
     replace_kubeadm_config_lb_ip
 fi
 # Write kubelet configuration to file "/var/lib/kubelet/config.yaml"
-kubeadm alpha phase kubelet config write-to-disk --config ${KUBEADM_CONFIG_PATH}
 # Write kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
-kubeadm alpha phase kubelet write-env-file --config ${KUBEADM_CONFIG_PATH}
+kubeadm init phase kubelet-start --config  ${KUBEADM_CONFIG_PATH}
 
 if [ "${HOST_ROLE}" == "master" ]
 then
     # Write Static Pod manifest
-    kubeadm alpha phase controlplane all --config ${KUBEADM_CONFIG_PATH}
+    kubeadm init phase control-plane all --config ${KUBEADM_CONFIG_PATH}
     if [ "${HOST_SID}" == "1" ]
     then
-        # Create a ConfigMap "kubelet-config-1.12" in namespace kube-system with the configuration for the kubelets in the cluster
-        kubeadm alpha phase kubelet config upload --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
         # storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
-        kubeadm alpha phase upload-config --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
+        retry kubeadm init phase upload-config kubeadm --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
+        # Creating a ConfigMap "kubelet-config-1.13" in namespace kube-system with the configuration for the kubelets in the cluster
+        retry kubeadm init phase upload-config kubelet --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     fi
 fi
 
