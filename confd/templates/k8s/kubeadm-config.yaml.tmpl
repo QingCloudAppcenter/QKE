@@ -9,9 +9,10 @@ nodeRegistration:
     fail-swap-on: "true"
     root-dir: "/data/var/lib/kubelet"
     allow-privileged: "true"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
     pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause:3.1"
     anonymous-auth: "true"
+    rotate-certificates: "true"
     authorization-mode: "AlwaysAllow"
     v: "{{getv "/env/kube_log_level"}}"
 ---
@@ -31,21 +32,31 @@ kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
 controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServer:
   extraArgs:
+    audit-policy-file: "/etc/kubernetes/audit/audit-policy-file.yaml"
+    audit-log-path: "/etc/kubernetes/audit/audit-log-file"
+    audit-log-maxage: "{{getv "/env/keep_audit_days"}}"
     service-node-port-range: "{{getv "/env/cluster_port_range"}}"
     insecure-port: "8080"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
     v: "{{getv "/env/kube_log_level"}}"
+  extraVolumes:
+  - name: "audit-volume"
+    hostPath: "/etc/kubernetes/audit"
+    mountPath: "/etc/kubernetes/audit"
+    readOnly: false
+    pathType: Directory
   certSANs:
   - "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
 controllerManager:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
     cloud-provider: "external"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
+    experimental-cluster-signing-duration: "8760h0m0s"
 scheduler:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,DynamicKubeletConfig=false"
+    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
 certificatesDir: "/etc/kubernetes/pki"
 imageRepository: "dockerhub.qingcloud.com/google_containers"
 useHyperKubeImage: true
