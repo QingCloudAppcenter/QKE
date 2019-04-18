@@ -448,6 +448,17 @@
           "required": "no"
         },
         {
+          "key": "keep_audit_days",
+          "label": "Keep audit days",
+          "description": "Defined the maximum number of days to retain old audit log files",
+          "type": "integer",
+          "default": 3,
+          "min":0,
+          "max":30,
+          "changeable": true,
+          "required": "no"
+        },
+        {
           "key": "docker_prune_days",
           "label": "Docker prune days",
           "description": "Keep Docker for x days, 0 indicates that the log is not cleared",

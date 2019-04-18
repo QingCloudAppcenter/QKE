@@ -103,5 +103,13 @@ then
     exit 255
 fi
 
+# update audit
+${K8S_HOME}/image/update-audit.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update audit failed!"
+    exit 255
+fi
+
 # disable and stop process managed by systemd
 ${K8S_HOME}/image/update-systemd.sh
