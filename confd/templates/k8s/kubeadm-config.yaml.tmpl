@@ -52,7 +52,7 @@ controllerManager:
     v: "{{getv "/env/kube_log_level"}}"
     cloud-provider: "external"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
-    experimental-cluster-signing-duration: "8760h0m0s"
+    experimental-cluster-signing-duration: "1h0m0s"
 scheduler:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
