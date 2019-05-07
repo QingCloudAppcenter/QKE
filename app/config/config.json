@@ -437,6 +437,17 @@
           "required": "no"
         },
         {
+          "key": "kube_log_level",
+          "label": "Kubernetes log level",
+          "description": "The log level for Kubernetes system",
+          "type": "integer",
+          "default": 0,
+          "min":0,
+          "max":10,
+          "changeable": true,
+          "required": "no"
+        },
+        {
           "key": "keep_log_days",
           "label": "Keep log days",
           "description": "Keep log on log node for x days, 0 indicates that the log is not cleared",
@@ -444,6 +455,15 @@
           "default": 3,
           "min":0,
           "max":30,
+          "changeable": true,
+          "required": "no"
+        },
+        {
+          "key": "kube_audit_file",
+          "label": "Kubernetes audit policy file",
+          "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged",
+          "type": "string",
+          "default": "/etc/kubernetes/audit/default-audit-policy-file.yaml",
           "changeable": true,
           "required": "no"
         },
@@ -466,17 +486,6 @@
           "default": 3,
           "min":0,
           "max":30,
-          "changeable": true,
-          "required": "no"
-        },
-        {
-          "key": "kube_log_level",
-          "label": "Kubernetes log level",
-          "description": "The log level for Kubernetes system",
-          "type": "integer",
-          "default": 0,
-          "min":0,
-          "max":10,
           "changeable": true,
           "required": "no"
         }
