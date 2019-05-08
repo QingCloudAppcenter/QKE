@@ -14,3 +14,5 @@ DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -
 modprobe ip_vs ip_vs_rr ip_vs_wrr ip_vs_sh nf_conntrack_ipv4
 
 sysctl net.bridge.bridge-nf-call-iptables=1
+
+pip install shyaml
