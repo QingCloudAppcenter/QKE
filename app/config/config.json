@@ -437,6 +437,15 @@
           "required": "no"
         },
         {
+          "key": "kubesphere_eip",
+          "label": "IP id for exposing KubeSphere Dashboard",
+          "description": "IP id for exposing KubeSphere Dashboard",
+          "type": "string",
+          "default": "",
+          "changeable": true,
+          "required": "no"
+        },
+        {
           "key": "kube_log_level",
           "label": "Kubernetes log level",
           "description": "The log level for Kubernetes system",

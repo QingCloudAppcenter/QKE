@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  {{$eipid := getv "/env/kubesphere_eip"}}{{if ne "" $eipid)}}annotations:
+    service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids: "{{print $eipid}}"
+    service.beta.kubernetes.io/qingcloud-load-balancer-type: "0"{{end}}
+  labels:
+    app: ks-console
+    tier: frontend
+    version: advanced-1.0.0
+  name: ks-console
+  namespace: kubesphere-system
+spec:
+  ports:
+  - name: nginx
+    port: 80
+    protocol: TCP
+    targetPort: 8000
+    nodePort: 30880
+  selector:
+    app: ks-console
+    tier: frontend
+    version: advanced-1.0.0
+  type: {{if ne "" (getv "/env/kubesphere_eip")}}LoadBalancer{{else}}NodePort{{end}}

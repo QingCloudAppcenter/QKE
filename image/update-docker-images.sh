@@ -26,6 +26,16 @@ docker pull dockerhub.qingcloud.com/k8scsi/csi-attacher:v0.2.0
 docker pull dockerhub.qingcloud.com/k8scsi/driver-registrar:v0.2.0
 docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.1
 
+# KS core
+docker pull dockerhub.qingcloud.com/kubesphere/ks-console:dev-20190507
+docker pull kubespheredev/ks-account:dev-20190507
+docker pull kubespheredev/ks-apigateway:dev-20190507
+docker pull kubespheredev/ks-apiserver:dev-20190507
+docker pull kubespheredev/ks-controller-manager:dev-20190507
+docker pull osixia/openldap:1.2.2
+docker pull busybox:1.28.4
+docker pull redis:4.0
+
 # KubeSphere
 #docker pull dockerhub.qingcloud.com/kubesphere/ks-console:advanced-1.0.1
 #docker pull kubesphere/ks-account:advanced-1.0.1
