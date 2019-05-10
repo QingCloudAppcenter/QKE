@@ -198,7 +198,8 @@ function install_tiller(){
 }
 
 function install_cloud_controller_manager(){
-    cp /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml /etc/kubernetes/manifests
+    kubectl create secret generic qcsecret --from-file=/etc/qingcloud/client.yaml -n kube-system
+    kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
 }
 
 function docker_login(){

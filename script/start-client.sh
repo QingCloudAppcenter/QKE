@@ -20,4 +20,7 @@ cp /root/.kube/config /etc/kubernetes/admin.conf
 #echo "Install KubeSphere"
 #install_kubesphere
 
+kubectl create ns kubesphere-system
+kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+
 echo "===end start client==="

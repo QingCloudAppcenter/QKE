@@ -48,6 +48,15 @@
           "required": "no"
         },
         {
+          "key": "elk_service",
+          "label": "ELK service",
+          "description": "Choose an ELK cluster to use if setting log node count to zero, leave empty if you choose not to use it, then you must specify address of Elastic Search server in environment properties",
+          "type": "service",
+          "tag": ["ELK", "elk"],
+          "default": "",
+          "required": "no"
+        },
+        {
           "key": "master",
           "label": "master",
           "description": "master properties",
@@ -440,7 +449,7 @@
           "key": "kubesphere_eip",
           "label": "IP id for exposing KubeSphere Dashboard",
           "description": "IP id for exposing KubeSphere Dashboard",
-          "type": "string",
+          "type": "eip",
           "default": "",
           "changeable": true,
           "required": "no"

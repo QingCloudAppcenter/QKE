@@ -8,14 +8,15 @@
             "add": ["ssd_node"]
         },
         "links": {
-            "etcd_service": {{cluster.etcd_service}}
+            "etcd_service": {{cluster.etcd_service}},
+            "elk_service": {{cluster.elk_service}}
         },
         "nodes": [
             {
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-hz0ka0v0",
+                    "image": "img-nkfzxe18",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -91,7 +92,7 @@
                 "role": "node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-hz0ka0v0",
+                    "image": "img-nkfzxe18",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -160,7 +161,7 @@
                 "role": "ssd_node",
                 "container": {
                     "type": "kvm",
-                    "image": "img-hz0ka0v0",
+                    "image": "img-nkfzxe18",
                     "zone": "ap2a"
                 },
                 "instance_class": 1,
@@ -229,7 +230,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-hz0ka0v0",
+                    "image": "img-nkfzxe18",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -285,5 +286,13 @@
             "master_count":{{cluster.master.count}},
             "kubesphere_eip": {{env.kubesphere_eip}},
             "kubernetes_version": "v1.13.5"
+        },
+        "display_tabs": {
+            "kubesphere_console_url": {
+                "cmd": "/opt/kubernetes/script/get-ks-console-url-json.sh",
+                "roles_to_execute_on": ["master"],
+                "description": "Get KubeSphere Console URL",
+                "timeout": 10
+            }
         }
 }
