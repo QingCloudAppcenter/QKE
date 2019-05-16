@@ -1,0 +1,28 @@
+master  ansible_connection=local
+
+[kube-master]
+master
+
+[kube-master:vars]
+
+bin_dir="/usr/bin"
+
+kubernetes_ca_crt="/etc/kubernetes/pki/ca.crt"
+kubernetes_ca_key="/etc/kubernetes/pki/ca.key"
+
+kubernetes_front_proxy_client_crt="/etc/kubernetes/pki/front-proxy-client.crt"
+kubernetes_front_proxy_client_key="/etc/kubernetes/pki/front-proxy-client.key"
+
+first_kube_master={{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{if eq "1" (getv $sid)}}{{getv $ip}}{{end}}{{end}}
+
+etcd_tls_enable=false
+ 
+etcd_client_ca_crt=""
+etcd_client_crt=""
+etcd_client_key=""
+
+etcd_endpoint_ips={{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{if eq "1" (getv $sid)}}{{getv $ip}}{{end}}{{end}}
+
+{{if exists "/links/elk_service/cluster/cluster_id"}}{{range $index,$value := gets "/links/elk_service/hosts/elk_node/*/ip"}}external_es_url={{print .Value}}
+external_es_port=9200{{end}}{{end}}
+

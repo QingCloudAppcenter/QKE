@@ -243,26 +243,12 @@ function makeup_kubesphere_values(){
 }
 
 function install_kubesphere(){
-    if [ -f "${CLIENT_INIT_LOCK}" ]; then
-        echo "client has installed KubeSphere"
-        return
+    if [ ! -f "/etc/kubernetes/pki/ca.crt" ] || [ ! -f "/etc/kubernetes/pki/ca.key" ] || 
+    [ ! -f "/etc/kubernetes/pki/front-proxy-client.crt" ] || [ ! -f "/etc/kubernetes/pki/front-proxy-client.key" ]
+    then
+        scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
-    helm upgrade --install ks-openpitrix  /opt/kubesphere/openpitrix/  --namespace openpitrix-system
-    helm upgrade --install ks-jenkins /opt/kubesphere/jenkins -f /opt/kubesphere/custom-values-jenkins.yaml --namespace kubesphere-devops-system
-    helm upgrade --install ks-monitoring  /opt/kubesphere/ks-monitoring/ --namespace kubesphere-monitoring-system
-    helm upgrade --install metrics-server  /opt/kubesphere/metrics-server/ --namespace kube-system
-    kubectl  apply  -f  /opt/kubesphere/init.yaml
-    makeup_kubesphere_values
-    helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
-    kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
-    kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
-    # install logging
-    helm upgrade --install elasticsearch-logging /opt/kubesphere/elasticsearch/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-curator /opt/kubesphere/elasticsearch-curator/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-kibana /opt/kubesphere/kibana/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-fluentbit /opt/kubesphere/fluent-bit/  --namespace kubesphere-logging-system
-    kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
-    touch ${CLIENT_INIT_LOCK}
+    ansible-playbook -i /opt/kubesphere/kubesphere/host-example.ini /opt/kubesphere/kubesphere/kubesphere-only.yaml -b
 }
 
 function get_loadbalancer_ip(){

@@ -19,8 +19,14 @@ cp /root/.kube/config /etc/kubernetes/admin.conf
 
 #echo "Install KubeSphere"
 #install_kubesphere
+if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
+    echo "Install Cloud Controller Manager"
+    install_cloud_controller_manager
+    kubectl create ns kubesphere-system
+    kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml  
+    touch ${CLIENT_INIT_LOCK}
+fi
 
-kubectl create ns kubesphere-system
-kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+
 
 echo "===end start client==="

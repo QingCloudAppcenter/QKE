@@ -105,8 +105,6 @@ then
     # Install Tiller
     echo "Install Tiller"
     retry install_tiller
-    echo "Install Cloud Controller Manager"
-    retry install_cloud_controller_manager
 fi
 
 # Mark Master
