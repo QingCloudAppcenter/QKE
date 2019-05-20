@@ -1,0 +1,7 @@
+[template]
+src = "k8s/external-elk-svc.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/addons/logging/external-elk-svc.yaml"
+keys = [
+    "/",
+]
+reload_cmd = "/opt/kubernetes/script/reload-external-elk-svc.sh"

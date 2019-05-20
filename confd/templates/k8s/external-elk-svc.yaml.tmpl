@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elk
+    component: data
+  name: external-elk
+  namespace: kubesphere-logging-system
+spec:
+  ports:
+  - name: http
+    port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
+    protocol: TCP
+    targetPort: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  labels:
+    app: elk
+    component: data
+  name: external-elk
+  namespace: kubesphere-logging-system
+subsets:
+- addresses:
+{{- range gets "/links/elk_service/hosts/es_node/*/ip" }}
+  - ip: {{print .Value}}
+{{- end }}
+  ports:
+  - port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
