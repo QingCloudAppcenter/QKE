@@ -18,6 +18,10 @@ image/build-base.sh
 ```
 
 - 拷贝 confd 文件
+```
+rm -rf /etc/confd/conf.d/k8s/*
+rm -rf /etc/confd/templates/k8s/*
+```
 
 ```
 cp -r /opt/kubernetes/confd/conf.d /etc/confd/
