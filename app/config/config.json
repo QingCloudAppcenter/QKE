@@ -40,8 +40,8 @@
         },
         {
           "key": "etcd_service",
-          "label": "Etcd service",
-          "description": "Choose an Etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal Etcd service in Kubernetes cluster",
+          "label": "etcd service",
+          "description": "Choose an etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal etcd service in Kubernetes cluster",
           "type": "service",
           "tag": ["ETCD", "etcd"],
           "default": "",
@@ -50,7 +50,7 @@
         {
           "key": "elk_service",
           "label": "ELK service",
-          "description": "Choose an ELK cluster to use if setting log node count to zero, leave empty if you choose not to use it, then you must specify address of Elastic Search server in environment properties",
+          "description": "Choose an external ELK cluster to store Kubernetes logging data, leave empty if you choose to use internal ES service in Kubernetes cluster",
           "type": "service",
           "tag": ["ELK", "elk"],
           "default": "",
@@ -319,7 +319,7 @@
         {
           "key": "pod_subnet",
           "label": "Pod Subnet",
-          "description": "Pod Subnet",
+          "description": "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16",
           "type": "string",
           "default": "10.10.0.0/16",
           "changeable": false,
@@ -328,7 +328,7 @@
         {
           "key": "service_subnet",
           "label": "Service Subnet",
-          "description": "Service Subnet",
+          "description": "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16",
           "type": "string",
           "default": "10.96.0.0/16",
           "changeable": false,

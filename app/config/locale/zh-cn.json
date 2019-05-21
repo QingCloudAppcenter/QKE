@@ -34,9 +34,9 @@
     "log": "日志节点",
     "log properties":"日志节点的属性",
     "ELK service": "ELK 服务",
-    "Choose an ELK cluster to use if setting log node count to zero, leave empty if you choose not to use it, then you must specify address of Elastic Search server in environment properties": "如选择不部署日志节点，请添加依赖的 ELK 集群，也可在环境变量中指定外部的 Elastic Search 服务器的地址",
+    "Choose an external ELK cluster to store Kubernetes logging data, leave empty if you choose to use internal ES service in Kubernetes cluster": "请添加依赖的 ELK 集群用于存储 Kubernetes 集群日志数据，否则将使用集群内自带 ES 服务",
     "etcd service": "etcd 服务",
-    "Choose an Etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal Etcd service in Kubernetes cluster": "请添加依赖的 Etcd 集群用于存储 Kubernetes 集群数据，否则将使用集群内自带 Etcd 服务",
+    "Choose an etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal etcd service in Kubernetes cluster": "请添加依赖的 etcd 集群用于存储 Kubernetes 集群数据，否则将使用集群内自带 etcd 服务",
     "The vxnets for Kubernetes pod, use a blank to split multi vxnet":"Kubernetes 的 pod 所在的私有网络，使用空格分割多个私有网络 ID。创建后只能增加，请勿删除，否则会导致网络问题",
     "Number of Pods that can run on each working node/kubelet": "每个工作节点上可运行的最大 pod 数量",
     "update": "更新",
@@ -49,7 +49,7 @@
     "The username of Docker registry, could be dockerhub.qingcloud.com or your private registry":"用于 dockerhub.qingcloud.com 或私有镜像服务器的用户名",
     "The password of Docker registry":"用于 dockerhub.qingcloud.com 或私有镜像服务器的的密码",
     "The insecure Docker registries, use a blank to split multi registry":"需要通过非安全的方式（http）访问的 Docker 仓库，多个地址通过空格切分",
-    "IP address and netmask for Docker bridge network": "docker 网桥的 IP 地址和子网掩码",
+    "IP address and netmask for Docker bridge network": "Docker 网桥的 IP 地址和子网掩码",
     "IP address and netmask for Docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24": "Docker 网桥的 IP 地址和子网掩码，请按照标准的 CIDR 格式填写。例如：192.168.1.5/24",
     "Keep log days":"日志保留天数",
     "Keep audit days": "审计日志保留天数",
@@ -91,6 +91,11 @@
     "IP id for exposing KubeSphere Dashboard": "选择合适公网 IP 资源以访问 KubeSphere 控制台",
     "Kubernetes audit policy file": "设置审计日志规则文件路径",
     "kubesphere_console_url": "KubeSphere 控制台 URL",
+    "Access key id": "API 密钥",
+    "Pod Subnet": "Pod 网段",
+    "Service Subnet": "Service 网段",
+    "Choose a proxy mode": "选择一种 Proxy Mode",
+    "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
+    "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
     "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml": "设置审计日志规则文件路径，路径为空不记录审计日志，预置默认审计日志规则文件路径：/etc/kubernetes/audit/default-audit-policy-file.yaml"
-  
   }
