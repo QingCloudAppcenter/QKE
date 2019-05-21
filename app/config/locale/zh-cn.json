@@ -89,6 +89,8 @@
     "The insecure Docker registry, use a blank to split multi registry": "需要通过非安全的方式 HTTP 和不受信任的 HTTPS 访问的 Docker 仓库，多个地址通过空格切分",
     "KubeSphere Dashboard EIP": "KubeSphere 控制台绑定的 EIP",
     "IP id for exposing KubeSphere Dashboard": "选择合适公网 IP 资源以访问 KubeSphere 控制台",
+    "Kubernetes audit policy file": "设置审计日志规则文件路径",
     "kubesphere_console_url": "KubeSphere 控制台 URL",
-    "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml": "设置审计日志规则路径，路径为空不记录审计日志，默认审计日志策略路径：/etc/kubernetes/audit/default-audit-policy-file.yaml"
+    "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml": "设置审计日志规则文件路径，路径为空不记录审计日志，预置默认审计日志规则文件路径：/etc/kubernetes/audit/default-audit-policy-file.yaml"
+  
   }
