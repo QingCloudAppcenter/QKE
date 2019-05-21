@@ -43,6 +43,9 @@
           "label": "etcd service",
           "description": "Choose an etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal etcd service in Kubernetes cluster",
           "type": "service",
+          "limits": {
+            "app-fdyvu2wk": []
+          },
           "tag": ["ETCD", "etcd"],
           "default": "",
           "required": "no"
@@ -52,6 +55,9 @@
           "label": "ELK service",
           "description": "Choose an external ELK cluster to store Kubernetes logging data, leave empty if you choose to use internal ES service in Kubernetes cluster",
           "type": "service",
+          "limits": {
+            "app-p6au3oyq": []
+          },
           "tag": ["ELK", "elk"],
           "default": "",
           "required": "no"
