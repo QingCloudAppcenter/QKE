@@ -188,5 +188,13 @@ docker pull alpine:3.9
 docker pull kubesphere/examples-bookinfo-productpage-v1:1.13.0
 docker pull kubesphere/examples-bookinfo-reviews-v1:1.13.0
 docker pull kubesphere/examples-bookinfo-reviews-v2:1.13.0
+docker pull kubesphere/examples-bookinfo-reviews-v3:1.13.0
 docker pull kubesphere/examples-bookinfo-details-v1:1.13.0
 docker pull kubesphere/examples-bookinfo-ratings-v1:1.13.0
+docker pull nginxdemos/hello:plain-text
+docker pull mysql:5.6
+docker pull wordpress:4.8-apache
+docker pull mirrorgooglecontainers/hpa-example:latest
+docker pull java:openjdk-8-jre-alpine
+docker pull fluent/fluentd:v1.4.2-2.0
+docker pull perl:latest
