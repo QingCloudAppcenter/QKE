@@ -34,16 +34,16 @@
                     "init": {
                         "order": 2,
                         "cmd": "/opt/kubernetes/script/init-master.sh",
-                        "timeout": 500
+                        "timeout": 1200
                     },
                     "start": {
                         "order": 1,
                         "cmd": "/opt/kubernetes/script/start-master.sh",
-                        "timeout": 500
+                        "timeout": 1200
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-master.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     },
                     "destroy": {
                         "order": 1,
@@ -116,16 +116,16 @@
                     "init": {
                         "order": 3,
                         "cmd": "/opt/kubernetes/script/init-node.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     },
                     "start": {
                         "order": 2,
                         "cmd": "/opt/kubernetes/script/start-node.sh",
-                        "timeout": 500
+                        "timeout": 1200
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     }
                 },
                 "health_check": {
@@ -185,16 +185,16 @@
                     "init": {
                         "order": 3,
                         "cmd": "/opt/kubernetes/script/init-node.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     },
                     "start": {
                         "order": 2,
                         "cmd": "/opt/kubernetes/script/start-node.sh",
-                        "timeout": 500
+                        "timeout": 1200
                     },
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     }
                 },
                 "health_check": {
@@ -249,12 +249,12 @@
                     "init": {
                         "order": 1,
                         "cmd": "/opt/kubernetes/script/init-client.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     },
                     "start": {
                         "order": 3,
                         "cmd": "/opt/kubernetes/script/start-client.sh",
-                        "timeout": 300
+                        "timeout": 1200
                     },
                     "destroy": {
                         "order": 3,
