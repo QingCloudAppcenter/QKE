@@ -67,6 +67,8 @@ docker pull kubesphere/alert_adapter:advanced-2.0.0
 docker pull openpitrix/openpitrix:v0.3.5
 docker pull openpitrix/openpitrix:flyway-v0.3.5
 docker pull minio/minio:RELEASE.2018-09-25T21-34-43Z
+docker pull dockerhub.qingcloud.com/coreos/etcd:v3.2.18
+
 
 # storage_images:
 docker pull dockerhub.qingcloud.com/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
