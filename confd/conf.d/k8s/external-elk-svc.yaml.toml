@@ -1,6 +1,6 @@
 [template]
 src = "k8s/external-elk-svc.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/addons/logging/external-elk-svc.yaml"
+dest = "/opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml"
 keys = [
     "/",
 ]

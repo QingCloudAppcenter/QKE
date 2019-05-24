@@ -157,7 +157,7 @@ docker pull dockerhub.qingcloud.com/kibana/kibana-oss:6.7.0
 docker pull dduportal/bats:0.4.0
 docker pull kubesphere/fluentbit-operator:advanced-2.0.0
 docker pull kubesphere/fluent-bit:advanced-2.0.0
-docker pull dockerhub.qingcloud.com/kslogging/configmap-reload:latest
+docker pull kubesphere/configmap-reload:advanced-2.0.0
 
 # istio_images:
 

@@ -8,6 +8,6 @@ if [ "${HOST_ROLE}" == "master" ]
 then
     if [ "${HOST_SID}" == "1" ]
     then
-        kubectl apply -f /opt/kubernetes/k8s/addons/logging/external-elk-svc.yaml
+        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
     fi
 fi
