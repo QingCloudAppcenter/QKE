@@ -21,7 +21,7 @@ echo "Install KubeSphere"
 if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     echo "Install Cloud Controller Manager"
     install_cloud_controller_manager
-    #install_kubesphere
+    install_kubesphere
     touch ${CLIENT_INIT_LOCK}
 fi
 
