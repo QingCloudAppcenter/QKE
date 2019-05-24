@@ -15,7 +15,7 @@ kubernetes_front_proxy_client_key="/etc/kubernetes/pki/front-proxy-client.key"
 
 first_kube_master={{range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}{{if eq "1" (getv $sid)}}{{getv $ip}}{{end}}{{end}}
 
-etcd_tls_enable=false
+etcd_tls_enable=False
  
 etcd_client_ca_crt=""
 etcd_client_crt=""

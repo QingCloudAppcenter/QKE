@@ -249,6 +249,8 @@ function install_kubesphere(){
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
     ansible-playbook -i /opt/kubesphere/kubesphere/host-example.ini /opt/kubesphere/kubesphere/kubesphere-only.yaml -b
+    kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+    kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
 }
 
 function get_loadbalancer_ip(){
