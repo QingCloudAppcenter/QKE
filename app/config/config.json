@@ -523,6 +523,15 @@
           "required": "yes"
         },
         {
+          "key": "kubesphere_eip",
+          "label": "KubeSphere Dashboard EIP",
+          "description": "IP id for exposing KubeSphere Dashboard",
+          "type": "eip",
+          "default": "",
+          "changeable": true,
+          "required": "no"
+        },
+        {
           "key": "pod_subnet",
           "label": "Pod Subnet",
           "description": "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16",
@@ -648,15 +657,6 @@
           "description": "IP address and netmask for Docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24",
           "type": "string",
           "default": "172.30.0.1/16",
-          "changeable": true,
-          "required": "no"
-        },
-        {
-          "key": "kubesphere_eip",
-          "label": "KubeSphere Dashboard EIP",
-          "description": "IP id for exposing KubeSphere Dashboard",
-          "type": "eip",
-          "default": "",
           "changeable": true,
           "required": "no"
         },
