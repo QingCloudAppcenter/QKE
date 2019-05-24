@@ -1,3 +1,4 @@
+{{if exists "/links/elk_service/cluster/cluster_id"}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,8 +9,7 @@ metadata:
   namespace: kubesphere-logging-system
 spec:
   ports:
-  - name: http
-    port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
+  - port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
     protocol: TCP
     targetPort: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
   type: ClusterIP
@@ -29,3 +29,4 @@ subsets:
 {{- end }}
   ports:
   - port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
+{{end}}

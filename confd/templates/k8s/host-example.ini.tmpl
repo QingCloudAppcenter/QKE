@@ -27,6 +27,6 @@ etcd_endpoint_ips={{ join . "," }}
 etcd_endpoint_ips={{ join (getvs "/hosts/master/*/ip") "," }}
 {{- end }}
 
-{{if exists "/links/elk_service/cluster/cluster_id"}}external_es_url=elk-headless.kubesphere-logging-system.svc
+{{if exists "/links/elk_service/cluster/cluster_id"}}external_es_url=external-elk.kubesphere-logging-system.svc
 external_es_port={{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}{{end}}
 

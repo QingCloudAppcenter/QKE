@@ -16,7 +16,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-923jajl6",
+                    "image": "img-9wv2r0yp",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -95,19 +95,19 @@
                 }
             },
             {
-                "role": "node",
+                "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-923jajl6",
+                    "image": "img-9wv2r0yp",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
-                "count": {{cluster.node.count}},
-                "cpu": {{cluster.node.cpu}},
-                "memory": {{cluster.node.memory}},
+                "count": {{cluster.node_perf.count}},
+                "cpu": {{cluster.node_perf.cpu}},
+                "memory": {{cluster.node_perf.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.node.volume_size}},
+                    "size": {{cluster.node_perf.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -164,19 +164,226 @@
                 "advanced_actions": ["scale_horizontal"]
             },
             {
-                "role": "ssd_node",
+                "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-923jajl6",
+                    "image": "img-9wv2r0yp",
                     "zone": "ap2a"
                 },
                 "instance_class": 1,
-                "count": {{cluster.ssd_node.count}},
-                "cpu": {{cluster.ssd_node.cpu}},
-                "memory": {{cluster.ssd_node.memory}},
+                "count": {{cluster.node_super_perf.count}},
+                "cpu": {{cluster.node_super_perf.cpu}},
+                "memory": {{cluster.node_super_perf.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.ssd_node.volume_size}},
+                    "size": {{cluster.node_super_perf.volume_size}},
+                    "mount_point": "/data",
+                    "mount_options": "defaults,noatime",
+                    "filesystem": "ext4"
+                },
+                "services": {
+                    "init": {
+                        "order": 3,
+                        "cmd": "/opt/kubernetes/script/init-node.sh",
+                        "timeout": 1200
+                    },
+                    "start": {
+                        "order": 2,
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
+                        "timeout": 1200
+                    },
+                    "stop": {
+                        "cmd": "/opt/kubernetes/script/stop-node.sh",
+                        "timeout": 1200
+                    }
+                },
+                "health_check": {
+                    "enable": true,
+                    "interval_sec": 60,
+                    "timeout_sec": 10,
+                    "action_timeout_sec": 30,
+                    "healthy_threshold": 3,
+                    "unhealthy_threshold": 3,
+                    "check_cmd": "/opt/kubernetes/script/check-node.sh",
+                    "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                },
+                "monitor": {
+                    "enable": true,
+                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "items": {
+                        "kubelet_running_container_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        },
+                        "kubelet_running_pod_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        }
+                    },
+                    "groups": {
+                        "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
+                    },
+                    "display": ["kubelet"],
+                    "alarm": ["kubelet_running_container_count"]
+                },
+                "advanced_actions": ["scale_horizontal"]
+            },
+            {
+                "role": "node_standard",
+                "container": {
+                    "type": "kvm",
+                    "image": "img-9wv2r0yp",
+                    "zone": "ap2a"
+                },
+                "instance_class": 101,
+                "count": {{cluster.node_standard.count}},
+                "cpu": {{cluster.node_standard.cpu}},
+                "memory": {{cluster.node_standard.memory}},
+                "passphraseless": "ssh-rsa",
+                "volume": {
+                    "size": {{cluster.node_standard.volume_size}},
+                    "mount_point": "/data",
+                    "mount_options": "defaults,noatime",
+                    "filesystem": "ext4"
+                },
+                "services": {
+                    "init": {
+                        "order": 3,
+                        "cmd": "/opt/kubernetes/script/init-node.sh",
+                        "timeout": 1200
+                    },
+                    "start": {
+                        "order": 2,
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
+                        "timeout": 1200
+                    },
+                    "stop": {
+                        "cmd": "/opt/kubernetes/script/stop-node.sh",
+                        "timeout": 1200
+                    }
+                },
+                "health_check": {
+                    "enable": true,
+                    "interval_sec": 60,
+                    "timeout_sec": 10,
+                    "action_timeout_sec": 30,
+                    "healthy_threshold": 3,
+                    "unhealthy_threshold": 3,
+                    "check_cmd": "/opt/kubernetes/script/check-node.sh",
+                    "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                },
+                "monitor": {
+                    "enable": true,
+                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "items": {
+                        "kubelet_running_container_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        },
+                        "kubelet_running_pod_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        }
+                    },
+                    "groups": {
+                        "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
+                    },
+                    "display": ["kubelet"],
+                    "alarm": ["kubelet_running_container_count"]
+                },
+                "advanced_actions": ["scale_horizontal"]
+            },
+            {
+                "role": "node_enterprise",
+                "container": {
+                    "type": "kvm",
+                    "image": "img-9wv2r0yp",
+                    "zone": "ap2a"
+                },
+                "instance_class": 201,
+                "count": {{cluster.node_enterprise.count}},
+                "cpu": {{cluster.node_enterprise.cpu}},
+                "memory": {{cluster.node_enterprise.memory}},
+                "passphraseless": "ssh-rsa",
+                "volume": {
+                    "size": {{cluster.node_enterprise.volume_size}},
+                    "mount_point": "/data",
+                    "mount_options": "defaults,noatime",
+                    "filesystem": "ext4"
+                },
+                "services": {
+                    "init": {
+                        "order": 3,
+                        "cmd": "/opt/kubernetes/script/init-node.sh",
+                        "timeout": 1200
+                    },
+                    "start": {
+                        "order": 2,
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
+                        "timeout": 1200
+                    },
+                    "stop": {
+                        "cmd": "/opt/kubernetes/script/stop-node.sh",
+                        "timeout": 1200
+                    }
+                },
+                "health_check": {
+                    "enable": true,
+                    "interval_sec": 60,
+                    "timeout_sec": 10,
+                    "action_timeout_sec": 30,
+                    "healthy_threshold": 3,
+                    "unhealthy_threshold": 3,
+                    "check_cmd": "/opt/kubernetes/script/check-node.sh",
+                    "action_cmd": "/opt/kubernetes/script/restart-node.sh"
+                },
+                "monitor": {
+                    "enable": true,
+                    "cmd": "/opt/kubernetes/script/prom2json  -insecure https://localhost:10250/metrics",
+                    "items": {
+                        "kubelet_running_container_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        },
+                        "kubelet_running_pod_count": {
+                            "unit": "",
+                            "value_type": "int",
+                            "statistics_type": "latest",
+                            "scale_factor_when_display": 0.001
+                        }
+                    },
+                    "groups": {
+                        "kubelet": ["kubelet_running_pod_count","kubelet_running_container_count"]
+                    },
+                    "display": ["kubelet"],
+                    "alarm": ["kubelet_running_container_count"]
+                },
+                "advanced_actions": ["scale_horizontal"]
+            },
+            {
+                "role": "node_premium",
+                "container": {
+                    "type": "kvm",
+                    "image": "img-9wv2r0yp",
+                    "zone": "ap2a"
+                },
+                "instance_class": 301,
+                "count": {{cluster.node_premium.count}},
+                "cpu": {{cluster.node_premium.cpu}},
+                "memory": {{cluster.node_premium.memory}},
+                "passphraseless": "ssh-rsa",
+                "volume": {
+                    "size": {{cluster.node_premium.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -236,7 +443,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-923jajl6",
+                    "image": "img-9wv2r0yp",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},

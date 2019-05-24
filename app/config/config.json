@@ -27,8 +27,8 @@
           "label": "Resource Configuration",
           "description": "The resource configuration of the service",
           "type": "string",
-          "default": "Basic",
-          "range": ["Basic", "Premium", "Basic HA", "Premium HA"]
+          "default": "Performance",
+          "range": ["Performance", "Super Performance", "Standard", "Enterprise", "Premium", "Performance HA", "Super Performance HA", "Standard HA", "Enterprise HA", "Premium HA"]
         },
         {
           "key": "vxnet",
@@ -81,7 +81,7 @@
                   3
                 ],
                 "required": "yes",
-                "resource_group": [1,1,3, 3]
+                "resource_group": [1,1,1,1,1,3,3,3,3,3]
               },
             {
               "key": "instance_class",
@@ -94,7 +94,7 @@
                 1
               ],
               "required": "yes",
-              "resource_group": [0,1,0, 1]
+              "resource_group": [0,1,101,201,301,0,1,101,201,301]
             },
             {
               "key": "cpu",
@@ -110,7 +110,7 @@
                 32
             ],
               "required": "yes",
-              "resource_group": [4,8,4, 8]
+              "resource_group": [4,8,4,8,8,4,8,4,8,8]
             },
             {
               "key": "memory",
@@ -128,7 +128,7 @@
                 131072
             ],
               "required": "yes",
-              "resource_group": [8192, 16384,8192, 16384]
+              "resource_group": [8192,16384,8192,16384,16384,8192,16384,8192,16384,16384]
             },
             {
               "key": "volume_size",
@@ -140,14 +140,14 @@
               "max": 500,
               "step": 10,
               "required": "yes",
-              "resource_group": [80, 200,80, 200]
+              "resource_group": [80,200,80,200,200,80,200,80,200,200]
             }
           ]
         },
         {
-          "key": "node",
-          "label": "node",
-          "description": "node properties",
+          "key": "node_perf",
+          "label": "performance node",
+          "description": "perfornamce node properties",
           "type": "array",
           "properties": [
                {
@@ -159,7 +159,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [3, 0,3, 0]
+                  "resource_group": [2,0,0,0,0,2,0,0,0,0]
                 },
                 {
                   "key": "cpu",
@@ -207,9 +207,9 @@
           ]
         },
         {
-          "key": "ssd_node",
-          "label": "ssd",
-          "description": "ssd node properties",
+          "key": "node_super_perf",
+          "label": "super performance node",
+          "description": "super performance node properties",
           "type": "array",
           "properties": [
               {
@@ -221,7 +221,193 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [0, 3,0, 3]
+                  "resource_group": [0,3,0,0,0,0,3,0,0,0]
+              },
+              {
+                  "key": "cpu",
+                  "label": "CPU",
+                  "description": "CPUs of each node",
+                  "type": "integer",
+                  "default": 8,
+                  "range": [
+                      4,
+                      8,
+                      12,
+                      16,
+                      32
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "memory",
+                  "label": "Memory",
+                  "description": "memory of each node (in MB)",
+                  "type": "integer",
+                  "default": 16384,
+                  "range": [
+                      8192,
+                      16384,
+                      24576,
+                      32768,
+                      49152,
+                      65536,
+                      131072
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "volume_size",
+                  "label": "volume size",
+                  "description": "The volume size for each instance",
+                  "type": "integer",
+                  "default": 200,
+                  "min": 40,
+                  "max": 500,
+                  "step": 10,
+                  "required": "yes"
+              }
+          ]
+        },
+        {
+          "key": "node_standard",
+          "label": "standard node",
+          "description": "standard node properties",
+          "type": "array",
+          "properties": [
+              {
+                  "key": "count",
+                  "label": "count",
+                  "description": "Number of nodes for the cluster to create",
+                  "type": "integer",
+                  "default": 0,
+                  "min":0,
+                  "max":100,
+                  "required": "yes",
+                  "resource_group": [0,0,3,0,0,0,0,3,0,0]
+              },
+              {
+                  "key": "cpu",
+                  "label": "CPU",
+                  "description": "CPUs of each node",
+                  "type": "integer",
+                  "default": 4,
+                  "range": [
+                      4,
+                      8,
+                      12,
+                      16,
+                      32
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "memory",
+                  "label": "Memory",
+                  "description": "memory of each node (in MB)",
+                  "type": "integer",
+                  "default": 8192,
+                  "range": [
+                      8192,
+                      16384,
+                      24576,
+                      32768,
+                      49152,
+                      65536,
+                      131072
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "volume_size",
+                  "label": "volume size",
+                  "description": "The volume size for each instance",
+                  "type": "integer",
+                  "default": 40,
+                  "min": 40,
+                  "max": 500,
+                  "step": 10,
+                  "required": "yes"
+              }
+          ]
+        },
+        {
+          "key": "node_enterprise",
+          "label": "enterprise node",
+          "description": "enterprise node properties",
+          "type": "array",
+          "properties": [
+              {
+                  "key": "count",
+                  "label": "count",
+                  "description": "Number of nodes for the cluster to create",
+                  "type": "integer",
+                  "default": 0,
+                  "min":0,
+                  "max":100,
+                  "required": "yes",
+                  "resource_group": [0,0,0,3,0,0,0,0,3,0]
+              },
+              {
+                  "key": "cpu",
+                  "label": "CPU",
+                  "description": "CPUs of each node",
+                  "type": "integer",
+                  "default": 8,
+                  "range": [
+                      4,
+                      8,
+                      12,
+                      16,
+                      32
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "memory",
+                  "label": "Memory",
+                  "description": "memory of each node (in MB)",
+                  "type": "integer",
+                  "default": 16384,
+                  "range": [
+                      8192,
+                      16384,
+                      24576,
+                      32768,
+                      49152,
+                      65536,
+                      131072
+                  ],
+                  "required": "yes"
+              },
+              {
+                  "key": "volume_size",
+                  "label": "volume size",
+                  "description": "The volume size for each instance",
+                  "type": "integer",
+                  "default": 200,
+                  "min": 40,
+                  "max": 500,
+                  "step": 10,
+                  "required": "yes"
+              }
+          ]
+        },
+        {
+          "key": "node_premium",
+          "label": "premium node",
+          "description": "premium node properties",
+          "type": "array",
+          "properties": [
+              {
+                  "key": "count",
+                  "label": "count",
+                  "description": "Number of nodes for the cluster to create",
+                  "type": "integer",
+                  "default": 0,
+                  "min":0,
+                  "max":100,
+                  "required": "yes",
+                  "resource_group": [0,0,0,0,3,0,0,0,0,3]
               },
               {
                   "key": "cpu",
@@ -372,7 +558,7 @@
           "description": "Number of Pods that can run on each working node/kubelet",
           "type": "integer",
           "changeable": true,
-          "default": 60,
+          "default": 120,
           "range":[60,120,180,240],
           "required": "no"
         },
