@@ -49,7 +49,7 @@ docker pull kubesphere/ks-devops:flyway-advanced-2.0.0
 docker pull kubesphere/ks-apigateway:advanced-2.0.0
 docker pull kubesphere/ks-apiserver:advanced-2.0.0
 docker pull kubesphere/ks-controller-manager:advanced-2.0.0
-docker pull kubesphere/docs.kubesphere.io:latest
+docker pull kubesphere/docs.kubesphere.io:advanced-2.0.0
 docker pull kubesphere/ks-upgrade:advanced-2.0.0
 docker pull kubesphere/cloud-controller-manager:v1.3.4
 
