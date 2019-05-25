@@ -8,7 +8,7 @@ swapoff -a
 ensure_dir
 
 # Start Docker
-retry systemctl restart docker
+retry systemctl start docker
 is_systemd_active docker
 
 join_node
@@ -19,10 +19,6 @@ kubeadm init phase kubelet-start --config  ${KUBEADM_CONFIG_PATH}
 
 # Reload config
 systemctl daemon-reload
-
-# Start Docker
-retry systemctl restart docker
-is_systemd_active docker
 
 # Start Kubelet
 retry systemctl restart kubelet

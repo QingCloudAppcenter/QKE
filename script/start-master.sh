@@ -23,7 +23,7 @@ then
 fi
 
 # Start Docker
-retry systemctl restart docker
+retry systemctl start docker
 is_systemd_active docker
 
 # Start Kubelet
