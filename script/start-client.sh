@@ -23,7 +23,7 @@ if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     echo $(date "+%Y-%m-%d %H:%M:%S") "Install Cloud Controller Manager"
     install_cloud_controller_manager
     echo $(date "+%Y-%m-%d %H:%M:%S") "Install KubeSphere"
-    nohup install_kubesphere >output 2>&1 &
+    install_kubesphere
     echo $(date "+%Y-%m-%d %H:%M:%S") "Finish install KubeSphere"
     touch ${CLIENT_INIT_LOCK}
 fi

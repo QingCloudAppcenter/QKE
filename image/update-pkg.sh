@@ -5,7 +5,7 @@ echo "*************************"
 
 apt-get update
 
-apt install python-pip
+apt install python-pip -y
 
 apt-get install -y ebtables socat jq apt-transport-https bash-completion ntp wget ca-certificates curl software-properties-common tree ipvsadm zip unzip bridge-utils
 
