@@ -75,13 +75,19 @@ function make_dir(){
 
 # Copy dir into data volume
 function link_dir(){
+    echo $(date "+%Y-%m-%d %H:%M:%S") "link dir"
+    echo $(date "+%Y-%m-%d %H:%M:%S") "make dir"
     make_dir
+    echo $(date "+%Y-%m-%d %H:%M:%S") "finish make dir"
     for i in "${!ORIGINAL_DIR[@]}"
     do
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
+            echo $(date "+%Y-%m-%d %H:%M:%S") "mv" ${ORIGINAL_DIR[$i]} "to" ${DATA_DIR[$i]}
             mv ${ORIGINAL_DIR[$i]} $(dirname ${DATA_DIR[$i]})
+            echo $(date "+%Y-%m-%d %H:%M:%S") "ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
             ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
+            echo $(date "+%Y-%m-%d %H:%M:%S") "finished ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
         fi
     done
 }
