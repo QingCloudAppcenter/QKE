@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start init client==="
+echo $(date "+%Y-%m-%d %H:%M:%S") "make lb ip file" 
+touch /etc/kubernetes/loadbalancer_ip
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start init client==="
 echo $(date "+%Y-%m-%d %H:%M:%S") "link dir" 
 link_dir
 echo $(date "+%Y-%m-%d %H:%M:%S") "set password" 
 set_password
-echo $(date "+%Y-%m-%d %H:%M:%S") "make lb ip file" 
-touch /etc/kubernetes/loadbalancer_ip
+
 if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
     echo $(date "+%Y-%m-%d %H:%M:%S") "ceate lb and firewall" 

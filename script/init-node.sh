@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start init node==="
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start init node==="
+
 echo $(date "+%Y-%m-%d %H:%M:%S") "link dir"
 link_dir
 echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff"

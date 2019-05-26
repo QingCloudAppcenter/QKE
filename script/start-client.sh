@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start start client==="
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start start client==="
 
 source "${K8S_HOME}/script/common.sh"
 export KUBECONFIG="/etc/kubernetes/admin.conf"

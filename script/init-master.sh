@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start init master===" 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start init master===" 
 echo $(date "+%Y-%m-%d %H:%M:%S") "link dir" 
 link_dir
 echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff" 
@@ -105,6 +105,8 @@ echo $(date "+%Y-%m-%d %H:%M:%S") "finish restart kubelet"
 echo $(date "+%Y-%m-%d %H:%M:%S") "wait for master started"
 retry kubectl get nodes --kubeconfig /etc/kubernetes/admin.conf
 echo $(date "+%Y-%m-%d %H:%M:%S") "master has been started"
+echo $(date "+%Y-%m-%d %H:%M:%S") "create kubeconfig link"
+ln -s /etc/kubernetes/admin.conf /root/.kube/config
 
 if [ "${HOST_SID}" == "1" ]
 then

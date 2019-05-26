@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start start node==="
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start start node==="
+
 echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff"
 swapoff -a
 echo $(date "+%Y-%m-%d %H:%M:%S") "ensure dir"
@@ -11,7 +12,7 @@ ensure_dir
 
 # Start Docker
 echo $(date "+%Y-%m-%d %H:%M:%S") "start docker"
-retry systemctl start docker
+retry systemctl restart docker
 is_systemd_active docker
 echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
 

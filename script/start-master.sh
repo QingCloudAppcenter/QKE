@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+echo $(date "+%Y-%m-%d %H:%M:%S") "===start start master==="
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start start master==="
 echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff"
 swapoff -a
 echo $(date "+%Y-%m-%d %H:%M:%S") "ensure dir"
@@ -30,13 +30,13 @@ fi
 
 # Start Docker
 echo $(date "+%Y-%m-%d %H:%M:%S") "start docker"
-retry systemctl start docker
+retry systemctl restart docker
 is_systemd_active docker
 echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
 
 # Start Kubelet
 echo $(date "+%Y-%m-%d %H:%M:%S") "start kubelet"
-retry systemctl start kubelet
+retry systemctl restart kubelet
 is_systemd_active kubelet
 echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
 
