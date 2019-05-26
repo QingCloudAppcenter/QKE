@@ -184,9 +184,10 @@
                   "label": "Memory",
                   "description": "memory of each node (in MB)",
                   "type": "integer",
-                  "default": 8192,
+                  "default": 12288,
                   "range": [
                     8192,
+                    12288,
                     16384,
                     24576,
                     32768,
@@ -249,6 +250,7 @@
                   "default": 16384,
                   "range": [
                       8192,
+                      12288,
                       16384,
                       24576,
                       32768,
@@ -308,9 +310,10 @@
                   "label": "Memory",
                   "description": "memory of each node (in MB)",
                   "type": "integer",
-                  "default": 8192,
+                  "default": 12288,
                   "range": [
                       8192,
+                      12288,
                       16384,
                       24576,
                       32768,
