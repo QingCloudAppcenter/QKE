@@ -15,7 +15,7 @@ KS_CONSOLE_SVC_TYPE=$(echo ${KS_CONSOLE_SVC_CONTENT} | jq .spec.type | sed 's/\"
 
 case $KS_CONSOLE_SVC_TYPE in
 "LoadBalancer")
-    echo http://$(echo ${KS_CONSOLE_SVC_CONTENT} | jq '.status.loadBalancer.ingress[0].ip'| sed 's/\"//g'):80
+    echo http://$(echo ${KS_CONSOLE_SVC_CONTENT} | jq '.status.loadBalancer.ingress[0].ip'| sed 's/\"//g'):30880
     ;;
 "NodePort")
     echo http://${MASTER_1_IP}:$(echo ${KS_CONSOLE_SVC_CONTENT}  | jq '.spec.ports[0].nodePort')

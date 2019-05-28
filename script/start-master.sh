@@ -38,7 +38,7 @@ echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
 echo $(date "+%Y-%m-%d %H:%M:%S") "start kubelet"
 retry systemctl restart kubelet
 is_systemd_active kubelet
-echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
+echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting kubelet"
 
 echo $(date "+%Y-%m-%d %H:%M:%S") "===end start master==="
 

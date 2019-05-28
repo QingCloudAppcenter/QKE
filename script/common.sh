@@ -92,19 +92,6 @@ function link_dir(){
     done
 }
 
-function upgrade_docker(){
-    #clear old aufs
-    rm -rf /data/var/lib/docker/aufs
-    rm -rf /data/var/lib/docker/image
-    #copy overlays2
-    mv /var/lib/docker/image /data/var/lib/docker/
-    mv /var/lib/docker/overlay2 /data/var/lib/docker/
-    rm -rf /var/lib/docker
-    ln -s /data/var/lib/docker /var/lib/docker
-    ln -s /data/var/lib/kubelet /var/lib/kubelet
-    return 0
-}
-
 function wait_apiserver(){
     while ! curl --output /dev/null --silent --fail http://localhost:8080/healthz;
     do
@@ -259,8 +246,11 @@ function install_kubesphere(){
     ansible-playbook -i /opt/kubesphere/kubesphere/host-example.ini /opt/kubesphere/kubesphere/kubesphere-only.yaml -b
     echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
-    echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create external elk svc"
-    kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
+    if [ "${CLUSTER_ELK_ID}" != "null" ]
+    then
+        echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create external elk svc"
+        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
+    fi
 }
 
 function get_loadbalancer_ip(){
