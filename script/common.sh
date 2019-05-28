@@ -243,7 +243,9 @@ function install_kubesphere(){
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
     echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: install kubesphere"
-    ansible-playbook -i /opt/kubesphere/kubesphere/host-example.ini /opt/kubesphere/kubesphere/kubesphere-only.yaml -b
+    pushd /opt/kubesphere/kubesphere
+    ansible-playbook -i host-example.ini kubesphere-only.yaml -b
+    popd
     echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
     if [ "${CLUSTER_ELK_ID}" != "null" ]
