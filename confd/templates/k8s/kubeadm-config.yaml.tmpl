@@ -36,6 +36,7 @@ apiServer:
     audit-log-path: "/etc/kubernetes/audit/audit-log-file"
     audit-log-maxage: "{{getv "/env/keep_audit_days"}}"
     service-node-port-range: "{{getv "/env/cluster_port_range"}}"
+    etcd-prefix: "{{getv "/cluster/cluster_id"}}"
     insecure-port: "8080"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
     v: "{{getv "/env/kube_log_level"}}"
