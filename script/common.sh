@@ -21,8 +21,8 @@ set -o pipefail
 
 function retry {
   local n=1
-  local max=20
-  local delay=6
+  local max=60
+  local delay=2
   while true; do
     "$@" && break || {
       if [[ $n -lt $max ]]; then
@@ -268,4 +268,14 @@ function replace_kubeadm_config_lb_ip(){
 function replace_hosts_lb_ip(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
     replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(echo ${lb_ip})
+}
+
+function is_tiller_available(){
+    avail_num=`kubectl -n kube-system get deploy/tiller-deploy -o jsonpath='{.status.availableReplicas}'`
+    if [ ${avail_num} -ge 1 ]
+    then
+        return 0
+    else
+        return -1
+    fi
 }

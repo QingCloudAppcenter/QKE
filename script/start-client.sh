@@ -22,6 +22,8 @@ echo $(date "+%Y-%m-%d %H:%M:%S") "Install KubeSphere"
 if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     echo $(date "+%Y-%m-%d %H:%M:%S") "Install Cloud Controller Manager"
     install_cloud_controller_manager
+    echo $(date "+%Y-%m-%d %H:%M:%S") "Pre-check tiller"
+    is_tiller_available
     echo $(date "+%Y-%m-%d %H:%M:%S") "Install KubeSphere"
     install_kubesphere
     echo $(date "+%Y-%m-%d %H:%M:%S") "Finish install KubeSphere"
