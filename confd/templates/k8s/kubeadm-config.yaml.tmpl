@@ -32,7 +32,7 @@ kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
 controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServer:
   extraArgs:
-    audit-policy-file: "/etc/kubernetes/audit/audit-policy-file.yaml"
+    audit-policy-file: "{{getv "/env/kube_audit_file"}}"
     audit-log-path: "/etc/kubernetes/audit/audit-log-file"
     audit-log-maxage: "{{getv "/env/keep_audit_days"}}"
     service-node-port-range: "{{getv "/env/cluster_port_range"}}"
@@ -52,7 +52,6 @@ controllerManager:
     v: "{{getv "/env/kube_log_level"}}"
     cloud-provider: "external"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
-    experimental-cluster-signing-duration: "8760h0m0s"
 scheduler:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"

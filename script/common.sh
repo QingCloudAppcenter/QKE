@@ -75,28 +75,21 @@ function make_dir(){
 
 # Copy dir into data volume
 function link_dir(){
+    echo $(date "+%Y-%m-%d %H:%M:%S") "link dir"
+    echo $(date "+%Y-%m-%d %H:%M:%S") "make dir"
     make_dir
+    echo $(date "+%Y-%m-%d %H:%M:%S") "finish make dir"
     for i in "${!ORIGINAL_DIR[@]}"
     do
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
+            echo $(date "+%Y-%m-%d %H:%M:%S") "mv" ${ORIGINAL_DIR[$i]} "to" ${DATA_DIR[$i]}
             mv ${ORIGINAL_DIR[$i]} $(dirname ${DATA_DIR[$i]})
+            echo $(date "+%Y-%m-%d %H:%M:%S") "ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
             ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
+            echo $(date "+%Y-%m-%d %H:%M:%S") "finished ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
         fi
     done
-}
-
-function upgrade_docker(){
-    #clear old aufs
-    rm -rf /data/var/lib/docker/aufs
-    rm -rf /data/var/lib/docker/image
-    #copy overlays2
-    mv /var/lib/docker/image /data/var/lib/docker/
-    mv /var/lib/docker/overlay2 /data/var/lib/docker/
-    rm -rf /var/lib/docker
-    ln -s /data/var/lib/docker /var/lib/docker
-    ln -s /data/var/lib/kubelet /var/lib/kubelet
-    return 0
 }
 
 function wait_apiserver(){
@@ -198,7 +191,8 @@ function install_tiller(){
 }
 
 function install_cloud_controller_manager(){
-    cp /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml /etc/kubernetes/manifests
+    kubectl create secret generic qcsecret --from-file=/etc/qingcloud/client.yaml -n kube-system
+    kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
 }
 
 function docker_login(){
@@ -242,26 +236,23 @@ function makeup_kubesphere_values(){
 }
 
 function install_kubesphere(){
-    if [ -f "${CLIENT_INIT_LOCK}" ]; then
-        echo "client has installed KubeSphere"
-        return
+    if [ ! -f "/etc/kubernetes/pki/ca.crt" ] || [ ! -f "/etc/kubernetes/pki/ca.key" ] || 
+    [ ! -f "/etc/kubernetes/pki/front-proxy-client.crt" ] || [ ! -f "/etc/kubernetes/pki/front-proxy-client.key" ]
+    then
+        echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: scp cert"
+        scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
-    helm upgrade --install ks-openpitrix  /opt/kubesphere/openpitrix/  --namespace openpitrix-system
-    helm upgrade --install ks-jenkins /opt/kubesphere/jenkins -f /opt/kubesphere/custom-values-jenkins.yaml --namespace kubesphere-devops-system
-    helm upgrade --install ks-monitoring  /opt/kubesphere/ks-monitoring/ --namespace kubesphere-monitoring-system
-    helm upgrade --install metrics-server  /opt/kubesphere/metrics-server/ --namespace kube-system
-    kubectl  apply  -f  /opt/kubesphere/init.yaml
-    makeup_kubesphere_values
-    helm upgrade --install kubesphere  /opt/kubesphere/kubesphere/  --namespace kubesphere-system
-    kubectl label ns $(kubectl get ns | awk '{if(NR>1) {print $1}}') kubesphere.io/workspace=system-workspace
-    kubectl annotate namespaces $(kubectl get ns | awk '{if(NR>1) {print $1}}') creator=admin
-    # install logging
-    helm upgrade --install elasticsearch-logging /opt/kubesphere/elasticsearch/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-curator /opt/kubesphere/elasticsearch-curator/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-kibana /opt/kubesphere/kibana/  --namespace kubesphere-logging-system
-    helm upgrade --install elasticsearch-logging-fluentbit /opt/kubesphere/fluent-bit/  --namespace kubesphere-logging-system
-    kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
-    touch ${CLIENT_INIT_LOCK}
+    echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: install kubesphere"
+    pushd /opt/kubesphere/kubesphere
+    ansible-playbook -i host-example.ini kubesphere-only.yaml -b
+    popd
+    echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create ks console svc"
+    kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+    if [ "${CLUSTER_ELK_ID}" != "null" ]
+    then
+        echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create external elk svc"
+        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
+    fi
 }
 
 function get_loadbalancer_ip(){

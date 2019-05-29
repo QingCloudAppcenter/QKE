@@ -1,0 +1,7 @@
+[template]
+src = "k8s/ks-console-svc.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml"
+keys = [
+    "/",
+]
+reload_cmd = "/opt/kubernetes/script/reload-ks-console-svc.sh"

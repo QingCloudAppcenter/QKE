@@ -342,12 +342,13 @@ function create_lb_and_firewall(){
     loadbalancer_name=$1
     vxnet=$2
     # Create firewall
+    echo $(date "+%Y-%m-%d %H:%M:%S") "create firewall"
     create_firewall ${firewall_name}
     if [ $? -ne 0 ]
     then
         return 101
     fi
-
+    echo $(date "+%Y-%m-%d %H:%M:%S") "get firewall id"
     firewall_id=$(get_firewall_id ${firewall_name})
     if [ "${firewall_id}" == "" ]
     then
@@ -355,6 +356,7 @@ function create_lb_and_firewall(){
         return 102
     fi
 
+    echo $(date "+%Y-%m-%d %H:%M:%S") "add rule on firewall"
     add_rule_on_firewall ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -362,6 +364,7 @@ function create_lb_and_firewall(){
         return 103
     fi
 
+    echo $(date "+%Y-%m-%d %H:%M:%S") "apply firewall"
     apply_firewall ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -370,6 +373,7 @@ function create_lb_and_firewall(){
     fi
 
     # Create loadbalancer
+    echo $(date "+%Y-%m-%d %H:%M:%S") "create loadbalancer"
     create_loadbalancer ${loadbalancer_name} ${vxnet} ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -381,6 +385,7 @@ function create_lb_and_firewall(){
     do   
         sleep 5
         loadbalancer_id=$(get_loadbalancer_id ${loadbalancer_name})
+        echo $(date "+%Y-%m-%d %H:%M:%S") "check loadbalancer status"
         is_loadbalancer_active ${loadbalancer_id}
         if [ "$?" == "0" ]
         then
@@ -388,11 +393,11 @@ function create_lb_and_firewall(){
         fi
         if [ "$i" == "20" ]
         then
-            echo "create lb timeout"
+            echo $(date "+%Y-%m-%d %H:%M:%S") "create lb timeout"
             exit -1
         fi
     done
-    echo lb_id ${loadbalancer_id}
+    echo $(date "+%Y-%m-%d %H:%M:%S") lb_id ${loadbalancer_id}
 
 
     if [ "$loadbalancer_id" == "" ]
@@ -401,6 +406,7 @@ function create_lb_and_firewall(){
         return 106
     fi
 
+    echo $(date "+%Y-%m-%d %H:%M:%S") "create loadbalancer listener"
     create_loadbalancer_listener ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
@@ -415,15 +421,18 @@ function create_lb_and_firewall(){
         return 108
     fi
 
+    echo $(date "+%Y-%m-%d %H:%M:%S") "add loadbalancer listener backend"
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_1_INSTANCE_ID
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_2_INSTANCE_ID
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_3_INSTANCE_ID
+    echo $(date "+%Y-%m-%d %H:%M:%S") "apply loadbalancer"
     apply_loadbalancer ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
         echo "Faile to apply loadbalancer"
         return 109
     fi
+    echo $(date "+%Y-%m-%d %H:%M:%S") "create firewall finished"
 }
 
 # Input: 

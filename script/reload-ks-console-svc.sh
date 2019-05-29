@@ -8,6 +8,6 @@ if [ "${HOST_ROLE}" == "master" ]
 then
     if [ "${HOST_SID}" == "1" ]
     then
-        kubectl apply -f /opt/kubernetes/k8s/addons/logging/es-logging-cm.yaml
+        kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
     fi
 fi

@@ -1,6 +1,7 @@
 [template]
 src = "k8s/root-crontab.tmpl"
-dest = "/var/spool/cron/crontabs/root"
+dest = "/opt/kubernetes/k8s/linux/crontab/root-crontab"
 keys = [
     "/",
 ]
+reload_cmd = "/opt/kubernetes/script/reload-crontab.sh"

@@ -18,6 +18,10 @@ image/build-base.sh
 ```
 
 - 拷贝 confd 文件
+```
+rm -rf /etc/confd/conf.d/k8s/*
+rm -rf /etc/confd/templates/k8s/*
+```
 
 ```
 cp -r /opt/kubernetes/confd/conf.d /etc/confd/
@@ -32,3 +36,6 @@ cp -r /opt/kubernetes/confd/templates /etc/confd/
 vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --anonymous-auth=true --authorization-mode=AlwaysAllow"
 ```
+
+- 执行 image 内 update-overlay2.sh
+执行前确保当前主机没有在 /var/lib/docker/overlay2 内创建软链接，链接镜像层。

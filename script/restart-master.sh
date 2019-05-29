@@ -4,7 +4,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-systemctl restart docker
+systemctl start docker
 systemctl restart kubelet
 
 # Mark Master
