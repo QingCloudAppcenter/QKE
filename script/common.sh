@@ -244,7 +244,7 @@ function install_kubesphere(){
     fi
     echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: install kubesphere"
     pushd /opt/kubesphere/kubesphere
-    ansible-playbook -i host-example.ini kubesphere-only.yaml -b
+    retry ansible-playbook -i host-example.ini kubesphere-only.yaml -b
     popd
     echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
