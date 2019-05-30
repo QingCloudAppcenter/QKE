@@ -267,6 +267,10 @@ function replace_kubeadm_config_lb_ip(){
 
 function replace_hosts_lb_ip(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    if [ "${lb_ip}" == "" ]
+    then
+        return
+    fi
     replace_kv /etc/hosts loadbalancer SHOULD_BE_REPLACED $(echo ${lb_ip})
 }
 
