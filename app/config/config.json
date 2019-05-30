@@ -48,7 +48,6 @@
           },
           "tag": ["ETCD", "etcd"],
           "default": "",
-          "unique": true,
           "required": "no"
         },
         {
