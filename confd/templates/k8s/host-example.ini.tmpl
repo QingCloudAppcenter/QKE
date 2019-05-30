@@ -30,5 +30,5 @@ etcd_endpoint_ips={{ join (getvs "/hosts/master/*/ip") "," }}
 {{if exists "/links/elk_service/cluster/cluster_id"}}external_es_url=external-elk.kubesphere-logging-system.svc
 external_es_port={{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}{{end}}
 
-elk_prefix={{getv "/cluster/cluster_id"}}
+elk_prefix="{{getv "/cluster/cluster_id"}}"
 
