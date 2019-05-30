@@ -60,7 +60,6 @@
           },
           "tag": ["ELK", "elk"],
           "default": "",
-          "unique": true,
           "required": "no"
         },
         {
