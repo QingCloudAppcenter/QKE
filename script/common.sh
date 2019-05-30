@@ -272,6 +272,10 @@ function replace_hosts_lb_ip(){
 
 function is_tiller_available(){
     avail_num=`kubectl -n kube-system get deploy/tiller-deploy -o jsonpath='{.status.availableReplicas}'`
+    if [ "${avail_num}" == ""  ]
+    then
+        return -2
+    fi
     if [ ${avail_num} -ge 1 ]
     then
         return 0
