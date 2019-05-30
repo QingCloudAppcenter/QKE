@@ -1,8 +1,7 @@
-127.0.0.1       localhost
+sed "/^# >> QKE nodes./,/^# << QKE nodes./d" /etc/hosts > /etc/hosts.swap
+cat >> /etc/hosts.swap << HOSTS_FILE
 
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-
+# >> QKE nodes. WARNING: this is managed by script and please don't touch manually.
 {{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}} loadbalancer{{end}}
 {{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/ip" $dir}}
 {{getv $ip}} {{$dir}} client{{end}}
@@ -27,3 +26,9 @@ ff02::2 ip6-allrouters
 
 {{$records := split (getv "/env/host_aliases") ","}}{{range $records}}{{.}}
 {{end}}
+# << QKE nodes. WARNING: this is managed by script and please don't touch manually.
+
+HOSTS_FILE
+mv /etc/hosts.swap /etc/hosts
+
+/opt/kubernetes/script/reload-hosts.sh

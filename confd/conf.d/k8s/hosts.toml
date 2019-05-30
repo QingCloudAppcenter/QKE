@@ -1,7 +1,8 @@
 [template]
 src = "k8s/hosts.tmpl"
-dest = "/etc/hosts"
+dest = "/opt/kubernetes/k8s/linux/hosts/update-hosts.sh"
 keys = [
     "/",
 ]
-reload_cmd = "/opt/kubernetes/script/reload-hosts.sh"
+mode = "0700"
+reload_cmd = "/opt/kubernetes/k8s/linux/hosts/update-hosts.sh"
