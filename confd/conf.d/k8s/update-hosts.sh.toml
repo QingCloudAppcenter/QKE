@@ -1,5 +1,5 @@
 [template]
-src = "k8s/hosts.tmpl"
+src = "k8s/update-hosts.sh.tmpl"
 dest = "/opt/kubernetes/k8s/linux/hosts/update-hosts.sh"
 keys = [
     "/",
