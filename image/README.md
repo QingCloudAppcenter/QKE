@@ -2,12 +2,15 @@
 
 - 基于 Ubuntu 16.04.4 构建，切换到 root 用户
 
+- Clear Command History
+``
+history -c
+```
+
 - 下载代码仓库
 ```bash
 apt-get install -y git
 git clone https://github.com/QingCloudAppcenter/kubesphere.git /opt/kubernetes
-
-git clone https://github.com/wnxn/kubesphere-1.git /opt/kubernetes
 cd /opt/kubernetes
 ```
 
@@ -33,8 +36,7 @@ cp -r /opt/kubernetes/confd/templates /etc/confd/
 添加参数，为健康检查用。待 Kubeadm 能够正常添加参数，此步可删去。
 
 ```
-vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --anonymous-auth=true --authorization-mode=AlwaysAllow"
+cp /opt/kubernetes/k8s/linux/kubelet/10-kubeadm.conf /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 ```
 
 - 执行 image 内 update-overlay2.sh

@@ -1,45 +1,61 @@
 #!/usr/bin/env bash
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start start master==="
+
+# Copyright 2018 The KubeSphere Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
-echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff"
+log "===start start master==="
+log "swapoff"
 swapoff -a
-echo $(date "+%Y-%m-%d %H:%M:%S") "ensure dir"
+log "ensure dir"
 ensure_dir
 
 if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
 then
-    echo $(date "+%Y-%m-%d %H:%M:%S") "read kubeadm config"
+    log "read kubeadm config"
     cat /etc/kubernetes/kubeadm-config.yaml
 fi
 
 # Reload config
-echo $(date "+%Y-%m-%d %H:%M:%S") "daemon reload"
+log "daemon reload"
 systemctl daemon-reload
 
 # Start etcd
 if [ "${CLUSTER_ETCD_ID}" == "null" ]
 then
-    echo $(date "+%Y-%m-%d %H:%M:%S") "start etcd"
+    log "start etcd"
     retry systemctl start etcd
     is_systemd_active etcd
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting etcd"
+    log "finish starting etcd"
 fi
 
 # Start Docker
-echo $(date "+%Y-%m-%d %H:%M:%S") "start docker"
+log "start docker"
 retry systemctl restart docker
 is_systemd_active docker
-echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting docker"
+log "finish starting docker"
 
 # Start Kubelet
-echo $(date "+%Y-%m-%d %H:%M:%S") "start kubelet"
-retry systemctl restart kubelet
+log "start kubelet"
+retry systemctl start kubelet
 is_systemd_active kubelet
-echo $(date "+%Y-%m-%d %H:%M:%S") "finish starting kubelet"
+log "finish starting kubelet"
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===end start master==="
-
+log "===end start master==="
+exit 0
 

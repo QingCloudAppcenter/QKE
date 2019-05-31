@@ -2,11 +2,6 @@
         "name": {{cluster.name}},
         "description": {{cluster.description}},
         "vxnet": {{cluster.vxnet}},
-        "upgrade_policy": [
-        ],
-        "upgrade_roles": {
-            "add": ["ssd_node"]
-        },
         "links": {
             "etcd_service": {{cluster.etcd_service}},
             "elk_service": {{cluster.elk_service}}
@@ -16,7 +11,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -98,7 +93,7 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -167,7 +162,7 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": 1,
@@ -236,7 +231,7 @@
                 "role": "node_standard",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": 101,
@@ -305,7 +300,7 @@
                 "role": "node_enterprise",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": 201,
@@ -374,7 +369,7 @@
                 "role": "node_premium",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": 301,
@@ -443,7 +438,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-6rhy90ff",
+                    "image": "img-uadqs2xz",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -462,12 +457,6 @@
                         "order": 3,
                         "cmd": "/opt/kubernetes/script/start-client.sh",
                         "timeout": 1200
-                    },
-                    "destroy": {
-                        "order": 3,
-                        "nodes_to_execute_on": 1,
-                        "post_stop_service": true,
-                        "cmd": "/opt/kubernetes/script/destroy-client.sh"
                     }
                 },
                 "custom_metadata": {
