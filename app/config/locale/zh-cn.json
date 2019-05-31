@@ -98,7 +98,7 @@
       "Standard HA": "基础型高可用", 
       "Enterprise HA": "企业型高可用", 
       "Premium HA": "专业增强型高可用",
-      "The resource configuration of the service":"请选择合适的预制资源配置类型，快速定义集群配置。也可根据自身需求自定义节点配置。",
+      "The resource configuration of the service. Single master cluster cannot upgrade to HA mster cluster.":"请选择合适的预制资源配置类型，快速定义集群配置。也可根据自身需求自定义节点配置。非高可用集群不可以升级到高可用集群",
       "host aliases": "主机 hosts 记录",
     "Set host aliases": "设置添加主机 hosts 的记录，多条记录用逗号分割",
     "The insecure Docker registry, use a blank to split multi registry": "需要通过非安全的方式 HTTP 和不受信任的 HTTPS 访问的 Docker 仓库，多个地址通过空格切分",
