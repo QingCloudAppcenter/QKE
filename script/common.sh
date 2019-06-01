@@ -34,6 +34,11 @@ source "${K8S_HOME}/version"
 set -o nounset
 set -o pipefail
 
+
+function log {
+  logger -t appctl $@
+}
+
 function retry {
   local n=1
   local max=60
@@ -42,7 +47,7 @@ function retry {
     "$@" && break || {
       if [[ $n -lt $max ]]; then
         ((n++))
-        echo "Command failed. Attempt $n/$max:"
+        log "Command failed. Attempt $n/$max:"
         sleep $delay;
       else
         fail "The command has failed after $n attempts."
@@ -90,19 +95,19 @@ function make_dir(){
 
 # Copy dir into data volume
 function link_dir(){
-    echo $(date "+%Y-%m-%d %H:%M:%S") "link dir"
-    echo $(date "+%Y-%m-%d %H:%M:%S") "make dir"
+    log "link dir"
+    log "make dir"
     make_dir
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish make dir"
+    log "finish make dir"
     for i in "${!ORIGINAL_DIR[@]}"
     do
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
-            echo $(date "+%Y-%m-%d %H:%M:%S") "mv" ${ORIGINAL_DIR[$i]} "to" ${DATA_DIR[$i]}
+            log "mv" ${ORIGINAL_DIR[$i]} "to" ${DATA_DIR[$i]}
             mv ${ORIGINAL_DIR[$i]} $(dirname ${DATA_DIR[$i]})
-            echo $(date "+%Y-%m-%d %H:%M:%S") "ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
+            log "ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
             ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
-            echo $(date "+%Y-%m-%d %H:%M:%S") "finished ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
+            log "finished ln" ${ORIGINAL_DIR[$i]} "with" ${DATA_DIR[$i]}
         fi
     done
 }
@@ -164,19 +169,19 @@ function install_kube_proxy(){
 
 function join_node(){
     if [ -f "${NODE_INIT_LOCK}" ]; then
-        echo "node has joined."
+        log "node has joined."
         return
     fi
 
     local initToken=`cat /data/kubernetes/init-token.metad`
     while [ -z "${initToken}" ]
     do
-        echo "sleep for wait init token for 2 second"
+        log "sleep for wait init token for 2 second"
         sleep 2
         initToken=`cat /data/kubernetes/init-token.metad`
     done
 
-    echo "Token: ${initToken}"
+    log "Token: ${initToken}"
     retry ${initToken}
 
     touch ${NODE_INIT_LOCK}
@@ -255,18 +260,18 @@ function install_kubesphere(){
     if [ ! -f "/etc/kubernetes/pki/ca.crt" ] || [ ! -f "/etc/kubernetes/pki/ca.key" ] || 
     [ ! -f "/etc/kubernetes/pki/front-proxy-client.crt" ] || [ ! -f "/etc/kubernetes/pki/front-proxy-client.key" ]
     then
-        echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: scp cert"
+        log "install_kubesphere: scp cert"
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
-    echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: install kubesphere"
+    log "install_kubesphere: install kubesphere"
     pushd /opt/kubesphere/kubesphere
     retry ansible-playbook -i host-example.ini kubesphere-only.yaml -b
     popd
-    echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create ks console svc"
+    log "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
     if [ "${CLUSTER_ELK_ID}" != "null" ]
     then
-        echo $(date "+%Y-%m-%d %H:%M:%S") "install_kubesphere: create external elk svc"
+        log "install_kubesphere: create external elk svc"
         kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
     fi
 }
@@ -302,8 +307,4 @@ function is_tiller_available(){
     else
         return -1
     fi
-}
-
-function log {
-  logger -t appctl $@
 }
