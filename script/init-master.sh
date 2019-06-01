@@ -1,32 +1,47 @@
 #!/usr/bin/env bash
-echo $(date "+%Y-%m-%d %H:%M:%S") "===start init master===" 
+
+# Copyright 2018 The KubeSphere Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
-
-echo $(date "+%Y-%m-%d %H:%M:%S") "link dir" 
+log "===start init master===" 
+log "link dir" 
 link_dir
-echo $(date "+%Y-%m-%d %H:%M:%S") "swapoff" 
+log "swapoff" 
 swapoff -a
-echo $(date "+%Y-%m-%d %H:%M:%S") "touch lb ip file" 
+log "touch lb ip file" 
 touch /etc/kubernetes/loadbalancer_ip
-echo $(date "+%Y-%m-%d %H:%M:%S") "systemctl restart docker" 
+log "systemctl restart docker" 
 systemctl restart docker
-echo $(date "+%Y-%m-%d %H:%M:%S") "is docker active" 
+log "is docker active" 
 is_systemd_active docker
-echo $(date "+%Y-%m-%d %H:%M:%S") "docker active" 
+log "docker active" 
 
 if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
-    echo $(date "+%Y-%m-%d %H:%M:%S") "replace kubeadm config lb ip" 
+    log "replace kubeadm config lb ip" 
     replace_kubeadm_config_lb_ip
-    echo $(date "+%Y-%m-%d %H:%M:%S") "replace hosts lb ip" 
+    log "replace hosts lb ip" 
     replace_hosts_lb_ip
 fi
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "is kubeadm config file exist" 
+log "is kubeadm config file exist" 
 if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
 then
     cat /etc/kubernetes/kubeadm-config.yaml
@@ -34,22 +49,22 @@ fi
 
 if [ "${CLUSTER_ETCD_ID}" == "null" ]
 then
-    echo $(date "+%Y-%m-%d %H:%M:%S") "start etcd" 
+    log "start etcd" 
     systemctl daemon-reload
     retry systemctl start etcd
     is_systemd_active etcd
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish start etcd" 
+    log "finish start etcd" 
 fi
 
 if [ "${HOST_SID}" == "1" ]
 then
     # Create Common Cert Files
-    echo $(date "+%Y-%m-%d %H:%M:%S") "create ca files" 
+    log "create ca files" 
     kubeadm init phase certs ca --config ${KUBEADM_CONFIG_PATH} 
     kubeadm init phase certs sa
     kubeadm init phase certs front-proxy-ca --config ${KUBEADM_CONFIG_PATH}
     # Copy Cert to Other Master
-    echo $(date "+%Y-%m-%d %H:%M:%S") "copy ca to other masters" 
+    log "copy ca to other masters" 
     cat << EOF > /etc/kubernetes/certificate_files.txt
 /etc/kubernetes/pki/ca.crt
 /etc/kubernetes/pki/ca.key
@@ -63,81 +78,82 @@ EOF
     do
         scp /etc/kubernetes/control-plane-certificates.tar.gz root@$(eval echo '$'"MASTER_${i}_INSTANCE_ID"):/etc/kubernetes
     done
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish copy ca to other masters" 
+    log "finish copy ca to other masters" 
 else
     # Get control plane cert files
-    echo $(date "+%Y-%m-%d %H:%M:%S") "waiting for ca files" 
+    log "waiting for ca files" 
     while [ -z "/etc/kubernetes/control-plane-certificates.tar.gz" ]
     do
-        echo "sleep for wait cert files"
+        log "sleep for wait cert files"
         sleep 2
     done
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish receiving ca files"
+    log "finish receiving ca files"
     retry tar -xzf /etc/kubernetes/control-plane-certificates.tar.gz -C /etc/kubernetes/pki --strip-components 3
-    echo $(date "+%Y-%m-%d %H:%M:%S") "finish extracting ca files"
+    log "finish extracting ca files"
 fi
 
 # Create Cert Files
-echo $(date "+%Y-%m-%d %H:%M:%S") "start init certs"
+log "start init certs"
 kubeadm init phase certs apiserver --config ${KUBEADM_CONFIG_PATH} 
 kubeadm init phase certs apiserver-kubelet-client --config ${KUBEADM_CONFIG_PATH}
 kubeadm init phase certs front-proxy-client --config ${KUBEADM_CONFIG_PATH}
-echo $(date "+%Y-%m-%d %H:%M:%S") "finish init certs"
+log "finish init certs"
 # Write KubeConfig file to disk
-echo $(date "+%Y-%m-%d %H:%M:%S") "start create kubeconfig"
+log "start create kubeconfig"
 kubeadm init phase kubeconfig all --config ${KUBEADM_CONFIG_PATH}
 # Set Kubelet Args
 # Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
 # Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
 # Restart the kubelet service 
-echo $(date "+%Y-%m-%d %H:%M:%S") "set kubelet args"
+log "set kubelet args"
 kubeadm init phase kubelet-start --config ${KUBEADM_CONFIG_PATH}
 # Write Static Pod manifest
-echo $(date "+%Y-%m-%d %H:%M:%S") "write manifest"
+log "write manifest"
 kubeadm init phase control-plane all --config ${KUBEADM_CONFIG_PATH}
 
 # Start Kubelet
-echo $(date "+%Y-%m-%d %H:%M:%S") "restart kubelet"
+log "restart kubelet"
 systemctl daemon-reload
 retry systemctl restart kubelet
 is_systemd_active kubelet
-echo $(date "+%Y-%m-%d %H:%M:%S") "finish restart kubelet"
-echo $(date "+%Y-%m-%d %H:%M:%S") "wait for master started"
-retry kubectl get nodes --kubeconfig /etc/kubernetes/admin.conf
-echo $(date "+%Y-%m-%d %H:%M:%S") "master has been started"
-echo $(date "+%Y-%m-%d %H:%M:%S") "create kubeconfig link"
-ln -s /etc/kubernetes/admin.conf /root/.kube/config
+log "finish restart kubelet"
+log "wait for master started"
+retry kubectl get nodes --kubeconfig ${KUBECONFIG}
+log "master has been started"
+log "create kubeconfig link"
+ln -s ${KUBECONFIG} /root/.kube/config
 
 if [ "${HOST_SID}" == "1" ]
 then
     # storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
-    echo $(date "+%Y-%m-%d %H:%M:%S") "upload kubeadm config"
+    log "upload kubeadm config"
     retry kubeadm init phase upload-config kubeadm --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     # Creating a ConfigMap "kubelet-config-1.13" in namespace kube-system with the configuration for the kubelets in the cluster
-    echo $(date "+%Y-%m-%d %H:%M:%S") "upload kubelet config"
+    log "upload kubelet config"
     retry kubeadm init phase upload-config kubelet --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     # Create Token
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Create Token"
+    log "Create Token"
     retry kubeadm init phase bootstrap-token --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
     # Install Addons
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Install Kube-Proxy"
+    log "Install Kube-Proxy"
     retry install_kube_proxy
     # Install Network Plugin
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Install Network Plugin"
+    log "Install Network Plugin"
     retry install_network_plugin
     # Install Coredns
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Install Coredns"
+    log "Install Coredns"
     retry install_coredns
     # Install Storage Plugin
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Install CSI"
+    log "Install CSI"
     retry install_csi
     # Install Tiller
-    echo $(date "+%Y-%m-%d %H:%M:%S") "Install Tiller"
+    log "Install Tiller"
     retry install_tiller
 fi
 
 # Mark Master
-echo $(date "+%Y-%m-%d %H:%M:%S") "Mark Master"
+log "Mark Master"
 kubeadm init phase mark-control-plane --node-name ${HOST_INSTANCE_ID}
 
-echo $(date "+%Y-%m-%d %H:%M:%S") "===end init master==="
+log "===end init master==="
+exit 0

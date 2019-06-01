@@ -1,7 +1,0 @@
-[template]
-src = "k8s/kubelet-service.tmpl"
-dest = "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
-keys = [
-    "/",
-]
-reload_cmd = "/opt/kubernetes/script/reload.sh"

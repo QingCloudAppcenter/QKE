@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+
+# Copyright 2018 The KubeSphere Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
@@ -51,7 +66,7 @@ function wait_etcd(){
 }
 
 function is_systemd_active(){
-    retry systemctl is-active $1 > /dev/null 2>&1
+    retry systemctl is-active -q $1
 }
 
 # Link dir from data volume
@@ -165,6 +180,7 @@ function join_node(){
     retry ${initToken}
 
     touch ${NODE_INIT_LOCK}
+    chmod 400 ${NODE_INIT_LOCK}
 }
 
 function install_csi(){
@@ -286,4 +302,8 @@ function is_tiller_available(){
     else
         return -1
     fi
+}
+
+function log {
+  logger -t appctl $@
 }
