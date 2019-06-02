@@ -263,17 +263,17 @@ function install_kubesphere(){
         log "install_kubesphere: scp cert"
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
+    if [ "${CLUSTER_ELK_ID}" != "null" ]
+    then
+        log "install_kubesphere: create external elk svc"
+        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
+    fi
     log "install_kubesphere: install kubesphere"
     pushd /opt/kubesphere/kubesphere
     retry ansible-playbook -i host-example.ini kubesphere-only.yaml -b
     popd
     log "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
-    if [ "${CLUSTER_ELK_ID}" != "null" ]
-    then
-        log "install_kubesphere: create external elk svc"
-        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
-    fi
 }
 
 function get_loadbalancer_ip(){
