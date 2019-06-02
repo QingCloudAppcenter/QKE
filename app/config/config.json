@@ -138,7 +138,7 @@
               "type": "integer",
               "default": 80,
               "min": 40,
-              "max": 500,
+              "max": 2000,
               "step": 10,
               "required": "yes",
               "resource_group": [80,200,80,200]
@@ -202,7 +202,7 @@
                   "type": "integer",
                   "default": 80,
                   "min": 40,
-                  "max": 500,
+                  "max": 2000,
                   "step": 10,
                   "required": "yes"
                 }
@@ -265,7 +265,7 @@
                   "type": "integer",
                   "default": 200,
                   "min": 40,
-                  "max": 500,
+                  "max": 2000,
                   "step": 10,
                   "required": "yes"
               }
@@ -328,7 +328,7 @@
                   "type": "integer",
                   "default": 40,
                   "min": 40,
-                  "max": 500,
+                  "max": 2000,
                   "step": 10,
                   "required": "yes"
               }
@@ -390,7 +390,7 @@
                   "type": "integer",
                   "default": 200,
                   "min": 40,
-                  "max": 500,
+                  "max": 2000,
                   "step": 10,
                   "required": "yes"
               }
@@ -452,7 +452,7 @@
                   "type": "integer",
                   "default": 200,
                   "min": 40,
-                  "max": 500,
+                  "max": 2000,
                   "step": 10,
                   "required": "yes"
               }
