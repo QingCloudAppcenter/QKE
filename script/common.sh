@@ -80,7 +80,7 @@ function ensure_dir(){
     do
         if [ -d ${ORIGINAL_DIR[$i]} ] && [ ! -L ${ORIGINAL_DIR[$i]} ]
         then
-            rm -rf ${ORIGINAL_DIR[$i]}
+            retry rm -rf ${ORIGINAL_DIR[$i]}
         fi
         ln -sfT ${DATA_DIR[$i]} ${ORIGINAL_DIR[$i]}
     done

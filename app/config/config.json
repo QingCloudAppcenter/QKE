@@ -3,13 +3,13 @@
   "properties": [
     {
       "key": "cluster",
-      "description": "Kubernetes properties",
+      "description": "QKE properties",
       "type": "array",
       "properties": [
         {
           "key": "name",
           "label": "name",
-          "description": "The name of the Kubernetes cluster",
+          "description": "The name of the QKE cluster",
           "type": "string",
           "default": "a qke cluster",
           "required": "yes"
@@ -17,7 +17,7 @@
         {
           "key": "description",
           "label":"description",
-          "description": "Description of Kubernetes cluster",
+          "description": "Description of QKE cluster",
           "type": "string",
           "default": "please add a description",
           "required": "yes"
@@ -41,7 +41,7 @@
         {
           "key": "etcd_service",
           "label": "etcd service",
-          "description": "Choose an etcd cluster to store Kubernetes cluster data, leave empty if you choose to use internal etcd service in Kubernetes cluster",
+          "description": "Choose an etcd cluster to store QKE cluster data, leave empty if you choose to use internal etcd service in QKE cluster. For better performance, It is recommended that using external etcd service",
           "type": "service",
           "limits": {
             "app-fdyvu2wk": []
@@ -53,7 +53,7 @@
         {
           "key": "elk_service",
           "label": "ELK service",
-          "description": "Choose an external ELK cluster to store Kubernetes logging data, leave empty if you choose to use internal ES service in Kubernetes cluster",
+          "description": "Choose an external ELK cluster to store QKE logging data, leave empty if you choose to use internal ES service in QKE cluster. For resizing ES, It is recommended that using external ELK service",
           "type": "service",
           "limits": {
             "app-p6au3oyq": []
@@ -504,7 +504,7 @@
         },
         {
           "key": "kube_audit_file",
-          "label": "Kubernetes audit policy file",
+          "label": "Set audit policy file",
           "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml",
           "type": "string",
           "default": "",
