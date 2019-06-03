@@ -160,7 +160,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [2,0,2,0]
+                  "resource_group": [2,0,3,0]
                 },
                 {
                   "key": "cpu",
@@ -223,7 +223,7 @@
                   "min":0,
                   "max":100,
                   "required": "yes",
-                  "resource_group": [0,2,0,2]
+                  "resource_group": [0,2,0,3]
               },
               {
                   "key": "cpu",
@@ -249,193 +249,6 @@
                   "range": [
                       8192,
                       12288,
-                      16384,
-                      24576,
-                      32768,
-                      49152,
-                      65536,
-                      131072
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "volume_size",
-                  "label": "volume size",
-                  "description": "The volume size for each instance",
-                  "type": "integer",
-                  "default": 200,
-                  "min": 40,
-                  "max": 2000,
-                  "step": 10,
-                  "required": "yes"
-              }
-          ]
-        },
-        {
-          "key": "node_standard",
-          "label": "standard node",
-          "description": "standard node properties",
-          "type": "array",
-          "properties": [
-              {
-                  "key": "count",
-                  "label": "count",
-                  "description": "Number of nodes for the cluster to create",
-                  "type": "integer",
-                  "default": 0,
-                  "min":0,
-                  "max":100,
-                  "required": "yes",
-                  "resource_group": [0,0,0,0]
-              },
-              {
-                  "key": "cpu",
-                  "label": "CPU",
-                  "description": "CPUs of each node",
-                  "type": "integer",
-                  "default": 4,
-                  "range": [
-                      4,
-                      8,
-                      12,
-                      16,
-                      32
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "memory",
-                  "label": "Memory",
-                  "description": "memory of each node (in MB)",
-                  "type": "integer",
-                  "default": 12288,
-                  "range": [
-                      8192,
-                      12288,
-                      16384,
-                      24576,
-                      32768,
-                      49152,
-                      65536,
-                      131072
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "volume_size",
-                  "label": "volume size",
-                  "description": "The volume size for each instance",
-                  "type": "integer",
-                  "default": 40,
-                  "min": 40,
-                  "max": 2000,
-                  "step": 10,
-                  "required": "yes"
-              }
-          ]
-        },
-        {
-          "key": "node_enterprise",
-          "label": "enterprise node",
-          "description": "enterprise node properties",
-          "type": "array",
-          "properties": [
-              {
-                  "key": "count",
-                  "label": "count",
-                  "description": "Number of nodes for the cluster to create",
-                  "type": "integer",
-                  "default": 0,
-                  "min":0,
-                  "max":100,
-                  "required": "yes",
-                  "resource_group": [0,0,0,0]
-              },
-              {
-                  "key": "cpu",
-                  "label": "CPU",
-                  "description": "CPUs of each node",
-                  "type": "integer",
-                  "default": 8,
-                  "range": [
-                      4,
-                      8,
-                      12,
-                      16,
-                      32
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "memory",
-                  "label": "Memory",
-                  "description": "memory of each node (in MB)",
-                  "type": "integer",
-                  "default": 16384,
-                  "range": [
-                      8192,
-                      16384,
-                      24576,
-                      32768,
-                      49152,
-                      65536,
-                      131072
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "volume_size",
-                  "label": "volume size",
-                  "description": "The volume size for each instance",
-                  "type": "integer",
-                  "default": 200,
-                  "min": 40,
-                  "max": 2000,
-                  "step": 10,
-                  "required": "yes"
-              }
-          ]
-        },
-        {
-          "key": "node_premium",
-          "label": "premium node",
-          "description": "premium node properties",
-          "type": "array",
-          "properties": [
-              {
-                  "key": "count",
-                  "label": "count",
-                  "description": "Number of nodes for the cluster to create",
-                  "type": "integer",
-                  "default": 0,
-                  "min":0,
-                  "max":100,
-                  "required": "yes",
-                  "resource_group": [0,0,0,0]
-              },
-              {
-                  "key": "cpu",
-                  "label": "CPU",
-                  "description": "CPUs of each node",
-                  "type": "integer",
-                  "default": 8,
-                  "range": [
-                      4,
-                      8,
-                      12,
-                      16,
-                      32
-                  ],
-                  "required": "yes"
-              },
-              {
-                  "key": "memory",
-                  "label": "Memory",
-                  "description": "memory of each node (in MB)",
-                  "type": "integer",
-                  "default": 16384,
-                  "range": [
-                      8192,
                       16384,
                       24576,
                       32768,
