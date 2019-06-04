@@ -18,7 +18,7 @@ echo "*************************"
 echo "update kubesphere"
 echo "*************************"
 
-KUBESPHERE_INSTALL_PACKAGE="kubesphere-all-advanced-2.0.0-20190603"
+KUBESPHERE_INSTALL_PACKAGE="kubesphere-all-advanced-2.0.1-dev-20190604"
 
 pushd /tmp
 curl -O -k https://kubesphere-installer.pek3b.qingstor.com/nightly-build/${KUBESPHERE_INSTALL_PACKAGE}.tar.gz
