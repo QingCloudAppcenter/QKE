@@ -357,13 +357,13 @@ function create_lb_and_firewall(){
     loadbalancer_name=$1
     vxnet=$2
     # Create firewall
-    echo $(date "+%Y-%m-%d %H:%M:%S") "create firewall"
+    log "create firewall"
     create_firewall ${firewall_name}
     if [ $? -ne 0 ]
     then
         return 101
     fi
-    echo $(date "+%Y-%m-%d %H:%M:%S") "get firewall id"
+    log "get firewall id"
     firewall_id=$(get_firewall_id ${firewall_name})
     if [ "${firewall_id}" == "" ]
     then
@@ -371,7 +371,7 @@ function create_lb_and_firewall(){
         return 102
     fi
 
-    echo $(date "+%Y-%m-%d %H:%M:%S") "add rule on firewall"
+    log "add rule on firewall"
     add_rule_on_firewall ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -379,7 +379,7 @@ function create_lb_and_firewall(){
         return 103
     fi
 
-    echo $(date "+%Y-%m-%d %H:%M:%S") "apply firewall"
+    log "apply firewall"
     apply_firewall ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -388,7 +388,7 @@ function create_lb_and_firewall(){
     fi
 
     # Create loadbalancer
-    echo $(date "+%Y-%m-%d %H:%M:%S") "create loadbalancer"
+    log "create loadbalancer"
     create_loadbalancer ${loadbalancer_name} ${vxnet} ${firewall_id}
     if [ $? -ne 0 ]
     then
@@ -400,7 +400,7 @@ function create_lb_and_firewall(){
     do   
         sleep 5
         loadbalancer_id=$(get_loadbalancer_id ${loadbalancer_name})
-        echo $(date "+%Y-%m-%d %H:%M:%S") "check loadbalancer status"
+        log "check loadbalancer status"
         is_loadbalancer_active ${loadbalancer_id}
         if [ "$?" == "0" ]
         then
@@ -408,46 +408,46 @@ function create_lb_and_firewall(){
         fi
         if [ "$i" == "20" ]
         then
-            echo $(date "+%Y-%m-%d %H:%M:%S") "create lb timeout"
+            log "create lb timeout"
             exit -1
         fi
     done
-    echo $(date "+%Y-%m-%d %H:%M:%S") lb_id ${loadbalancer_id}
+    log lb_id ${loadbalancer_id}
 
 
     if [ "$loadbalancer_id" == "" ]
     then
-        echo "Failed to get loadbalancer id"
+        log "Failed to get loadbalancer id"
         return 106
     fi
 
-    echo $(date "+%Y-%m-%d %H:%M:%S") "create loadbalancer listener"
+    log "create loadbalancer listener"
     create_loadbalancer_listener ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
-        echo "Failed to create loadbalancer listener"
+        log "Failed to create loadbalancer listener"
         return 107
     fi
 
     loadbalancer_listener_id=$(get_loadbalancer_listener_id ${loadbalancer_id})
     if [ "$loadbalancer_listener_id" == "" ]
     then
-        echo "Failed to get loadbalancer listener id"
+        log "Failed to get loadbalancer listener id"
         return 108
     fi
 
-    echo $(date "+%Y-%m-%d %H:%M:%S") "add loadbalancer listener backend"
+    log "add loadbalancer listener backend"
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_1_INSTANCE_ID
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_2_INSTANCE_ID
     add_loadbalancer_listener_backend ${loadbalancer_listener_id} $MASTER_3_INSTANCE_ID
-    echo $(date "+%Y-%m-%d %H:%M:%S") "apply loadbalancer"
+    log "apply loadbalancer"
     apply_loadbalancer ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
-        echo "Faile to apply loadbalancer"
+        log "Faile to apply loadbalancer"
         return 109
     fi
-    echo $(date "+%Y-%m-%d %H:%M:%S") "create firewall finished"
+    log "create firewall finished"
 }
 
 # Input: 
@@ -457,14 +457,14 @@ function delete_lb_and_firewall(){
     loadbalancer_id=$(get_loadbalancer_id ${obj_name})
     if [ "${loadbalancer_id}" == "" ]
     then
-        echo "Failed to get loadbalancer id"
+        log "Failed to get loadbalancer id"
         return 101
     fi
 
     delete_loadbalancer ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
-        echo "Failed to delete loadbalancer"
+        log "Failed to delete loadbalancer"
         return 102
     fi
 
@@ -478,7 +478,7 @@ function delete_lb_and_firewall(){
         fi
         if [ "$i" == "20" ]
         then
-            echo "delete lb timeout"
+            log "delete lb timeout"
             exit -1
         fi
     done
@@ -486,14 +486,14 @@ function delete_lb_and_firewall(){
     firewall_id=$(get_firewall_id ${obj_name})
     if [ "${firewall_id}" == "" ]
     then
-        echo "Failed to get firewall id"
+        log "Failed to get firewall id"
         return 103
     fi
 
     delete_firewall ${firewall_id}
     if [ $? -ne 0 ]
     then
-        echo "Failed to delete firewall"
+        log "Failed to delete firewall"
         return 104
     fi
 }

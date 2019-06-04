@@ -41,3 +41,12 @@ cp /opt/kubernetes/k8s/linux/kubelet/10-kubeadm.conf /etc/systemd/system/kubelet
 
 - 执行 image 内 update-overlay2.sh
 执行前确保当前主机没有在 /var/lib/docker/overlay2 内创建软链接，链接镜像层。
+
+# 修改 KVM 镜像里 Docker 镜像
+
+
+```
+mv /var/lib/docker/overlay2/l /opt/overlay2/
+rm -rf /var/lib/docker/overlay2/*
+mv /opt/overlay2/* /var/lib/docker/overlay2/
+```
