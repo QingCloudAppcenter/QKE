@@ -56,6 +56,7 @@ controllerManager:
 scheduler:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
+    address: "0.0.0.0"
     feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
 certificatesDir: "/etc/kubernetes/pki"
 imageRepository: "dockerhub.qingcloud.com/google_containers"

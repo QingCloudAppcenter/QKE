@@ -50,3 +50,17 @@ mv /var/lib/docker/overlay2/l /opt/overlay2/
 rm -rf /var/lib/docker/overlay2/*
 mv /opt/overlay2/* /var/lib/docker/overlay2/
 ```
+
+# 用户密码
+
+- 参考资料：https://blog.csdn.net/QiaoRui_/article/details/81172109
+
+## 查看用户密码设定情况
+```
+chage -l root
+```
+
+## 强制用户登陆时修改口令
+```
+chage -d 0 root
+```
