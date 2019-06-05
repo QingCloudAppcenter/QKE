@@ -3,7 +3,7 @@
 - 基于 Ubuntu 16.04.4 构建，切换到 root 用户
 
 - Clear Command History
-``
+```
 history -c
 ```
 
