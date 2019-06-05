@@ -11,7 +11,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2qxgtl2l",
+                    "image": "img-l22augm7",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -94,7 +94,7 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2qxgtl2l",
+                    "image": "img-l22augm7",
                     "zone": "ap2a"
                 },
                 "instance_class": 0,
@@ -163,7 +163,7 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2qxgtl2l",
+                    "image": "img-l22augm7",
                     "zone": "ap2a"
                 },
                 "instance_class": 1,
@@ -232,7 +232,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-2qxgtl2l",
+                    "image": "img-l22augm7",
                     "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -260,7 +260,7 @@
         ],
         "endpoints": {
             "nodeport": {
-              "port": "env.cluster_port_range",
+              "port": {{env.cluster_port_range}},
               "protocol": "tcp"
             },
             "apiserver": {

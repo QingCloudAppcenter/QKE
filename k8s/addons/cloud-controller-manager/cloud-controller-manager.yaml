@@ -28,7 +28,7 @@ spec:
         - --allocate-node-cidrs=true
         - --cluster-cidr=10.244.0.0/16
         image: kubesphere/cloud-controller-manager:v1.3.4
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: qingcloud-cloud-controller-manager
         resources:
           requests:

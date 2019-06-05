@@ -138,6 +138,7 @@ function set_password(){
     echo "root:k8s" |chpasswd
     sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
     systemctl restart ssh
+    chage -d 0 root
 }
 
 function install_network_plugin(){

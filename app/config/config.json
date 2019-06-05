@@ -343,6 +343,7 @@
           "type": "eip",
           "default": "",
           "changeable": true,
+          "expanded": true,
           "pattern": "^(eip-)(\\w{8})$|^$",
           "required": "no"
         },
