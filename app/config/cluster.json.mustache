@@ -11,13 +11,21 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-l22augm7",
-                    "zone": "ap2a"
+                    "image": "img-rjnwb52m",
+                    "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
                 "count": {{cluster.master.count}},
                 "cpu": {{cluster.master.cpu}},
                 "memory": {{cluster.master.memory}},
+                "extra_quota": {
+                    "volume": {
+                      "size": 230,
+                      "count": 14
+                    },
+                    "loadbalancer": 2,
+                    "security_group": 2
+                },
                 "passphraseless": "ssh-rsa",
                 "vertical_scaling_policy": "sequential",
                 "volume": {
@@ -94,8 +102,8 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-l22augm7",
-                    "zone": "ap2a"
+                    "image": "img-rjnwb52m",
+                    "zone": "sh1a"
                 },
                 "instance_class": 0,
                 "count": {{cluster.node_perf.count}},
@@ -163,8 +171,8 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-l22augm7",
-                    "zone": "ap2a"
+                    "image": "img-rjnwb52m",
+                    "zone": "sh1a"
                 },
                 "instance_class": 1,
                 "count": {{cluster.node_super_perf.count}},
@@ -232,8 +240,8 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-l22augm7",
-                    "zone": "ap2a"
+                    "image": "img-rjnwb52m",
+                    "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
                 "count": 1,
