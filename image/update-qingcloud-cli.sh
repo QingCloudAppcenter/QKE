@@ -21,3 +21,5 @@ echo "*************************"
 apt install python-pip -y
 
 pip install qingcloud-cli
+
+pip install --upgrade qingcloud-cli
