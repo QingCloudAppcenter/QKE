@@ -110,7 +110,7 @@ function create_loadbalancer(){
         return 0
     fi
 
-    ret_str=$(qingcloud iaas create-loadbalancers -f /etc/qingcloud/client.yaml -N ${loadbalancer_name} -x ${vxnet} -s ${firewall_id})
+    ret_str=$(qingcloud iaas create-loadbalancers -f /etc/qingcloud/client.yaml  --mode 1 -c 2 -N ${loadbalancer_name} -x ${vxnet} -s ${firewall_id})
     ret_val=$(echo ${ret_str} | jq -r ".ret_code")
 
     if [ ${ret_val} -eq 0 ]
