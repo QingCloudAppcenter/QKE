@@ -10,7 +10,7 @@ history -c
 - 下载代码仓库
 ```bash
 apt-get install -y git
-git clone https://github.com/QingCloudAppcenter/kubesphere.git /opt/kubernetes
+git clone https://github.com/QingCloudAppcenter/QKE.git /opt/kubernetes
 cd /opt/kubernetes
 ```
 
