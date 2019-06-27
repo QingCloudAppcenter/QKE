@@ -21,6 +21,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# update storage client
+${K8S_HOME}/image/update-storage-client.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update storage client failed!"
+    exit 255
+fi
+
 # update docker
 ${K8S_HOME}/image/update-docker.sh
 if [[ $? != 0 ]]
