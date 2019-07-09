@@ -1,11 +1,6 @@
 # 构建虚拟机镜像
 
-- 基于 Ubuntu 16.04.4 构建，切换到 root 用户
-
-- Clear Command History
-```
-history -c
-```
+- 基于 Ubuntu 18.04.1（bionic1x64c） 构建，切换到 root 用户
 
 - 下载代码仓库
 ```bash
@@ -15,7 +10,6 @@ cd /opt/kubernetes
 ```
 
 - 下载所需内容
-
 ```bash
 image/build-base.sh
 ```
@@ -34,7 +28,6 @@ cp -r /opt/kubernetes/confd/templates /etc/confd/
 - 修改 Kubelet 启动 service 文件
 
 添加参数，为健康检查用。待 Kubeadm 能够正常添加参数，此步可删去。
-
 ```
 cp /opt/kubernetes/k8s/linux/kubelet/10-kubeadm.conf /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 ```
@@ -42,8 +35,12 @@ cp /opt/kubernetes/k8s/linux/kubelet/10-kubeadm.conf /etc/systemd/system/kubelet
 - 执行 image 内 update-overlay2.sh
 执行前确保当前主机没有在 /var/lib/docker/overlay2 内创建软链接，链接镜像层。
 
-- 清理命令行历史
+- 强制用户登陆时修改口令
+```
+chage -d 0 root
+```
 
+- 清理命令行历史
 ```
 > /var/log/syslog
 > ~/.bash_history && history -c
@@ -71,4 +68,9 @@ chage -l root
 ## 强制用户登陆时修改口令
 ```
 chage -d 0 root
+```
+
+# 检查软件安装情况
+```
+dpkg -s NAME
 ```

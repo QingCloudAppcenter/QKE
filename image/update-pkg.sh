@@ -18,6 +18,8 @@ echo "*************************"
 echo "update pkg"
 echo "*************************"
 
+sed -i 's/main/& universe/g' /etc/apt/sources.list
+
 apt-get update
 
 apt install python-pip -y

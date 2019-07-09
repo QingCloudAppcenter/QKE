@@ -40,3 +40,5 @@ apt-get install docker-ce=18.06.2~ce~3-0~ubuntu -y
 docker info
 
 apt-mark hold docker-ce
+
+systemctl stop docker

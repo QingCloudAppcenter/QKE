@@ -42,3 +42,7 @@ apt-mark hold kubelet kubeadm kubectl
 source /usr/share/bash-completion/bash_completion >> ~/.bashrc
 echo 'source <(kubectl completion bash)' >>~/.bashrc
 kubectl completion bash >/etc/bash_completion.d/kubectl
+
+systemctl daemon-reload
+systemctl stop kubelet
+systemctl disable kubelet
