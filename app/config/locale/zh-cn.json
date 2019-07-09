@@ -40,7 +40,7 @@
     "The domain of the Kubernetes api server":"Kubernetes API 服务域名",
     "client": "客户端",
     "log": "日志节点",
-    "Get KubeSphere Console URL": "KubeSphere 控制台 URL",
+    "Get KubeSphere Console URL": "KubeSphere 控制台 URL（初始登录账号：admin@kubesphere.io 密码：P@88w0rd），登录后请及时修改密码。",
     "log properties":"日志节点的属性",
     "ELK service": "ELK 服务",
     "Choose an external ELK cluster to store QKE logging data, leave empty if you choose to use internal ES service in QKE cluster. For resizing ES, It is recommended that using external ELK service": "请添加依赖的 ELK 5.5.1 以上集群用于存储 QKE 集群日志数据，否则将使用集群内自带 ES 服务。为了便于扩容，推荐添加依赖的 ELK 服务",

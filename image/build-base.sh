@@ -21,6 +21,15 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+
+# update util tools
+${K8S_HOME}/image/update-pkg.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update util tools failed!"
+    exit 255
+fi
+
 # update storage client
 ${K8S_HOME}/image/update-storage-client.sh
 if [[ $? != 0 ]]
@@ -58,14 +67,6 @@ ${K8S_HOME}/image/update-helm.sh
 if [[ $? != 0 ]]
 then
     echo "[ERROR]: Update Helm failed!"
-    exit 255
-fi
-
-# update util tools
-${K8S_HOME}/image/update-pkg.sh
-if [[ $? != 0 ]]
-then
-    echo "[ERROR]: Update util tools failed!"
     exit 255
 fi
 
@@ -132,6 +133,3 @@ then
     echo "[ERROR]: Update audit failed!"
     exit 255
 fi
-
-# disable and stop process managed by systemd
-${K8S_HOME}/image/update-systemd.sh

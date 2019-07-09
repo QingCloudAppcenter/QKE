@@ -18,7 +18,7 @@ echo "*************************"
 echo "update docker images"
 echo "*************************"
 
-
+systemctl start docker
 docker login -u guest -p guest dockerhub.qingcloud.com
 
 # Basic
@@ -27,7 +27,6 @@ docker pull dockerhub.qingcloud.com/google_containers/pause:3.1
 
 # Network
 docker pull dockerhub.qingcloud.com/google_containers/coredns:1.2.6
-#docker pull dockerhub.qingcloud.com/google_containers/coredns:1.4.0
 docker pull dockerhub.qingcloud.com/calico/typha:v3.3.6
 docker pull dockerhub.qingcloud.com/calico/node:v3.3.6
 docker pull dockerhub.qingcloud.com/calico/cni:v3.3.6
@@ -42,8 +41,6 @@ docker pull dockerhub.qingcloud.com/k8scsi/csi-provisioner:v0.2.1
 docker pull dockerhub.qingcloud.com/k8scsi/csi-attacher:v0.2.0
 docker pull dockerhub.qingcloud.com/k8scsi/driver-registrar:v0.2.0
 docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.1
-
-
 
 # KubeSphere                    
 docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.11.0
@@ -68,7 +65,6 @@ docker pull kubesphere/ks-upgrade:advanced-2.0.0
 docker pull kubesphere/cloud-controller-manager:v1.3.4
 
 # ks_notification_images:
-
 docker pull kubesphere/notification:flyway-advanced-2.0.0
 docker pull kubesphere/notification:advanced-2.0.0
 docker pull kubesphere/alerting-dbinit:advanced-2.0.0
@@ -76,18 +72,15 @@ docker pull kubesphere/alerting:advanced-2.0.0
 docker pull kubesphere/alert_adapter:advanced-2.0.0
 
 # openpitrix_images:
-
 docker pull openpitrix/openpitrix:v0.3.5
 docker pull openpitrix/openpitrix:flyway-v0.3.5
 docker pull minio/minio:RELEASE.2018-09-25T21-34-43Z
 docker pull dockerhub.qingcloud.com/coreos/etcd:v3.2.18
 
-
 # storage_images:
 docker pull dockerhub.qingcloud.com/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
 
 # harbor_images:
-
 docker pull dockerhub.qingcloud.com/goharbor/nginx-photon:v1.7.5git 
 docker pull dockerhub.qingcloud.com/goharbor/chartmuseum-photon:v0.8.1-v1.7.5
 docker pull dockerhub.qingcloud.com/goharbor/notary-server-photon:v0.6.1-v1.7.5
@@ -103,7 +96,6 @@ docker pull dockerhub.qingcloud.com/goharbor/redis-photon:v1.7.5
 docker pull dockerhub.qingcloud.com/goharbor/harbor-core:v1.7.5
 
 # jenkins_images:
-
 docker pull dockerhub.qingcloud.com/qingcloud/jenkins-uc:0.8.0-dev
 docker pull jenkins/jenkins:2.138.4
 docker pull jenkins/jnlp-slave:3.27-1
@@ -115,7 +107,6 @@ docker pull docker:18.06.1-ce-dind
 docker pull sonarqube:7.4-community
 
 # s2i_images:
-
 docker pull kubesphere/s2ioperator:advanced-2.0.0
 docker pull kubesphere/s2irun:advanced-2.0.0
 docker pull kubesphere/java-11-centos7:advanced-2.0.0
@@ -129,7 +120,6 @@ docker pull kubesphere/python-34-centos7:advanced-2.0.0
 docker pull kubesphere/python-27-centos7:advanced-2.0.0
 
 # gitlab_images:
-
 docker pull dockerhub.qingcloud.com/gitlab_org/gitaly:v1.20.0
 docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-rails-ce:v11.8.1
 docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-shell:v8.4.4
@@ -150,7 +140,6 @@ docker pull minio/mc:RELEASE.2018-07-13T00-53-22Z
 docker pull registry:2.7.1
 
 # ks_monitor_images:
-
 docker pull dockerhub.qingcloud.com/coreos/configmap-reload:v0.0.1
 docker pull dockerhub.qingcloud.com/prometheus/prometheus:v2.5.0
 docker pull dockerhub.qingcloud.com/coreos/prometheus-config-reloader:v0.27.0
@@ -162,7 +151,6 @@ docker pull dockerhub.qingcloud.com/coreos/addon-resizer:1.8.4
 docker pull dockerhub.qingcloud.com/coreos/k8s-prometheus-adapter-amd64:v0.4.1
 
 # ks_logger_images:
-
 docker pull dockerhub.qingcloud.com/pires/docker-elasticsearch-curator:5.5.4
 docker pull dockerhub.qingcloud.com/elasticsearch/elasticsearch-oss:6.7.0
 docker pull dockerhub.qingcloud.com/fluent/fluent-bit:0.14.7
@@ -173,7 +161,6 @@ docker pull kubesphere/fluent-bit:advanced-2.0.0
 docker pull kubesphere/configmap-reload:advanced-2.0.0
 
 # istio_images:
-
 docker pull docker.io/istio/kubectl:1.1.1
 docker pull docker.io/istio/proxy_init:1.1.1
 docker pull docker.io/istio/proxyv2:1.1.1
@@ -189,7 +176,6 @@ docker pull jaegertracing/jaeger-collector:1.11
 docker pull jaegertracing/jaeger-query:1.11
 
 # base_images:
-
 docker pull redis:4.0
 docker pull busybox:1.28.4
 docker pull mysql:8.0.11
@@ -199,7 +185,6 @@ docker pull osixia/openldap:1.2.2
 docker pull alpine:3.9
 
 # examples_bookinfo_images:
-
 docker pull kubesphere/examples-bookinfo-productpage-v1:1.13.0
 docker pull kubesphere/examples-bookinfo-reviews-v1:1.13.0
 docker pull kubesphere/examples-bookinfo-reviews-v2:1.13.0
@@ -213,3 +198,5 @@ docker pull mirrorgooglecontainers/hpa-example:latest
 docker pull java:openjdk-8-jre-alpine
 docker pull fluent/fluentd:v1.4.2-2.0
 docker pull perl:latest
+
+systemctl stop docker
