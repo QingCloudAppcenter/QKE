@@ -217,21 +217,6 @@ function install_cloud_controller_manager(){
     kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
 }
 
-function docker_login(){
-    if [ ! -z "${ENV_PRIVATE_REGISTRY}" ]
-    then
-        if [ ! -z "${ENV_DOCKERHUB_USERNAME}" ] && [ ! -z "${ENV_DOCKERHUB_PASSWORD}" ]
-        then
-            retry docker login ${ENV_PRIVATE_REGISTRY} -u ${ENV_DOCKERHUB_USERNAME} -p ${ENV_DOCKERHUB_PASSWORD}
-        fi
-    else
-        if [ ! -z "${ENV_DOCKERHUB_USERNAME}" ] && [ ! -z "${ENV_DOCKERHUB_PASSWORD}" ]
-        then
-            retry docker login dockerhub.qingcloud.com -u ${ENV_DOCKERHUB_USERNAME} -p ${ENV_DOCKERHUB_PASSWORD}
-        fi
-    fi
-}
-
 function replace_kv(){
     filepath=$1
     key=$2

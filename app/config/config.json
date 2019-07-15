@@ -449,33 +449,6 @@
           "required": "no"
         },
         {
-          "key": "private_registry",
-          "label": "Private registry",
-          "description": "The URL of private Docker registry",
-          "type": "string",
-          "default": "",
-          "changeable": true,
-          "required": "no"
-        },
-        {
-          "key": "dockerhub_username",
-          "label": "Username of Docker registry",
-          "description": "The username of Docker registry, could be dockerhub.qingcloud.com or your private registry",
-          "type": "string",
-          "default": "",
-          "changeable": true,
-          "required": "no"
-        },
-        {
-          "key": "dockerhub_password",
-          "label": "Password of Docker registry",
-          "description": "The password of Docker registry",
-          "type": "password",
-          "default": "",
-          "changeable": true,
-          "required": "no"
-        },
-        {
           "key": "docker_bip",
           "label": "IP address and netmask for Docker bridge network",
           "description": "IP address and netmask for Docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24",
