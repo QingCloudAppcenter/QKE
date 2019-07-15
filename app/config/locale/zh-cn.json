@@ -72,7 +72,7 @@
     "kubelet_running_pod_count":"正在运行的 Pod 数量",
     "Fluent forward server":"Fluent 日志转发服务",
     "The fluent log server address to forward server, format host:port":"Fluent 日志服务器，用于将 Kubernetes 收集到的日志转发到用户自定义的日志服务，格式 host:port",
-    "The Docker hub registry mirror, use a blank to split multi registry":"镜像服务地址，多个用空格隔开",
+    "The Docker hub registry mirrors, use a blank to split multi registry mirrors":"镜像服务地址，多个用空格隔开",
     "Enable istio":"开启 istio",
     "Enable service mesh platform istio":"开启 istio 来进行微服务治理",
     "Elastic Search server":"Elastic Search 服务器",

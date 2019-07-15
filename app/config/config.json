@@ -432,9 +432,10 @@
         {
           "key": "registry_mirrors",
           "label": "Registry mirrors",
-          "description": "The Docker hub registry mirror, use a blank to split multi registry",
+          "description": "The Docker hub registry mirrors, use a blank to split multi registry mirrors",
           "type": "string",
           "default": "",
+          "pattern": "^$|^((?!dockerhub\\.qingcloud\\.com).)+$",
           "changeable": true,
           "required": "no"
         },
