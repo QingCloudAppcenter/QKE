@@ -27,8 +27,8 @@
           "label": "Resource Configuration",
           "description": "The resource configuration of the service. Single master cluster cannot upgrade to HA mster cluster.",
           "type": "string",
-          "default": "Performance",
-          "range": ["Performance", "Super Performance", "Performance HA", "Super Performance HA"]
+          "default": "DevTest",
+          "range": ["DevTest", "Super DevTest", "Prod", "Super Prod"]
         },
         {
           "key": "vxnet",
