@@ -1,0 +1,6 @@
+[template]
+src = "k8s/kubesphere-installer.yaml.tmpl"
+dest = "/opt/kubernetes/k8s/kubesphere/installer/kubesphere-installer.yaml"
+keys = [
+    "/",
+]
