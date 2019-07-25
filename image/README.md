@@ -49,7 +49,6 @@ history
 
 # 修改 KVM 镜像里 Docker 镜像
 
-
 ```
 mv /var/lib/docker/overlay2/l /opt/overlay2/
 rm -rf /var/lib/docker/overlay2/*
@@ -73,4 +72,16 @@ chage -d 0 root
 # 检查软件安装情况
 ```
 dpkg -s NAME
+```
+
+# 查看 metadata
+
+```
+curl http://metadata/self
+```
+
+# 刷新 confd 文件
+
+```
+/opt/qingcloud/app-agent/bin/confd -onetime
 ```

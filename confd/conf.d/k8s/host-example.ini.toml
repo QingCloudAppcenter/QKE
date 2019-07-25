@@ -1,6 +1,0 @@
-[template]
-src = "k8s/host-example.ini.tmpl"
-dest = "/opt/kubesphere/kubesphere/host-example.ini"
-keys = [
-    "/",
-]

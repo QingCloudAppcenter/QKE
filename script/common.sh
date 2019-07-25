@@ -56,6 +56,26 @@ function retry {
   done
 }
 
+
+function wait_installer_job_completed(){
+  local n=1
+  local max=200
+  local delay=10
+
+  while true; do
+    job_status=`kubectl get job -n kubesphere-system kubesphere-installer -o jsonpath='{.status.conditions[0].type}'`
+    [ "$job_status" == "Complete" ] && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        log "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        fail "The command has failed after $n attempts."
+      fi
+    }
+  done
+}
+
 function get_node_status(){
     local status=$(kubectl get nodes/${HOST_INSTANCE_ID} --kubeconfig /etc/kubernetes/kubelet.conf -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
     echo ${status}
@@ -228,36 +248,43 @@ function replace_kv(){
     fi
 }
 
-function makeup_kubesphere_values(){
-    scp root@master1:/etc/kubernetes/pki/* /etc/kubernetes/pki
-    local kubernetes_token=$(kubectl -n kubesphere-system get secrets $(kubectl -n kubesphere-system get sa kubesphere -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d)
-    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_token SHOULD_BE_REPLACED ${kubernetes_token}
-    local kubernetes_ca_crt=$(cat /etc/kubernetes/pki/ca.crt | base64 | tr -d "\n")
-    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_ca_crt SHOULD_BE_REPLACED ${kubernetes_ca_crt}
-    local kubernetes_ca_key=$(cat /etc/kubernetes/pki/ca.key | base64 | tr -d "\n")
-    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_ca_key SHOULD_BE_REPLACED ${kubernetes_ca_key}
-    local kubernetes_front_proxy_client_crt=$(cat /etc/kubernetes/pki/front-proxy-client.crt | base64 | tr -d "\n")
-    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_front_proxy_client_crt SHOULD_BE_REPLACED ${kubernetes_front_proxy_client_crt}
-    local kubernetes_front_proxy_client_key=$(cat /etc/kubernetes/pki/front-proxy-client.key | base64 | tr -d "\n")
-    replace_kv /opt/kubesphere/kubesphere/values.yaml kubernetes_front_proxy_client_key SHOULD_BE_REPLACED ${kubernetes_front_proxy_client_key}
-}
-
 function install_kubesphere(){
+    log "install_kubesphere: create kubesphere-system namespace"
+    kubectl create ns  kubesphere-system
+    log "install_kubesphere: create kubesphere-monitoring-system namespace"
+    kubectl create ns kubesphere-monitoring-system
+
     if [ ! -f "/etc/kubernetes/pki/ca.crt" ] || [ ! -f "/etc/kubernetes/pki/ca.key" ] || 
     [ ! -f "/etc/kubernetes/pki/front-proxy-client.crt" ] || [ ! -f "/etc/kubernetes/pki/front-proxy-client.key" ]
     then
         log "install_kubesphere: scp cert"
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
+
+    log "install_kubesphere: create kubesphere-ca secret"
+    kubectl -n kubesphere-system create secret generic kubesphere-ca \
+    --from-file=ca.crt=/etc/kubernetes/pki/ca.crt \
+    --from-file=ca.key=/etc/kubernetes/pki/ca.key 
+
+    log "install_kubesphere: create front-proxy-client secret"
+    kubectl -n kubesphere-system create secret generic front-proxy-client \
+    --from-file=front-proxy-client.crt=/etc/kubernetes/pki/front-proxy-client.crt \
+    --from-file=front-proxy-client.key=/etc/kubernetes/pki/front-proxy-client.key
+
+    log "install_kubesphere: create kube-etcd-client-certs secret"
+    kubectl -n kubesphere-monitoring-system create secret generic kube-etcd-client-certs
     if [ "${CLUSTER_ELK_ID}" != "null" ]
     then
         log "install_kubesphere: create external elk svc"
         kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
     fi
-    log "install_kubesphere: install kubesphere"
-    pushd /opt/kubesphere/kubesphere
-    retry ansible-playbook -i host-example.ini kubesphere-only.yaml -b
-    popd
+
+    log "install_kubesphere: install ks-only"
+    kubectl apply -f /opt/kubernetes/k8s/kubesphere/installer/kubesphere-installer.yaml
+
+    log "install_kubesphere: wait ks-only installer job complete"
+    wait_installer_job_completed
+
     log "install_kubesphere: create ks console svc"
     kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
 }

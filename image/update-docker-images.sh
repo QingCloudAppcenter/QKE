@@ -43,8 +43,8 @@ docker pull dockerhub.qingcloud.com/k8scsi/driver-registrar:v0.2.0
 docker pull dockerhub.qingcloud.com/csiplugin/csi-qingcloud:v0.2.1
 
 # KubeSphere                    
-docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.11.0
-docker pull dockerhub.qingcloud.com/kubernetes_ingress_controller/nginx-ingress-controller:0.16.2
+docker pull dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.12.3
+docker pull dockerhub.qingcloud.com/kubernetes_ingress_controller/nginx-ingress-controller:0.24.1
 docker pull googlecontainer/defaultbackend-amd64:1.4
 docker pull dockerhub.qingcloud.com/google_containers/metrics-server-amd64:v0.3.1
 
@@ -53,23 +53,23 @@ docker pull nginx
 docker pull busybox
 
 # ks_core_images:
-docker pull dockerhub.qingcloud.com/kubesphere/ks-console:advanced-2.0.1
-docker pull dockerhub.qingcloud.com/kubesphere/kubectl:advanced-1.0.0
-docker pull kubesphere/ks-account:advanced-2.0.0
-docker pull kubesphere/ks-devops:flyway-advanced-2.0.0
-docker pull kubesphere/ks-apigateway:advanced-2.0.0
-docker pull kubesphere/ks-apiserver:advanced-2.0.1
-docker pull kubesphere/ks-controller-manager:advanced-2.0.1
+docker pull dockerhub.qingcloud.com/kubesphere/ks-console:advanced-2.0.2
+docker pull kubesphere/kubectl:advanced-1.0.0
+docker pull kubesphere/ks-account:advanced-2.0.2
+docker pull kubesphere/ks-devops:flyway-advanced-2.0.2
+docker pull kubesphere/ks-apigateway:advanced-2.0.2
+docker pull kubesphere/ks-apiserver:advanced-2.0.2
+docker pull kubesphere/ks-controller-manager:advanced-2.0.2
 docker pull kubesphere/docs.kubesphere.io:advanced-2.0.0
 docker pull kubesphere/ks-upgrade:advanced-2.0.0
 docker pull kubesphere/cloud-controller-manager:v1.3.4
 
 # ks_notification_images:
-docker pull kubesphere/notification:flyway-advanced-2.0.0
-docker pull kubesphere/notification:advanced-2.0.0
-docker pull kubesphere/alerting-dbinit:advanced-2.0.0
-docker pull kubesphere/alerting:advanced-2.0.0
-docker pull kubesphere/alert_adapter:advanced-2.0.0
+docker pull kubesphere/notification:flyway-advanced-2.0.2
+docker pull kubesphere/notification:advanced-2.0.2
+docker pull kubesphere/alerting-dbinit:advanced-2.0.2
+docker pull kubesphere/alerting:advanced-2.0.2
+docker pull kubesphere/alert_adapter:advanced-2.0.2
 
 # openpitrix_images:
 docker pull openpitrix/openpitrix:v0.3.5
@@ -79,21 +79,6 @@ docker pull dockerhub.qingcloud.com/coreos/etcd:v3.2.18
 
 # storage_images:
 docker pull dockerhub.qingcloud.com/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
-
-# harbor_images:
-docker pull dockerhub.qingcloud.com/goharbor/nginx-photon:v1.7.5git 
-docker pull dockerhub.qingcloud.com/goharbor/chartmuseum-photon:v0.8.1-v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/notary-server-photon:v0.6.1-v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-registryctl:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/registry-photon:v2.6.2-v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-jobservice:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-portal:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-adminserver:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-db:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/clair-photon:v2.0.8-v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/notary-signer-photon:v0.6.1-v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/redis-photon:v1.7.5
-docker pull dockerhub.qingcloud.com/goharbor/harbor-core:v1.7.5
 
 # jenkins_images:
 docker pull dockerhub.qingcloud.com/qingcloud/jenkins-uc:0.8.0-dev
@@ -119,31 +104,11 @@ docker pull kubesphere/python-35-centos7:advanced-2.0.0
 docker pull kubesphere/python-34-centos7:advanced-2.0.0
 docker pull kubesphere/python-27-centos7:advanced-2.0.0
 
-# gitlab_images:
-docker pull dockerhub.qingcloud.com/gitlab_org/gitaly:v1.20.0
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-rails-ce:v11.8.1
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-shell:v8.4.4
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-sidekiq-ce:v11.8.1
-docker pull gitlab/gitlab-runner:alpine-v10.3.0
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-task-runner-ce:v11.8.1
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-unicorn-ce:v11.8.1
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-workhorse-ce:v11.8.1
-docker pull dockerhub.qingcloud.com/gitlab_org/kubectl:1f8690f03f7aeef27e727396927ab3cc96ac89e7
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-mailroom:0.9.1
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-redis-ha:732704f18e34ba469df34b10c3b2465e0469d484
-docker pull oliver006/redis_exporter:v0.30.0
-docker pull wrouesnel/postgres_exporter:v0.1.1
-docker pull dockerhub.qingcloud.com/gitlab_org/alpine-certificates:20171114-r3
-docker pull dockerhub.qingcloud.com/gitlab_org/cfssl-self-sign:1.2
-docker pull dockerhub.qingcloud.com/gitlab_org/gitlab-operator:v0.3
-docker pull minio/mc:RELEASE.2018-07-13T00-53-22Z
-docker pull registry:2.7.1
-
 # ks_monitor_images:
 docker pull dockerhub.qingcloud.com/coreos/configmap-reload:v0.0.1
 docker pull dockerhub.qingcloud.com/prometheus/prometheus:v2.5.0
-docker pull dockerhub.qingcloud.com/coreos/prometheus-config-reloader:v0.27.0
-docker pull dockerhub.qingcloud.com/coreos/prometheus-operator:v0.27.0
+docker pull dockerhub.qingcloud.com/coreos/prometheus-config-reloader:v0.27.1
+docker pull dockerhub.qingcloud.com/coreos/prometheus-operator:v0.27.1
 docker pull dockerhub.qingcloud.com/coreos/kube-rbac-proxy:v0.4.1
 docker pull dockerhub.qingcloud.com/coreos/kube-state-metrics:v1.5.2
 docker pull dockerhub.qingcloud.com/prometheus/node-exporter:ks-v0.16.0
@@ -198,5 +163,8 @@ docker pull mirrorgooglecontainers/hpa-example:latest
 docker pull java:openjdk-8-jre-alpine
 docker pull fluent/fluentd:v1.4.2-2.0
 docker pull perl:latest
+
+# installer image
+docker pull kubespheredev/ks-installer:advanced-2.0.2
 
 systemctl stop docker
