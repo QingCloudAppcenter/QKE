@@ -47,40 +47,71 @@ chage -d 0 root
 history
 ```
 
-# 修改 KVM 镜像里 Docker 镜像
+# 对于新增功能点
+开发者开发容器镜像、confd、脚本相关功能，可以复用已有的 KVM 镜像。
 
+## 修改 KVM 镜像里 Docker 镜像
+对于容器镜像更新、新增、删除可以用本方法。
+- 删除软连接镜像层，将实际镜像层放到 docker 文件夹里
 ```
 mv /var/lib/docker/overlay2/l /opt/overlay2/
 rm -rf /var/lib/docker/overlay2/*
 mv /opt/overlay2/* /var/lib/docker/overlay2/
 ```
+- 查看镜像层情况
+```
+`/opt/overlay2` 文件夹内不应有内容
+`/var/lib/docker/overlay2` 文件夹内不应有软链接
+```
 
-# 用户密码
+- 更新镜像命令
+```
+docker rmi XXX
+docker pull XXX
+```
+- 添加软链接镜像层
+```
+/opt/kubernetes/image/update-overlay2.sh
+```
 
-- 参考资料：https://blog.csdn.net/QiaoRui_/article/details/81172109
+## 更新 confd 文件
+- 对于 confd 文件更新，可以用本方法。
+```
+rm -rf /etc/confd/conf.d/k8s/*
+rm -rf /etc/confd/templates/k8s/*
+```
 
-## 查看用户密码设定情况
+```
+cp -r /opt/kubernetes/confd/conf.d /etc/confd/
+cp -r /opt/kubernetes/confd/templates /etc/confd/
+```
+
+# 参考资料
+## 用户密码修改
+参考资料：https://blog.csdn.net/QiaoRui_/article/details/81172109
+
+- 查看用户密码设定情况
 ```
 chage -l root
 ```
 
-## 强制用户登陆时修改口令
+- 强制用户登陆时修改口令
 ```
 chage -d 0 root
 ```
 
-# 检查软件安装情况
+## 检查软件安装情况
 ```
 dpkg -s NAME
 ```
 
-# 查看 metadata
+## 查看 metadata
 
 ```
 curl http://metadata/self
 ```
 
-# 刷新 confd 文件
+## 刷新 confd 文件
 
 ```
 /opt/qingcloud/app-agent/bin/confd -onetime
