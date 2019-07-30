@@ -1,0 +1,119 @@
+apiVersion: rbac.authorization.k8s.io/v1
+# kubernetes versions before 1.8.0 should use rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: hostnic-node
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - nodes
+  - namespaces
+  verbs: ["list", "watch", "get","update", "patch"]
+- apiGroups: ["extensions"]
+  resources:
+  - daemonsets
+  verbs: ["list", "watch"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hostnic-node
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# kubernetes versions before 1.8.0 should use rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: hostnic-node
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hostnic-node
+subjects:
+- kind: ServiceAccount
+  name: hostnic-node
+  namespace: kube-system
+---
+
+kind: DaemonSet
+apiVersion: apps/v1
+# kubernetes versions before 1.9.0 should use extensions/v1beta1
+metadata:
+  name: hostnic-node
+  namespace: kube-system
+  labels:
+    app: hostnic-node
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: hostnic-node
+  template:
+    metadata:
+      labels:
+        app: hostnic-node
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      priorityClassName: system-node-critical
+      serviceAccountName: hostnic-node
+      hostNetwork: true
+      tolerations:
+      - operator: Exists
+      containers:
+      - image: kubespheredev/hostnic:v1.0.0-alpha
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 61678
+          name: metrics
+        name: hostnic-node
+        env:
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /host/opt/cni/bin
+          name: cni-bin-dir
+        - mountPath: /host/etc/cni/net.d
+          name: cni-net-dir
+        - mountPath: /host/var/log
+          name: log-dir
+        - mountPath: /var/run/docker.sock
+          name: dockersock
+        - mountPath: /root/.qingcloud/
+          name: apiaccesskey
+          readOnly: true
+        - mountPath: /host/etc/qingcloud/
+          name: qingcloud-cfg
+          readOnly: true
+      volumes:
+      - name: cni-bin-dir
+        hostPath:
+          path: /opt/cni/bin
+      - name: cni-net-dir
+        hostPath:
+          path: /etc/cni/net.d
+      - name: log-dir
+        hostPath:
+          path: /var/log
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+      - name:  apiaccesskey
+        secret:
+          secretName: qcsecret-hostnic
+      - name:  qingcloud-cfg
+        hostPath:
+          path:  /etc/qingcloud

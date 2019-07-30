@@ -33,7 +33,7 @@ if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     log  "Pre-check tiller"
     retry is_tiller_available
     log  "Install KubeSphere"
-    install_kubesphere
+    ##install_kubesphere
     log  "Finish install KubeSphere"
     touch ${CLIENT_INIT_LOCK}
     chmod 400 ${CLIENT_INIT_LOCK}
