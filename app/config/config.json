@@ -339,9 +339,18 @@
           "required": "yes"
         },
         {
+          "key": "install_kubesphere",
+          "label": "Install KubeSphere",
+          "description": "Whether to install kubesphere",
+          "type": "boolean",
+          "changeable": false,
+          "default": true,
+          "required": "yes"
+        },
+        {
           "key": "kubesphere_eip",
           "label": "KubeSphere Dashboard EIP ID",
-          "description": "IP id for exposing KubeSphere Dashboard",
+          "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
           "type": "eip",
           "default": "",
           "changeable": true,
@@ -444,7 +453,7 @@
           "label": "Insecure registry",
           "description": "The insecure Docker registry, use a blank to split multi registry",
           "type": "string",
-          "default": "",
+          "default": "^$|^(\\S+\\s)*(\\S+)$",
           "changeable": true,
           "required": "no"
         },
@@ -471,7 +480,7 @@
         {
           "key": "keep_log_days",
           "label": "Keep log days",
-          "description": "Keep log on log node for x days, 0 indicates that the log is not cleared",
+          "description": "Keep log on log node for x days, 0 indicates that the log is not cleared. This is a KubeSphere parameter",
           "type": "integer",
           "default": 3,
           "min":0,

@@ -32,8 +32,11 @@ if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     install_cloud_controller_manager
     log  "Pre-check tiller"
     retry is_tiller_available
-    log  "Install KubeSphere"
-    install_kubesphere
+    if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
+    then
+        log  "Install KubeSphere"
+        install_kubesphere
+    fi
     log  "Finish install KubeSphere"
     touch ${CLIENT_INIT_LOCK}
     chmod 400 ${CLIENT_INIT_LOCK}
