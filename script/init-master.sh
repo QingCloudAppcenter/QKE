@@ -37,6 +37,8 @@ if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
     log "replace kubeadm config lb ip" 
     replace_kubeadm_config_lb_ip
+    log "replace kubeadm eip lb ip"
+    replace_kubeadm_eip_lb_ip
     log "replace hosts lb ip" 
     replace_hosts_lb_ip
 fi

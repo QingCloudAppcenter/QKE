@@ -17,6 +17,7 @@
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 KUBEADM_CONFIG_PATH="/data/kubernetes/kubeadm-config.yaml"
+KUBEADM_EIP_PATH="/data/kubernetes/kubeadm-eip.yaml"
 KUBECONFIG="/etc/kubernetes/admin.conf"
 NODE_INIT_LOCK="/data/kubernetes/node-init.lock"
 CLIENT_INIT_LOCK="/data/kubernetes/client-init.lock"
@@ -297,6 +298,11 @@ function get_loadbalancer_ip(){
 function replace_kubeadm_config_lb_ip(){
     lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
     replace_kv /etc/kubernetes/kubeadm-config.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $(echo ${lb_ip})
+}
+
+function replace_kubeadm_eip_lb_ip(){
+    lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
+    replace_kv /etc/kubernetes/kubeadm-eip.yaml controlPlaneEndpoint SHOULD_BE_REPLACED $(echo ${lb_ip})
 }
 
 function replace_hosts_lb_ip(){

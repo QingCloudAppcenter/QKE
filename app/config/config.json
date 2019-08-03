@@ -89,10 +89,7 @@
               "default": 1,
               "range": [
                 0,
-                1,
-                101,
-                201,
-                301
+                1
               ],
               "required": "yes",
               "resource_group": [0,1,0,1]
@@ -287,10 +284,7 @@
               "default": 1,
               "range": [
                   0,
-                  1,
-                  101,
-                  201,
-                  301
+                  1
               ],
               "required": "yes",
               "resource_group": [0,1,0,1]
@@ -357,6 +351,16 @@
           "expanded": true,
           "pattern": "^(eip-)(\\w{8})$|^$",
           "required": "no"
+        },
+        {
+          "key": "kubernetes_eip",
+          "label": "Kubernetes EIP Address",
+          "description": "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23",
+          "type": "string",
+          "default": "",
+          "changeable": true,
+          "required":"no",
+          "pattern": "^$|^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
         },
         {
           "key": "pod_subnet",
@@ -453,7 +457,8 @@
           "label": "Insecure registry",
           "description": "The insecure Docker registry, use a blank to split multi registry",
           "type": "string",
-          "default": "^$|^(\\S+\\s)*(\\S+)$",
+          "default": "",
+          "pattern":"^$|^(\\S+\\s)*(\\S+)$",
           "changeable": true,
           "required": "no"
         },
