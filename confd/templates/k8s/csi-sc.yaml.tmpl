@@ -13,3 +13,20 @@ parameters:
   stepSize: "{{$type := getv "/host/volume_class"}}{{if or  (eq "1" $type) (eq "2" $type) (eq "5" $type)}}100{{else}}10{{end}}"
   fsType: "ext4"
 reclaimPolicy: Delete
+{{- $records := split (getv "/cluster/resource_limits/valid_volume_classes") ","}}{{range $index, $element := $records}}{{if (eq "5" $element)}}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: neonsan
+  annotations:
+    storageclass.kubesphere.io/supported_access_modes: '["ReadWriteOnce"]'
+provisioner: csi-qingcloud
+parameters:
+  type: "5"
+  maxSize: "50000"
+  minSize: "100"
+  stepSize: "100"
+  fsType: "ext4"
+reclaimPolicy: Delete
+{{end}}{{- end}}

@@ -89,10 +89,7 @@
               "default": 1,
               "range": [
                 0,
-                1,
-                101,
-                201,
-                301
+                1
               ],
               "required": "yes",
               "resource_group": [0,1,0,1]
@@ -287,10 +284,7 @@
               "default": 1,
               "range": [
                   0,
-                  1,
-                  101,
-                  201,
-                  301
+                  1
               ],
               "required": "yes",
               "resource_group": [0,1,0,1]
@@ -339,15 +333,34 @@
           "required": "yes"
         },
         {
+          "key": "install_kubesphere",
+          "label": "Install KubeSphere",
+          "description": "Whether to install kubesphere",
+          "type": "boolean",
+          "changeable": false,
+          "default": true,
+          "required": "yes"
+        },
+        {
           "key": "kubesphere_eip",
           "label": "KubeSphere Dashboard EIP ID",
-          "description": "IP id for exposing KubeSphere Dashboard",
+          "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
           "type": "eip",
           "default": "",
           "changeable": true,
           "expanded": true,
           "pattern": "^(eip-)(\\w{8})$|^$",
           "required": "no"
+        },
+        {
+          "key": "kubernetes_eip",
+          "label": "Kubernetes EIP Address",
+          "description": "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23",
+          "type": "string",
+          "default": "",
+          "changeable": true,
+          "required":"no",
+          "pattern": "^$|^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
         },
         {
           "key": "pod_subnet",
@@ -445,6 +458,7 @@
           "description": "The insecure Docker registry, use a blank to split multi registry",
           "type": "string",
           "default": "",
+          "pattern":"^$|^(\\S+\\s)*(\\S+)$",
           "changeable": true,
           "required": "no"
         },
@@ -471,7 +485,7 @@
         {
           "key": "keep_log_days",
           "label": "Keep log days",
-          "description": "Keep log on log node for x days, 0 indicates that the log is not cleared",
+          "description": "Keep log on log node for x days, 0 indicates that the log is not cleared. This is a KubeSphere parameter",
           "type": "integer",
           "default": 3,
           "min":0,

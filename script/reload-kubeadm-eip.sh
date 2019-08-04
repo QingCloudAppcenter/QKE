@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018 The KubeSphere Authors.
+# Copyright 2019 The KubeSphere Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,8 +19,20 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${HOST_ROLE}" == "master" ] && [ "${HOST_SID}" == "1" ]
+if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
+    replace_kubeadm_eip_lb_ip
 fi
-exit 0
+
+log "remove apiserver.crt"
+rm -rf /etc/kubernetes/pki/apiserver.crt
+log "remove apiserver.key"
+rm -rf /etc/kubernetes/pki/apiserver.key
+
+if [ "${HOST_ROLE}" == "master" ]
+then
+    log "create apiserver certs with eip"
+    kubeadm init phase certs apiserver --config ${KUBEADM_EIP_PATH}
+    log "restart kubernetes apiserver"
+    kill -9 $(pidof kube-apiserver)
+fi

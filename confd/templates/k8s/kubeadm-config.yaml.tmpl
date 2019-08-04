@@ -48,6 +48,7 @@ apiServer:
     pathType: Directory
   certSANs:
   - "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
+{{if ne "" (getv "/env/kubernetes_eip")}}  - "{{getv "/env/kubernetes_eip"}}"{{end}}  
 controllerManager:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"

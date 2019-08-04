@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 touch /etc/kubernetes/loadbalancer_ip
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
@@ -44,6 +43,8 @@ then
     done
     log "replace lb ip on kubeadm config" 
     replace_kubeadm_config_lb_ip
+    log "replace kubeadm eip lb ip"
+    replace_kubeadm_eip_lb_ip
     log "replace lb ip on hosts" 
     replace_hosts_lb_ip
 fi
