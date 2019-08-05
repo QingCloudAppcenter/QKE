@@ -24,6 +24,10 @@ apt-get update
 
 apt install python-pip -y
 
+apt install iputils-arping -y
+
+apt install arping -y
+
 apt-get install -y ebtables socat jq apt-transport-https bash-completion ntp wget ca-certificates curl software-properties-common tree ipvsadm zip unzip bridge-utils
 
 apt-get remove -y network-managerupda
