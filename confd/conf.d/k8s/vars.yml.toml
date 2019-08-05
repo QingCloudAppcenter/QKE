@@ -1,6 +1,0 @@
-[template]
-src = "k8s/vars.yml.tmpl"
-dest = "/opt/kubesphere/conf/vars.yml"
-keys = [
-    "/",
-]
