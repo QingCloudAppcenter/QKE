@@ -1,2 +1,42 @@
+#!/bin/bash
+export PATH="$PATH:/usr/local/bin"
+KUBEADM_FILE=/etc/kubernetes/kubeadm-eip.yaml
+
+function retry {
+  local n=1
+  local max=5
+  local delay=1
+  while true; do
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        echo "The command has failed after $n attempts."
+        return 1
+      fi
+    }
+  done
+}
+
+function get_eip_from_kubeadm {
+    if [ "$(cat ${KUBEADM_FILE}|shyaml get-length apiServer.certSANs)" == "2" ] && [ "$(cat /etc/kubernetes/kubeadm-eip.yaml |shyaml get-value apiServer.certSANs.1)" != "" ]; then
+        echo $(cat /etc/kubernetes/kubeadm-eip.yaml |shyaml get-value apiServer.certSANs.1)
+    else
+        echo ""
+    fi
+}
+
+function is_valid {
+    kubeadm_eip=$(get_eip_from_kubeadm)
+    if [ "{{getv "/env/kubernetes_eip"}}" == "${kubeadm_eip}" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 echo {{getv "/env/kubernetes_eip"}}
+retry is_valid
 /opt/kubernetes/script/reload-kubeadm-eip.sh

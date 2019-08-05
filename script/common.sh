@@ -35,6 +35,10 @@ source "${K8S_HOME}/version"
 set -o nounset
 set -o pipefail
 
+function fail {
+  echo $1 >&2
+  exit 1
+}
 
 function log {
   logger -t appctl $@
