@@ -48,10 +48,6 @@ docker pull dockerhub.qingcloud.com/kubernetes_ingress_controller/nginx-ingress-
 docker pull googlecontainer/defaultbackend-amd64:1.4
 docker pull dockerhub.qingcloud.com/google_containers/metrics-server-amd64:v0.3.1
 
-# others
-docker pull nginx
-docker pull busybox
-
 # ks_core_images:
 docker pull dockerhub.qingcloud.com/kubesphere/ks-console:advanced-2.0.2
 docker pull kubesphere/kubectl:advanced-1.0.0
@@ -159,10 +155,8 @@ docker pull kubesphere/examples-bookinfo-ratings-v1:1.13.0
 docker pull nginxdemos/hello:plain-text
 docker pull mysql:5.6
 docker pull wordpress:4.8-apache
-docker pull mirrorgooglecontainers/hpa-example:latest
 docker pull java:openjdk-8-jre-alpine
 docker pull fluent/fluentd:v1.4.2-2.0
-docker pull perl:latest
 
 # installer image
 docker pull kubespheredev/ks-installer:advanced-2.0.2
