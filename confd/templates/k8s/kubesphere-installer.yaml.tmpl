@@ -16,6 +16,7 @@ data:
     external_es_port: {{getv "/links/elk_service/cluster/endpoints/ElasticSearch/port"}}
     {{- end}}
     containersLogMountedPath: "/data/var/lib/docker/containers"
+    keep_log_days: {{getv "/env/keep_log_days"}}
 kind: ConfigMap
 metadata:
   name: kubesphere-config
