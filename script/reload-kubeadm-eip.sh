@@ -24,13 +24,12 @@ then
     replace_kubeadm_eip_lb_ip
 fi
 
-log "remove apiserver.crt"
-rm -rf /etc/kubernetes/pki/apiserver.crt
-log "remove apiserver.key"
-rm -rf /etc/kubernetes/pki/apiserver.key
-
 if [ "${HOST_ROLE}" == "master" ]
 then
+    log "remove apiserver.crt"
+    rm -rf /etc/kubernetes/pki/apiserver.crt
+    log "remove apiserver.key"
+    rm -rf /etc/kubernetes/pki/apiserver.key
     log "create apiserver certs with eip"
     kubeadm init phase certs apiserver --config ${KUBEADM_EIP_PATH}
     log "restart kubernetes apiserver"
