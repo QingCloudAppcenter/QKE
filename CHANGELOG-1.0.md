@@ -22,8 +22,15 @@
 * Access Kubernetes through EIP ([#75](https://github.com/QingCloudAppcenter/QKE/pull/75), [@wnxn](https://github.com/wnxn))
 * Add installation KubeSphere option ([#75](https://github.com/QingCloudAppcenter/QKE/pull/75), [@wnxn](https://github.com/wnxn))
 * Add regex in insecure regitry ([#75](https://github.com/QingCloudAppcenter/QKE/pull/75), [@wnxn](https://github.com/wnxn))
+* Install arping ([#82](https://github.com/QingCloudAppcenter/QKE/pull/91), [@wnxn](https://github.com/wnxn))
+* Remove images with latest tag ([#90](https://github.com/QingCloudAppcenter/QKE/pull/90), [@wnxn](https://github.com/wnxn))
+* Add NFS client provisioner helm chart ([#89](https://github.com/QingCloudAppcenter/QKE/pull/89), [@wnxn](https://github.com/wnxn))
 
 ### Bug fixed
-* Fix steal time overflow and update KVM OS to Ubuntu 18.04.1 LTS 64 bit(bionic1x64c) ([#60](https://github.com/QingCloudAppcenter/QKE/pull/60), [@wnxn](https://github.com/wnxn))
-* Install Ceph RBD, Glusterfs, NFS client ([#53](https://github.com/QingCloudAppcenter/QKE/pull/53), [@wnxn](https://github.com/wnxn))
-* Support '-' in hosts domain regex ([#66](https://github.com/QingCloudAppcenter/QKE/pull/66), [@wnxn](https://github.com/wnxn))
+* Fix updating KVM to Ubuntu 18.04.1 LTS 64 bit(bionic1x64c) ([#60](https://github.com/QingCloudAppcenter/QKE/pull/60), [@wnxn](https://github.com/wnxn))
+* Fix installing Ceph RBD, Glusterfs, NFS client ([#53](https://github.com/QingCloudAppcenter/QKE/pull/53), [@wnxn](https://github.com/wnxn))
+* Fix supporting '-' in hosts domain regex ([#66](https://github.com/QingCloudAppcenter/QKE/pull/66), [@wnxn](https://github.com/wnxn))
+* Fix updating max pods on nodes ([#86](https://github.com/QingCloudAppcenter/QKE/pull/86), [@wnxn](https://github.com/wnxn))
+* Fix keep log day not working ([#89](https://github.com/QingCloudAppcenter/QKE/pull/89), [@wnxn](https://github.com/wnxn))
+* Fix renewing Apiserver certification after updating Kubernetes EIP ([#94](https://github.com/QingCloudAppcenter/QKE/pull/94), [@wnxn](https://github.com/wnxn))
+* Fix audit log file path regex ([#95](https://github.com/QingCloudAppcenter/QKE/pull/95), [@wnxn](https://github.com/wnxn))
