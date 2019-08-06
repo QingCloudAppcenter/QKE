@@ -500,7 +500,7 @@
           "type": "string",
           "default": "",
           "changeable": true,
-          "pattern": "^(\/(\\w+\/?)+(\\w+))$|^$",
+          "pattern": "^(\/((\\w|\\-|\\.)+\/?)+((\\w|\\-|\\.)+))$|^$",
           "required": "no"
         },
         {
