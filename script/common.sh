@@ -112,10 +112,10 @@ function ensure_dir(){
 }
 
 function make_dir(){
-    mkdir -p /data/var/lib
-    mkdir -p /data/root
-    mkdir -p /root/.kube
-    mkdir -p /etc/kubernetes/pki
+    retry mkdir -p /data/var/lib
+    retry mkdir -p /data/root
+    retry mkdir -p /root/.kube
+    retry mkdir -p /etc/kubernetes/pki
 }
 
 # Copy dir into data volume
@@ -255,9 +255,9 @@ function replace_kv(){
 
 function install_kubesphere(){
     log "install_kubesphere: create kubesphere-system namespace"
-    kubectl create ns  kubesphere-system
+    retry kubectl create ns  kubesphere-system
     log "install_kubesphere: create kubesphere-monitoring-system namespace"
-    kubectl create ns kubesphere-monitoring-system
+    retry kubectl create ns kubesphere-monitoring-system
 
     if [ ! -f "/etc/kubernetes/pki/ca.crt" ] || [ ! -f "/etc/kubernetes/pki/ca.key" ] || 
     [ ! -f "/etc/kubernetes/pki/front-proxy-client.crt" ] || [ ! -f "/etc/kubernetes/pki/front-proxy-client.key" ]
@@ -267,31 +267,31 @@ function install_kubesphere(){
     fi
 
     log "install_kubesphere: create kubesphere-ca secret"
-    kubectl -n kubesphere-system create secret generic kubesphere-ca \
+    retry kubectl -n kubesphere-system create secret generic kubesphere-ca \
     --from-file=ca.crt=/etc/kubernetes/pki/ca.crt \
     --from-file=ca.key=/etc/kubernetes/pki/ca.key 
 
     log "install_kubesphere: create front-proxy-client secret"
-    kubectl -n kubesphere-system create secret generic front-proxy-client \
+    retry kubectl -n kubesphere-system create secret generic front-proxy-client \
     --from-file=front-proxy-client.crt=/etc/kubernetes/pki/front-proxy-client.crt \
     --from-file=front-proxy-client.key=/etc/kubernetes/pki/front-proxy-client.key
 
     log "install_kubesphere: create kube-etcd-client-certs secret"
-    kubectl -n kubesphere-monitoring-system create secret generic kube-etcd-client-certs
+    retry kubectl -n kubesphere-monitoring-system create secret generic kube-etcd-client-certs
     if [ "${CLUSTER_ELK_ID}" != "null" ]
     then
         log "install_kubesphere: create external elk svc"
-        kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
+        retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/logging/external-elk-svc.yaml
     fi
 
     log "install_kubesphere: install ks-only"
-    kubectl apply -f /opt/kubernetes/k8s/kubesphere/installer/kubesphere-installer.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/installer/kubesphere-installer.yaml
 
     log "install_kubesphere: wait ks-only installer job complete"
     wait_installer_job_completed
 
     log "install_kubesphere: create ks console svc"
-    kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
 }
 
 function get_loadbalancer_ip(){
