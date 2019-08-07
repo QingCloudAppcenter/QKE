@@ -70,4 +70,5 @@ function renew_config_files(){
 if [ "${HOST_ROLE}" == "master" ]
 then
     renew_config_files
+    restart_kubernetes_control_plane
 fi
