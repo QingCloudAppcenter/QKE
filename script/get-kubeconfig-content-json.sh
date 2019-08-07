@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-KS_CONSOLE_URL=$(/opt/kubernetes/script/get-ks-console-url.sh)
+KUBECONFIG_CONTENT=$(/opt/kubernetes/script/get-kubeconfig-content.sh)
 
 echo { \
-    \"labels\": [ \"KubeSphere Console\"], \
+    \"labels\": [ \"Kubeconfig\"], \
     \"data\":\
     [\
-        [\"${KS_CONSOLE_URL}\"]\
+        [\""${KUBECONFIG_CONTENT}"\"]\
     ]\
 }

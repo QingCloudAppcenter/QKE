@@ -301,10 +301,16 @@
             "kubernetes_version": "v1.13.5"
         },
         "display_tabs": {
-            "kubesphere_console_url": {
+            "kubesphere_console": {
                 "cmd": "/opt/kubernetes/script/get-ks-console-url-json.sh",
                 "roles_to_execute_on": ["master"],
-                "description": "Get KubeSphere Console URL",
+                "description": "Get KubeSphere Console",
+                "timeout": 10
+            },
+            "kubeconfig":{
+                "cmd": "/opt/kubernetes/script/get-kubeconfig-content-json.sh",
+                "roles_to_execute_on": ["master"],
+                "description": "Get Kubeconfig",
                 "timeout": 10
             }
         }

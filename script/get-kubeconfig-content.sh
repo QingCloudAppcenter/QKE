@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2018 The KubeSphere Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-KS_CONSOLE_URL=$(/opt/kubernetes/script/get-ks-console-url.sh)
+SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+K8S_HOME=$(dirname "${SCRIPTPATH}")
 
-echo { \
-    \"labels\": [ \"KubeSphere Console\"], \
-    \"data\":\
-    [\
-        [\"${KS_CONSOLE_URL}\"]\
-    ]\
-}
+source "${K8S_HOME}/script/common.sh"
+
+sed 's/$/\&\%\&/' ${KUBECONFIG}| sed ':label;N;s/\n//;t label' |sed 's/\&\%\&/\\\\n/g'
+exit
