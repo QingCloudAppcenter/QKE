@@ -21,6 +21,6 @@ source "${K8S_HOME}/script/common.sh"
 
 if [ "${HOST_ROLE}" == "master" ] && [ "${HOST_SID}" == "1" ]
 then
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
 fi
 exit 0
