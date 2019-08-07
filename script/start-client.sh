@@ -22,7 +22,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 source "${K8S_HOME}/script/common.sh"
 export KUBECONFIG="/etc/kubernetes/admin.conf"
 log "===start start client==="
-log  "copy pki from master1"
+log  "copy kubeconfig from master1"
 scp root@master1:${KUBECONFIG} /root/.kube/config
 cp /root/.kube/config ${KUBECONFIG}
 
