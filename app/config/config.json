@@ -496,7 +496,7 @@
         {
           "key": "kube_audit_file",
           "label": "Set audit policy file",
-          "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml",
+          "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml Audit file path: /etc/kubernetes/audit/audit-log-file",
           "type": "string",
           "default": "",
           "changeable": true,
