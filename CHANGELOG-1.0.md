@@ -29,7 +29,7 @@
 * Add node affinity on ks docs and prometheus ([#112](https://github.com/QingCloudAppcenter/QKE/pull/112), [@wnxn](https://github.com/wnxn))
 * Display Kubeconfig on QingCloud console ([#108](https://github.com/QingCloudAppcenter/QKE/pull/108), [@wnxn](https://github.com/wnxn))
 * Restart control plane after renewing certs ([#110](https://github.com/QingCloudAppcenter/QKE/pull/110), [@wnxn](https://github.com/wnxn))
-* Enable kube adn system reserved resource ([#105](https://github.com/QingCloudAppcenter/QKE/pull/105), [@wnxn](https://github.com/wnxn))
+* Enable kube and system reserved resource ([#105](https://github.com/QingCloudAppcenter/QKE/pull/105), [@wnxn](https://github.com/wnxn))
 
 ### Bug fixed
 * Fix updating KVM to Ubuntu 18.04.1 LTS 64 bit(bionic1x64c) ([#60](https://github.com/QingCloudAppcenter/QKE/pull/60), [@wnxn](https://github.com/wnxn))
