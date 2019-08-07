@@ -142,7 +142,7 @@ spec:
       containers:
       - name: ansible
         command: ["ansible-playbook", "/usr/src/kubesphere/kubesphere.yaml", "-b", "-e", "@/usr/src/kubesphere/conf/ks-config.yaml"]
-        image: "kubespheredev/ks-installer:advanced-2.0.2"
+        image: "kubesphere/ks-installer:advanced-2.0.2"
         imagePullPolicy: "IfNotPresent"
         volumeMounts:
           - name: kubesphere-config
