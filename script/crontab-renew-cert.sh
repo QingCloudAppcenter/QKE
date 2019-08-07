@@ -65,4 +65,5 @@ function renew_cert_files(){
 if [ "${HOST_ROLE}" == "master" ]
 then
     renew_cert_files
+    restart_kubernetes_control_plane
 fi

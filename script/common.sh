@@ -339,3 +339,17 @@ function is_tiller_available(){
         return -1
     fi
 }
+
+function restart_kubernetes_control_plane(){
+    log "restart kubelet"
+    systemctl restart kubelet
+    if [ "${HOST_ROLE}" == "master" ]
+    then
+        log "restart kubernetes apiserver"
+        kill -9 $(pidof kube-apiserver)
+        log "restart kubernetes controller manager"
+        kill -9 $(pidof kube-controller-manager)
+        log "restart kubernetes scheduler"
+        kill -9 $(pidof kube-scheduler)
+    fi
+}
