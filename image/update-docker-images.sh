@@ -58,7 +58,6 @@ docker pull kubesphere/ks-apiserver:advanced-2.0.2
 docker pull kubesphere/ks-controller-manager:advanced-2.0.2
 docker pull kubesphere/ks-docs:advanced-2.0.2
 docker pull kubesphere/ks-upgrade:advanced-2.0.0
-docker pull kubesphere/cloud-controller-manager:v1.3.4
 
 # ks_notification_images:
 docker pull kubesphere/notification:flyway-advanced-2.0.2
