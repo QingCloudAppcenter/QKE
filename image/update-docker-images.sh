@@ -56,7 +56,7 @@ docker pull kubesphere/ks-devops:flyway-advanced-2.0.2
 docker pull kubesphere/ks-apigateway:advanced-2.0.2
 docker pull kubesphere/ks-apiserver:advanced-2.0.2
 docker pull kubesphere/ks-controller-manager:advanced-2.0.2
-docker pull kubesphere/docs.kubesphere.io:advanced-2.0.0
+docker pull kubesphere/ks-docs:advanced-2.0.2
 docker pull kubesphere/ks-upgrade:advanced-2.0.0
 docker pull kubesphere/cloud-controller-manager:v1.3.4
 
@@ -159,6 +159,6 @@ docker pull java:openjdk-8-jre-alpine
 docker pull fluent/fluentd:v1.4.2-2.0
 
 # installer image
-docker pull kubespheredev/ks-installer:advanced-2.0.2
+docker pull kubesphere/ks-installer:advanced-2.0.2
 
 systemctl stop docker
