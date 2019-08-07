@@ -106,5 +106,5 @@
     "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23":"远程访问 Kubernetes 的 EIP 地址，请按照点分十进制填写 EIP。例如：139.198.123.23",
     "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
-    "Defined the path of audit policy files. If the flag is omitted, no events are logged. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml": "设置审计日志规则文件路径，路径为空不记录审计日志，预置默认审计日志规则文件路径：/etc/kubernetes/audit/default-audit-policy-file.yaml"
+    "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml Audit file path: /etc/kubernetes/audit/audit-log-file": "设置审计日志规则文件路径，路径为空不记录审计日志，用户需确保审计日志规则文件在所有主节点存在。预置默认审计日志规则文件路径：/etc/kubernetes/audit/default-audit-policy-file.yaml，审计日志存放路径：/etc/kubernetes/audit/audit-log-file"
   }
