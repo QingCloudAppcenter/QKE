@@ -87,7 +87,7 @@ function get_node_status(){
 }
 
 function drain_node(){
-    kubectl drain  --kubeconfig /etc/kubernetes/admin.conf  --delete-local-data=true --ignore-daemonsets=true --force $1 
+    retry kubectl drain  --kubeconfig /etc/kubernetes/admin.conf  --delete-local-data=true --ignore-daemonsets=true --force $1 
     return $?
 }
 
@@ -169,11 +169,11 @@ function set_password(){
 function install_network_plugin(){
     case "${NETWORK_PLUGIN}" in
     "calico")
-        kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-rbac.yaml
-        kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-deploy.yaml
+        retry kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-rbac.yaml
+        retry kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-deploy.yaml
         ;;
     "flannel")
-        kubectl apply -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml
+        retry kubectl apply -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml
         ;;
     *)
         echo "Invalid network plugin" ${NETWORK_PLUGIN} >&2
@@ -188,9 +188,9 @@ function install_kube_proxy(){
         lb_ip=`cat /etc/kubernetes/loadbalancer_ip`
         replace_kv /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml server SHOULD_BE_REPLACED $(echo ${lb_ip})
     fi
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/rbac.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-ds.yaml
 }
 
 function join_node(){
@@ -215,31 +215,31 @@ function join_node(){
 }
 
 function install_csi(){
-    kubectl create configmap csi-qingcloud --from-file=config.yaml=/etc/qingcloud/client.yaml --namespace=kube-system
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-secret.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-rbac.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-rbac.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-sts.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-ds.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml
+    retry kubectl create configmap csi-qingcloud --from-file=config.yaml=/etc/qingcloud/client.yaml --namespace=kube-system
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-secret.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-rbac.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-rbac.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-sts.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-ds.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml
 }
 
 function install_coredns(){
     kubeadm init phase addon coredns --config ${KUBEADM_CONFIG_PATH}
-    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-deploy.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-cm.yaml
 }
 
 function install_tiller(){
-    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-sa.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-deploy.yaml
-    kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-svc.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-sa.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-deploy.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/tiller/tiller-svc.yaml
 }
 
 function install_cloud_controller_manager(){
-    kubectl create secret generic qcsecret --from-file=/etc/qingcloud/client.yaml -n kube-system
-    kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
+    retry kubectl create secret generic qcsecret --from-file=/etc/qingcloud/client.yaml -n kube-system
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
 }
 
 function replace_kv(){

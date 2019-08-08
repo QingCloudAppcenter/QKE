@@ -156,7 +156,7 @@ fi
 # Mark Master
 log "Mark Master"
 kubeadm init phase mark-control-plane --node-name ${HOST_INSTANCE_ID}
-kubectl patch node ${HOST_INSTANCE_ID} -p '{"metadata":{"labels":{"role":"master"}}}'
+retry kubectl patch node ${HOST_INSTANCE_ID} -p '{"metadata":{"labels":{"role":"master"}}}'
 
 log "===end init master==="
 exit 0
