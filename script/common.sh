@@ -61,7 +61,6 @@ function retry {
   done
 }
 
-
 function wait_installer_job_completed(){
   local n=1
   local max=200

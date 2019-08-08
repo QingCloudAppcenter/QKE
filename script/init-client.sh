@@ -17,7 +17,7 @@
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
 ${K8S_HOME}/script/check-fs.sh
-
+${K8S_HOME}/script/check-env.sh
 touch /etc/kubernetes/loadbalancer_ip
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
