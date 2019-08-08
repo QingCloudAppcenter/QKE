@@ -26,5 +26,5 @@ function check_fs_wait_fs(){
   done
 }
 
-check_fs_wait_fs /etc/kubernetes/tmp
+check_fs_wait_fs /root/tmp
 check_fs_wait_fs /data/tmp
