@@ -17,8 +17,7 @@
 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
-
-
+${K8S_HOME}/script/check-fs.sh
 source "${K8S_HOME}/script/common.sh"
 export KUBECONFIG="/etc/kubernetes/admin.conf"
 log "===start start client==="

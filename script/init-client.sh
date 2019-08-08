@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-touch /etc/kubernetes/loadbalancer_ip
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
+${K8S_HOME}/script/check-fs.sh
 
+touch /etc/kubernetes/loadbalancer_ip
 source "${K8S_HOME}/script/common.sh"
 source "${K8S_HOME}/script/loadbalancer-manager.sh"
 
