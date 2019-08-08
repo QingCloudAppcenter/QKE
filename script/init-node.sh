@@ -17,10 +17,9 @@
 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
-
+${K8S_HOME}/script/check-fs.sh
 source "${K8S_HOME}/script/common.sh"
 log "===start init node==="
-
 log "link dir"
 link_dir
 log "swapoff"
