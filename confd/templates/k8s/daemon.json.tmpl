@@ -1,4 +1,9 @@
 {
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "10m",    
+        "max-file": "3"    
+    },
     {{$registries := getv "/env/insecure_registry"}}
     {{if ne $registries ""}}
     "insecure-registries": {{split $registries " "|toJson}},
