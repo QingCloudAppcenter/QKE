@@ -43,8 +43,11 @@ if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
 fi
 
 # for cluster recovery
-retry kubectl get nodes --kubeconfig ${KUBECONFIG}
-kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
+then
+    retry kubectl get nodes --kubeconfig ${KUBECONFIG}
+    retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+fi
 
 log  "===end start client==="
 exit 0
