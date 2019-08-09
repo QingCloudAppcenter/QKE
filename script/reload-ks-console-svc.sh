@@ -19,7 +19,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ] && [ "${HOST_ROLE}" == "master" ] && [ "${HOST_SID}" == "1" ]
+if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ] && [ "${HOST_ROLE}" == "master" ] && [ "${HOST_SID}" == "1" ] && [ -f "${PERMIT_RELOAD_LOCK}" ]
 then
     log "reload ks console svc"
     retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml

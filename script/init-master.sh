@@ -159,5 +159,7 @@ log "Mark Master"
 kubeadm init phase mark-control-plane --node-name ${HOST_INSTANCE_ID}
 retry kubectl patch node ${HOST_INSTANCE_ID} -p '{"metadata":{"labels":{"role":"master"}}}'
 
+touch ${PERMIT_RELOAD_LOCK}
+chmod 400 ${PERMIT_RELOAD_LOCK}
 log "===end init master==="
 exit 0
