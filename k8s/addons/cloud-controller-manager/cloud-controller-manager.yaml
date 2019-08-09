@@ -59,7 +59,7 @@ spec:
           effect: NoSchedule
       volumes:
       - hostPath:
-          path: /etc/kubernetes
+          path: /opt/kubernetes/k8s/addons/cloud-controller-manager
         name: k8s
       - name:  qingcloud
         secret:

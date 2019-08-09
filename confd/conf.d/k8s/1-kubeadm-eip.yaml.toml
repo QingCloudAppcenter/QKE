@@ -1,6 +1,6 @@
 [template]
 src = "k8s/1-kubeadm-eip.yaml.tmpl"
-dest = "/etc/kubernetes/kubeadm-eip.yaml"
+dest = "/opt/kubernetes/k8s/kubernetes/kubeadm-eip.yaml"
 keys = [
     "/",
 ]

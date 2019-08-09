@@ -45,9 +45,9 @@ then
 fi
 
 log "is kubeadm config file exist" 
-if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+if [ -f "${KUBEADM_CONFIG_PATH}" ]
 then
-    cat /etc/kubernetes/kubeadm-config.yaml
+    cat ${KUBEADM_CONFIG_PATH}
 fi
 
 if [ "${CLUSTER_ETCD_ID}" == "null" ]
