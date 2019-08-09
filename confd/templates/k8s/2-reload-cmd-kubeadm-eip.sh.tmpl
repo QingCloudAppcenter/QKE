@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH="$PATH:/usr/local/bin"
-KUBEADM_FILE=/etc/kubernetes/kubeadm-eip.yaml
+KUBEADM_EIP_FILE=/opt/kubernetes/k8s/kubernetes/kubeadm-eip.yaml
 
 function retry {
   local n=1
@@ -21,8 +21,8 @@ function retry {
 }
 
 function get_eip_from_kubeadm {
-    if [ "$(cat ${KUBEADM_FILE}|shyaml get-length apiServer.certSANs)" == "2" ] && [ "$(cat /etc/kubernetes/kubeadm-eip.yaml |shyaml get-value apiServer.certSANs.1)" != "" ]; then
-        echo $(cat /etc/kubernetes/kubeadm-eip.yaml |shyaml get-value apiServer.certSANs.1)
+    if [ "$(cat ${KUBEADM_EIP_FILE}|shyaml get-length apiServer.certSANs)" == "2" ] && [ "$(cat ${KUBEADM_EIP_FILE} |shyaml get-value apiServer.certSANs.1)" != "" ]; then
+        echo $(cat ${KUBEADM_EIP_FILE} |shyaml get-value apiServer.certSANs.1)
     else
         echo ""
     fi

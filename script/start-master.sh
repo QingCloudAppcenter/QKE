@@ -26,10 +26,10 @@ swapoff -a
 log "ensure dir"
 ensure_dir
 
-if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+if [ -f "${KUBEADM_CONFIG_PATH}" ]
 then
     log "read kubeadm config"
-    cat /etc/kubernetes/kubeadm-config.yaml
+    cat ${KUBEADM_CONFIG_PATH}
 fi
 
 # Reload config

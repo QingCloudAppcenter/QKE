@@ -49,10 +49,10 @@ then
     log "replace lb ip on hosts" 
     replace_hosts_lb_ip
 fi
-if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+if [ -f "${KUBEADM_CONFIG_PATH}" ]
 then
     log "read kubeadm config" 
-    cat /etc/kubernetes/kubeadm-config.yaml
+    cat ${KUBEADM_CONFIG_PATH}
 fi
 
 touch ${PERMIT_RELOAD_LOCK}

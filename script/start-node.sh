@@ -51,10 +51,10 @@ log "restart kubelet"
 retry systemctl start kubelet
 is_systemd_active kubelet
 
-if [ -f "/etc/kubernetes/kubeadm-config.yaml" ]
+if [ -f "${KUBEADM_CONFIG_PATH}" ]
 then
     log "cat kubeadm config"
-    cat /etc/kubernetes/kubeadm-config.yaml
+    cat ${KUBEADM_CONFIG_PATH}
 fi
 log "===end start node==="
 exit 0
