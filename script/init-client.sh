@@ -54,5 +54,8 @@ then
     log "read kubeadm config" 
     cat /etc/kubernetes/kubeadm-config.yaml
 fi
+
+touch ${PERMIT_RELOAD_LOCK}
+chmod 400 ${PERMIT_RELOAD_LOCK}
 log "===end init client==="
 exit 0

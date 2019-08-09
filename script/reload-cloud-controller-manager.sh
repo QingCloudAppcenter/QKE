@@ -19,10 +19,7 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ "${HOST_ROLE}" == "master" ]
+if [ "${HOST_ROLE}" == "master" ] &&[ "${HOST_SID}" == "1" ] && [ -f "${PERMIT_RELOAD_LOCK}" ]
 then
-    if [ "${HOST_SID}" == "1" ]
-    then
-        install_cloud_controller_manager
-    fi
+    install_cloud_controller_manager
 fi

@@ -19,6 +19,11 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
+if [ ! -f "${PERMIT_RELOAD_LOCK}" ]
+then
+    exit 0
+fi
+
 if [ ${ENV_MASTER_COUNT} -gt 1 ]
 then
     replace_kubeadm_config_lb_ip
