@@ -72,7 +72,7 @@
     "kubelet_running_pod_count":"正在运行的 Pod 数量",
     "Fluent forward server":"Fluent 日志转发服务",
     "The fluent log server address to forward server, format host:port":"Fluent 日志服务器，用于将 Kubernetes 收集到的日志转发到用户自定义的日志服务，格式 host:port",
-    "The Docker hub registry mirrors, use a blank to split multi registry mirrors":"镜像服务地址，多个用空格隔开",
+    "The Docker hub registry mirrors, use a blank to split multi registry mirrors":"镜像服务地址，多个用 1 个空格隔开",
     "Install KubeSphere": "安装 KubeSphere",
     "Whether to install kubesphere": "选择是否安装 KubeSphere",
     "Elastic Search server":"Elastic Search 服务器",
