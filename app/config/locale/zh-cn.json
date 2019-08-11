@@ -103,7 +103,7 @@
     "Service Subnet": "Service 网段",
     "Choose a proxy mode": "选择一种 Proxy Mode",
     "Kubernetes EIP Address": "Kubernetes EIP 地址",
-    "Get Kubeconfig":"获取 Kubeconfig",
+    "Get Kubeconfig":"如果用户希望本地使用 kubectl 通过 EIP 访问 Kubernetes Apiserver ，请在 QKE 配置参数中填写 Kubernetes EIP 地址，需要用户自己确保 EIP 和 Kubernetes Apiserver 的连通性，并将 kubeconfig 中 server 的 IP 地址修改为 EIP 地址，端口修改为适当的端口。",
     "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23":"远程访问 Kubernetes 的 EIP 地址，请按照点分十进制填写 EIP。例如：139.198.123.23",
     "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
