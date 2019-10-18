@@ -419,7 +419,7 @@
           "type": "string",
           "changeable": false,
           "default": "calico",
-          "range":["calico","flannel"],
+          "range":["calico","flannel","hostnic"],
           "required": "no"
         },
         {

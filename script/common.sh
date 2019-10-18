@@ -175,6 +175,10 @@ function install_network_plugin(){
     "flannel")
         retry kubectl apply -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml
         ;;
+    "hostnic")
+        kubectl create secret generic qcsecret-hostnic --from-file=/etc/qingcloud/client.yaml -n kube-system
+        kubectl apply -f /opt/kubernetes/k8s/hostnic-deploy.yaml
+        ;;
     *)
         echo "Invalid network plugin" ${NETWORK_PLUGIN} >&2
         exit -1
