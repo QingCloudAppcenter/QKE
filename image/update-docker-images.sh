@@ -35,6 +35,7 @@ docker pull dockerhub.qingcloud.com/calico/kube-controllers:v3.1.3
 docker pull dockerhub.qingcloud.com/coreos/flannel:v0.11.0-amd64
 docker pull dockerhub.qingcloud.com/google_containers/cluster-proportional-autoscaler-amd64:1.3.0
 docker pull kubesphere/cloud-controller-manager:v1.3.6
+docker pull kubesphere/hostnic:v1.0.0-alpha3
 
 # QingCloud CSI
 docker pull dockerhub.qingcloud.com/k8scsi/csi-provisioner:v0.2.1
