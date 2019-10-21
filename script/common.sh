@@ -112,7 +112,7 @@ function ensure_dir(){
 }
 
 function make_dir(){
-    retry mkdir -p /data/var/lib
+    retry mkdir -p /data/var/lib/kubelet
     retry mkdir -p /data/root
     retry mkdir -p /root/.kube
     retry mkdir -p /etc/kubernetes/pki

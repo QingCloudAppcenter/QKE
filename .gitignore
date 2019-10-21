@@ -3,3 +3,4 @@ vendor
 *.tar.gz
 appcenter-cli
 __generated
+.idea*

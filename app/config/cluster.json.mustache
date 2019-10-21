@@ -11,8 +11,8 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-w1e9oiyv",
-                    "zone": "sh1a"
+                    "image": "img-wtgnxk6y",
+                    "zone": "ap2a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
                 "count": {{cluster.master.count}},
@@ -102,8 +102,8 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-w1e9oiyv",
-                    "zone": "sh1a"
+                    "image": "img-wtgnxk6y",
+                    "zone": "ap2a"
                 },
                 "instance_class": 0,
                 "count": {{cluster.node_perf.count}},
@@ -171,8 +171,8 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-w1e9oiyv",
-                    "zone": "sh1a"
+                    "image": "img-wtgnxk6y",
+                    "zone": "ap2a"
                 },
                 "instance_class": 1,
                 "count": {{cluster.node_super_perf.count}},
@@ -240,8 +240,8 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-w1e9oiyv",
-                    "zone": "sh1a"
+                    "image": "img-wtgnxk6y",
+                    "zone": "ap2a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
                 "count": 1,
@@ -298,7 +298,7 @@
             "kubesphere_eip": {{env.kubesphere_eip}},
             "kubernetes_eip": {{env.kubernetes_eip}},
             "install_kubesphere":{{env.install_kubesphere}},
-            "kubernetes_version": "v1.13.5"
+            "kubernetes_version": "v1.15.5"
         },
         "display_tabs": {
             "kubesphere_console": {

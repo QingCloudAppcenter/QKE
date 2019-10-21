@@ -34,7 +34,7 @@ EOF
 
 apt-get update
 
-apt-get install -y kubelet=${KUBE_BIN_VER} kubeadm=${KUBE_BIN_VER} kubectl=${KUBE_BIN_VER}
+apt-get install -y kubelet=${KUBE_BIN_VER} kubectl=${KUBE_BIN_VER} kubeadm=${KUBE_BIN_VER}
 
 apt-mark hold kubelet kubeadm kubectl
 
