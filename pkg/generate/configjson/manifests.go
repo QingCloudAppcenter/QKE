@@ -1,4 +1,7 @@
-{
+package configjson
+
+const (
+	QKEConfigJson = `{
   "type": "array",
   "properties": [
     {
@@ -44,7 +47,7 @@
           "description": "Choose an etcd cluster to store QKE cluster data, leave empty if you choose to use internal etcd service in QKE cluster. For better performance, It is recommended that using external etcd service",
           "type": "service",
           "limits": {
-            "app-fdyvu2wk": []
+            "{{ .EtcdAppId }}": []
           },
           "tag": ["ETCD", "etcd"],
           "default": "",
@@ -56,7 +59,7 @@
           "description": "Choose an external ELK cluster to store QKE logging data, leave empty if you choose to use internal ES service in QKE cluster. For resizing ES, It is recommended that using external ELK service",
           "type": "service",
           "limits": {
-            "app-p6au3oyq": []
+            "{{ .ELKAppId }}": []
           },
           "tag": ["ELK", "elk"],
           "default": "",
@@ -84,15 +87,15 @@
             {
               "key": "instance_class",
               "label": "resource type",
-              "description": "The instance type for the cluster to run, such as high performance, high performance plus",
+              "description": "The instance type for the cluster to run, such as standard, enterprise1",
               "type": "integer",
               "default": 1,
               "range": [
-                0,
-                1
+                101,
+                201
               ],
               "required": "yes",
-              "resource_group": [0,1,0,1]
+              "resource_group": [101,201,101,201]
             },
             {
               "key": "cpu",
@@ -143,9 +146,9 @@
           ]
         },
         {
-          "key": "node_perf",
-          "label": "performance node",
-          "description": "perfornamce node properties",
+          "key": "node_std",
+          "label": "standard node",
+          "description": "standard node properties",
           "type": "array",
           "properties": [
                {
@@ -207,9 +210,9 @@
           ]
         },
         {
-          "key": "node_super_perf",
-          "label": "super performance node",
-          "description": "super performance node properties",
+          "key": "node_ent1",
+          "label": "enterprise1 node",
+          "description": "enterprise1 node properties",
           "type": "array",
           "properties": [
               {
@@ -279,15 +282,15 @@
           {
               "key": "instance_class",
               "label": "resource type",
-              "description": "The instance type for the cluster to run, such as high performance, high performance plus",
+              "description": "The instance type for the cluster to run, such as standard, enterprise1",
               "type": "integer",
               "default": 1,
               "range": [
-                  0,
-                  1
+                  101,
+                  201
               ],
               "required": "yes",
-              "resource_group": [0,1,0,1]
+              "resource_group": [101,201,101,201]
           },
           {
               "key": "cpu",
@@ -529,3 +532,5 @@
     }
   ]
 }
+`
+)

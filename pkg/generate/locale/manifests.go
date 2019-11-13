@@ -1,4 +1,7 @@
-{
+package locale
+
+const (
+	QKELocale = `{
     "QKE properties":"QKE 属性",
     "The name of the QKE cluster":"QKE 集群名称",
     "name":"名称",
@@ -12,7 +15,7 @@
     "count":"数量",
     "Number of master for the cluster to create":"主节点数量",
     "resource type":"资源类型",
-    "The instance type for the cluster to run, such as high performance, high performance plus":"集群运行所需资源类型，例如高性能，超高性能",
+    "The instance type for the cluster to run, such as standard, enterprise1":"集群运行所需资源类型，例如基础型，企业型e1",
     "volume size":"硬盘大小",
     "The volume size for each instance":"每个机器的硬盘大小",
     "load balancer": "负载均衡器",
@@ -21,7 +24,7 @@
     "performance node":"性能型节点",
     "super performance node":"超高性能型节点",
     "standard node": "基础型节点", 
-    "enterprise node": "企业型节点", 
+    "enterprise1 node": "企业型e1节点", 
     "premium node": "专业增强型节点",
     "performance node properties":"性能型节点属性",
     "super performance node properties":"超高性能型节点属性",
@@ -72,7 +75,7 @@
     "kubelet_running_pod_count":"正在运行的 Pod 数量",
     "Fluent forward server":"Fluent 日志转发服务",
     "The fluent log server address to forward server, format host:port":"Fluent 日志服务器，用于将 Kubernetes 收集到的日志转发到用户自定义的日志服务，格式 host:port",
-    "The Docker hub registry mirrors, use a blank to split multi registry mirrors":"镜像服务地址，多个用空格隔开",
+    "The Docker hub registry mirrors, use a blank to split multi registry mirrors":"镜像服务地址，多个用 1 个空格隔开",
     "Install KubeSphere": "安装 KubeSphere",
     "Whether to install kubesphere": "选择是否安装 KubeSphere",
     "Elastic Search server":"Elastic Search 服务器",
@@ -103,9 +106,11 @@
     "Service Subnet": "Service 网段",
     "Choose a proxy mode": "选择一种 Proxy Mode",
     "Kubernetes EIP Address": "Kubernetes EIP 地址",
-    "Get Kubeconfig":"获取 Kubeconfig",
+    "Get Kubeconfig":"如果用户希望本地使用 kubectl 通过 EIP 访问 Kubernetes Apiserver ，请在 QKE 配置参数中填写 Kubernetes EIP 地址，需要用户自己确保 EIP 和 Kubernetes Apiserver 的连通性，并将 kubeconfig 中 server 的 IP 地址修改为 EIP 地址，端口修改为适当的端口。",
     "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23":"远程访问 Kubernetes 的 EIP 地址，请按照点分十进制填写 EIP。例如：139.198.123.23",
     "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
     "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/default-audit-policy-file.yaml Audit file path: /etc/kubernetes/audit/audit-log-file": "设置审计日志规则文件路径，路径为空不记录审计日志，用户需确保审计日志规则文件在所有主节点存在。预置默认审计日志规则文件路径：/etc/kubernetes/audit/default-audit-policy-file.yaml，审计日志存放路径：/etc/kubernetes/audit/audit-log-file"
   }
+`
+)
