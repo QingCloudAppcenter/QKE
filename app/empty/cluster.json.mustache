@@ -11,7 +11,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-klehzytj",
+                    "image": "img-za61dwq8",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -37,7 +37,7 @@
                 "services": {
                     "init": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-master.sh",
                         "timeout": 1200
                     },
                     "start": {
@@ -66,19 +66,19 @@
                 }
             },
             {
-                "role": "node_std",
+                "role": "node_normal",
                 "container": {
                     "type": "kvm",
-                    "image": "img-klehzytj",
+                    "image": "img-za61dwq8",
                     "zone": "sh1a"
                 },
                 "instance_class": 101,
-                "count": {{cluster.node_std.count}},
-                "cpu": {{cluster.node_std.cpu}},
-                "memory": {{cluster.node_std.memory}},
+                "count": {{cluster.node_normal.count}},
+                "cpu": {{cluster.node_normal.cpu}},
+                "memory": {{cluster.node_normal.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.node_std.volume_size}},
+                    "size": {{cluster.node_normal.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -102,19 +102,19 @@
                 "advanced_actions": ["scale_horizontal"]
             },
             {
-                "role": "node_ent1",
+                "role": "node_performance",
                 "container": {
                     "type": "kvm",
-                    "image": "img-klehzytj",
+                    "image": "img-za61dwq8",
                     "zone": "sh1a"
                 },
                 "instance_class": 201,
-                "count": {{cluster.node_ent1.count}},
-                "cpu": {{cluster.node_ent1.cpu}},
-                "memory": {{cluster.node_ent1.memory}},
+                "count": {{cluster.node_performance.count}},
+                "cpu": {{cluster.node_performance.cpu}},
+                "memory": {{cluster.node_performance.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.node_ent1.volume_size}},
+                    "size": {{cluster.node_performance.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -141,7 +141,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-klehzytj",
+                    "image": "img-za61dwq8",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},

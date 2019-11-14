@@ -84,7 +84,7 @@
             {
               "key": "instance_class",
               "label": "resource type",
-              "description": "The instance type for the cluster to run, such as high performance, high performance plus",
+              "description": "The instance type for the cluster to run, such as standard, enterprise1",
               "type": "integer",
               "default": 1,
               "range": [
@@ -143,9 +143,9 @@
           ]
         },
         {
-          "key": "node_std",
-          "label": "standard node",
-          "description": "standard node properties",
+          "key": "node_normal",
+          "label": "normal node",
+          "description": "normal node properties",
           "type": "array",
           "properties": [
                {
@@ -207,9 +207,9 @@
           ]
         },
         {
-          "key": "node_ent1",
-          "label": "enterprise1 node",
-          "description": "enterprise1 node properties",
+          "key": "node_performance",
+          "label": "performance node",
+          "description": "performance node properties",
           "type": "array",
           "properties": [
               {

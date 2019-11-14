@@ -27,9 +27,15 @@ KUBE_BIN_VER=$(echo $HYPERKUBE_VERSION|sed  's/^v//g')-00
 echo KUBE_BIN_VER = ${KUBE_BIN_VER}
 apt-get update && apt-get install -y apt-transport-https curl
 
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+# We cannot reach the Kubernetes official site and use ali mirror instead.
+# curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+# cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+# deb https://apt.kubernetes.io/ kubernetes-xenial main
+# EOF
+
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
 
 apt-get update
