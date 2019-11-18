@@ -118,14 +118,6 @@ then
     exit 255
 fi
 
-# update kubesphere
-${K8S_HOME}/image/update-kubesphere.sh
-if [[ $? != 0 ]]
-then
-    echo "[ERROR]: Update kubesphere failed!"
-    exit 255
-fi
-
 # update audit
 ${K8S_HOME}/image/update-audit.sh
 if [[ $? != 0 ]]
