@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 bootstrapTokens:
 - ttl: "0"
@@ -8,17 +8,17 @@ nodeRegistration:
     max-pods: "{{getv "/env/max_pods"}}"
     fail-swap-on: "true"
     root-dir: "/data/var/lib/kubelet"
-    allow-privileged: "true"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
-    pod-infra-container-image: "dockerhub.qingcloud.com/google_containers/pause:3.1"
+    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
+    pod-infra-container-image: "gcr.azk8s.cn/google_containers/pause:3.1"
     anonymous-auth: "true"
+    read-only-port: "10255"
     rotate-certificates: "true"
     authorization-mode: "AlwaysAllow"
     v: "{{getv "/env/kube_log_level"}}"
     kube-reserved: "cpu=200m,memory=512M"
     system-reserved: "cpu=200m,memory=512M"
 ---
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 etcd:
   external:
@@ -40,7 +40,7 @@ apiServer:
     service-node-port-range: "{{getv "/env/cluster_port_range"}}"
     etcd-prefix: "{{getv "/cluster/cluster_id"}}"
     insecure-port: "8080"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
+    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
     v: "{{getv "/env/kube_log_level"}}"
   extraVolumes:
   - name: "audit-volume"
@@ -55,14 +55,14 @@ controllerManager:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
     cloud-provider: "external"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
+    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
 scheduler:
   extraArgs:
     v: "{{getv "/env/kube_log_level"}}"
     address: "0.0.0.0"
-    feature-gates: "KubeletPluginsWatcher=false,CSINodeInfo=false,CSIDriverRegistry=false,RotateKubeletClientCertificate=true"
+    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
 certificatesDir: "/etc/kubernetes/pki"
-imageRepository: "dockerhub.qingcloud.com/google_containers"
+imageRepository: "gcr.azk8s.cn/google_containers"
 useHyperKubeImage: true
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1

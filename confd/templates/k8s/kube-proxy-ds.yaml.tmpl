@@ -21,13 +21,13 @@ spec:
       priorityClassName: system-node-critical
       containers:
       - name: kube-proxy
-        image: dockerhub.qingcloud.com/google_containers/hyperkube:{{getv "/env/kubernetes_version"}}
+        image: gcr.azk8s.cn/google_containers/hyperkube:{{getv "/env/kubernetes_version"}}
         imagePullPolicy: IfNotPresent
         command:
         - /usr/local/bin/kube-proxy
         - --v={{getv "/env/kube_log_level"}}
         - --masquerade-all
-        - --feature-gates=AllAlpha=true,DynamicKubeletConfig=false,RotateKubeletServerCertificate=false,RotateKubeletClientCertificate=false,SupportIPVSProxyMode=true
+        - --feature-gates=AllAlpha=true,CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true
         - --proxy-mode={{getv "/env/proxy_mode"}}
         - --kubeconfig=/var/lib/kube-proxy/kubeconfig.conf
         - --cluster-cidr={{getv "/env/pod_subnet"}}
