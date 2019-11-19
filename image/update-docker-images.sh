@@ -20,4 +20,16 @@ echo "*************************"
 
 systemctl start docker
 
+docker pull gcr.azk8s.cn/google-containers/hyperkube:v1.15.5
+docker pull gcr.azk8s.cn/google-containers/pause:3.1
+
+# Network
+docker pull gcr.azk8s.cn/google_containers/coredns:1.3.1
+docker pull gcr.azk8s.cn/google_containers/coredns:1.3.1
+docker pull calico/node:v3.8.4
+docker pull calico/cni:v3.8.4
+docker pull calico/kube-controllers:v3.8.4
+docker pull calico/pod2daemon-flexvol:v3.8.4
+docker pull quay.io/coreos/flannel:v0.11.0-amd64
+
 systemctl stop docker

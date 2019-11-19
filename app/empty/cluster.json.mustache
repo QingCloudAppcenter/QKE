@@ -11,7 +11,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-za61dwq8",
+                    "image": "img-16dp6j6r",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -69,7 +69,7 @@
                 "role": "node_normal",
                 "container": {
                     "type": "kvm",
-                    "image": "img-za61dwq8",
+                    "image": "img-16dp6j6r",
                     "zone": "sh1a"
                 },
                 "instance_class": 101,
@@ -105,7 +105,7 @@
                 "role": "node_performance",
                 "container": {
                     "type": "kvm",
-                    "image": "img-za61dwq8",
+                    "image": "img-16dp6j6r",
                     "zone": "sh1a"
                 },
                 "instance_class": 201,
@@ -141,7 +141,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-za61dwq8",
+                    "image": "img-16dp6j6r",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -153,7 +153,7 @@
                 "services": {
                     "init": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-client.sh",
                         "timeout": 1200
                     },
                     "start": {
