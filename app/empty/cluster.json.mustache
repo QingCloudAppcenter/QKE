@@ -6,12 +6,13 @@
             "etcd_service": {{cluster.etcd_service}},
             "elk_service": {{cluster.elk_service}}
         },
+        "need_tag": true,
         "nodes": [
             {
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-16dp6j6r",
+                    "image": "img-27gwlg9x",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -42,7 +43,7 @@
                     },
                     "start": {
                         "order": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/start-master.sh",
                         "timeout": 1200
                     },
                     "stop": {
@@ -62,14 +63,14 @@
                     }
                 },
                 "custom_metadata": {
-                    "cmd": "/opt/kubernetes/script/empty-script.sh"
+                    "cmd": "/opt/kubernetes/script/get-kubeadm-token.sh"
                 }
             },
             {
                 "role": "node_normal",
                 "container": {
                     "type": "kvm",
-                    "image": "img-16dp6j6r",
+                    "image": "img-27gwlg9x",
                     "zone": "sh1a"
                 },
                 "instance_class": 101,
@@ -86,12 +87,12 @@
                 "services": {
                     "init": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-node.sh",
                         "timeout": 1200
                     },
                     "start": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
                         "timeout": 1200
                     },
                     "stop": {
@@ -105,7 +106,7 @@
                 "role": "node_performance",
                 "container": {
                     "type": "kvm",
-                    "image": "img-16dp6j6r",
+                    "image": "img-27gwlg9x",
                     "zone": "sh1a"
                 },
                 "instance_class": 201,
@@ -122,12 +123,12 @@
                 "services": {
                     "init": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/init-node.sh",
                         "timeout": 1200
                     },
                     "start": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
                         "timeout": 1200
                     },
                     "stop": {
@@ -141,7 +142,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-16dp6j6r",
+                    "image": "img-27gwlg9x",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -158,12 +159,12 @@
                     },
                     "start": {
                         "order": 3,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/start-client.sh",
                         "timeout": 1200
                     }
                 },
                 "custom_metadata": {
-                    "cmd": "/opt/kubernetes/script/empty-script.sh"
+                    "cmd": "/opt/kubernetes/script/get-loadbalancer-ip.sh"
                 }
             }
         ],

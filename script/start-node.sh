@@ -38,9 +38,6 @@ log "finish joining node"
 
 # Write kubelet configuration to file "/var/lib/kubelet/config.yaml"
 # Write kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
-log "write kubelet config"
-kubeadm init phase kubelet-start --config  ${KUBEADM_CONFIG_PATH}
-log "finish writing kubelet config"
 
 # Reload config
 log "daemon reload"

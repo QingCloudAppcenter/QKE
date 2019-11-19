@@ -209,18 +209,14 @@ function join_node(){
 
     log "Token: ${initToken}"
     retry ${initToken}
-
+    /opt/qingcloud/app-agent/bin/confd -onetime
     touch ${NODE_INIT_LOCK}
     chmod 400 ${NODE_INIT_LOCK}
 }
 
 function install_csi(){
     retry kubectl create configmap csi-qingcloud --from-file=config.yaml=/etc/qingcloud/client.yaml --namespace=kube-system
-    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-secret.yaml
-    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-rbac.yaml
-    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-rbac.yaml
-    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-controller-sts.yaml
-    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-node-ds.yaml
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-release-v1.1.0.yaml
     retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml
 }
 
@@ -352,4 +348,12 @@ function restart_kubernetes_control_plane(){
         log "restart kubernetes scheduler"
         kill -9 $(pidof kube-scheduler)
     fi
+}
+
+function kubelet_active(){
+  retry systemctl is-active kubelet >/dev/null 2>&1
+}
+
+function docker_active(){
+  retry systemctl is-active docker >/dev/null 2>&1
 }

@@ -370,7 +370,6 @@ function create_lb_and_firewall(){
         echo "Failed to get firewall id"
         return 102
     fi
-
     log "add rule on firewall"
     add_rule_on_firewall ${firewall_id}
     if [ $? -ne 0 ]
@@ -421,6 +420,20 @@ function create_lb_and_firewall(){
         return 106
     fi
 
+    log "attach tags"
+    qingcloud iaas attach-tags -p ${CLUSTER_TAG}:security_group:${firewall_id} -f /etc/qingcloud/client.yaml
+    if [ $? -ne 0 ]
+    then
+        log "Failed to attach tag on firewall"
+        return 110
+    fi
+    qingcloud iaas attach-tags -p ${CLUSTER_TAG}:loadbalancer:${loadbalancer_id} -f /etc/qingcloud/client.yaml
+    if [ $? -ne 0 ]
+    then
+        log "Failed to attach tag on loadbalancer"
+        return 111
+    fi
+
     log "create loadbalancer listener"
     create_loadbalancer_listener ${loadbalancer_id}
     if [ $? -ne 0 ]
@@ -444,7 +457,7 @@ function create_lb_and_firewall(){
     apply_loadbalancer ${loadbalancer_id}
     if [ $? -ne 0 ]
     then
-        log "Faile to apply loadbalancer"
+        log "Failed to apply loadbalancer"
         return 109
     fi
     log "create firewall finished"
