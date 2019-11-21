@@ -28,25 +28,26 @@ cp /root/.kube/config ${KUBECONFIG}
 
 log  "Install KubeSphere"
 if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
-    log  "Install Cloud Controller Manager"
-    install_cloud_controller_manager
-    log  "Pre-check tiller"
-    retry is_tiller_available
-    if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
-    then
-        log  "Install KubeSphere"
-        install_kubesphere
-    fi
-    log  "Finish install KubeSphere"
     touch ${CLIENT_INIT_LOCK}
+    # log  "Install Cloud Controller Manager"
+    # install_cloud_controller_manager
+    # log  "Pre-check tiller"
+    # retry is_tiller_available
+    # if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
+    # then
+    #     log  "Install KubeSphere"
+    #     install_kubesphere
+    # fi
+    # log  "Finish install KubeSphere"
     chmod 400 ${CLIENT_INIT_LOCK}
 fi
 
 # for cluster recovery
 if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
 then
-    retry kubectl get nodes --kubeconfig ${KUBECONFIG}
-    retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+    log "install kubesphere resource"
+    # retry kubectl get nodes --kubeconfig ${KUBECONFIG}
+    # retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
 fi
 
 log  "===end start client==="

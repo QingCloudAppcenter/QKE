@@ -146,9 +146,9 @@ then
     # Install Coredns
     log "Install Coredns"
     retry install_coredns
-    # # Install Storage Plugin
-    # log "Install CSI"
-    # retry install_csi
+    # Install Storage Plugin
+    log "Install CSI"
+    retry install_csi
     # # Install Tiller
     # log "Install Tiller"
     # retry install_tiller

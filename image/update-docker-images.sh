@@ -32,4 +32,14 @@ docker pull calico/kube-controllers:v3.8.4
 docker pull calico/pod2daemon-flexvol:v3.8.4
 docker pull quay.io/coreos/flannel:v0.11.0-amd64
 
+# Storage
+docker pull quay.io/k8scsi/csi-provisioner:v1.4.0
+docker pull quay.io/k8scsi/csi-attacher:v2.0.0
+docker pull quay.io/k8scsi/csi-snapshotter:v1.2.2
+docker pull quay.io/k8scsi/csi-resizer:v0.2.0
+docker pull csiplugin/csi-qingcloud:v1.1.0
+docker pull quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
+
+
+
 systemctl stop docker
