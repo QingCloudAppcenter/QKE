@@ -234,7 +234,8 @@ function install_tiller(){
 }
 
 function install_cloud_controller_manager(){
-    retry kubectl create secret generic qcsecret --from-file=/etc/qingcloud/client.yaml -n kube-system
+    retry kubectl create configmap lbconfig --from-file=/opt/kubernetes/k8s/addons/cloud-controller-manager/qingcloud.yaml -n kube-system
+    retry kubectl create secret generic qcsecret --from-file=config.yaml=/etc/qingcloud/client.yaml -n kube-system
     retry kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml
 }
 

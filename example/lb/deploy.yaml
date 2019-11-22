@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-nginx
+spec:
+  selector:
+    matchLabels:
+      app: deploy-nginx
+      tier: csi-qingcloud
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deploy-nginx
+        tier: csi-qingcloud
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        imagePullPolicy: IfNotPresent

@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  mylbapp
+  annotations:
+    service.beta.kubernetes.io/qingcloud-load-balancer-type: "0"
+    service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids: "eip-b8cyyabw"
+spec:
+  selector:
+    app:  deploy-nginx
+  type:  LoadBalancer 
+  ports:
+  - name:  http  #这里指定port name,如果有多个http端口，都可以指定为http
+    port:  8088
+    targetPort:  80
