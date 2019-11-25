@@ -149,9 +149,9 @@ then
     # Install Storage Plugin
     log "Install CSI"
     retry install_csi
-    # # Install Tiller
-    # log "Install Tiller"
-    # retry install_tiller
+    # Install Tiller
+    log "Install Tiller"
+    retry install_tiller
 fi
 
 # Mark Master

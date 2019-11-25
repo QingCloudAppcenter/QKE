@@ -41,6 +41,7 @@ docker pull quay.io/k8scsi/csi-resizer:v0.2.0
 docker pull csiplugin/csi-qingcloud:v1.1.0
 docker pull quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
 
-
+# tiller
+docker pull gcr.azk8s.cn/kubernetes-helm/tiller:v2.12.3
 
 systemctl stop docker

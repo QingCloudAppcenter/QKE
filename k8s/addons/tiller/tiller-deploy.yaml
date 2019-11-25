@@ -26,7 +26,7 @@ spec:
           value: kube-system
         - name: TILLER_HISTORY_MAX
           value: "0"
-        image: dockerhub.qingcloud.com/kubernetes_helm/tiller:v2.12.3
+        image: gcr.azk8s.cn/kubernetes-helm/tiller:v2.12.3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
