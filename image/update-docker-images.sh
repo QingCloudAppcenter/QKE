@@ -31,6 +31,7 @@ docker pull calico/cni:v3.8.4
 docker pull calico/kube-controllers:v3.8.4
 docker pull calico/pod2daemon-flexvol:v3.8.4
 docker pull quay.io/coreos/flannel:v0.11.0-amd64
+docker pull kubesphere/cloud-controller-manager:v1.4.2
 
 # Storage
 docker pull quay.io/k8scsi/csi-provisioner:v1.4.0
