@@ -12,7 +12,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-enx2gc9x",
+                    "image": "img-ni836t52",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -47,7 +47,7 @@
                         "timeout": 1200
                     },
                     "stop": {
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/stop-master.sh",
                         "timeout": 1200
                     },
                     "destroy": {
@@ -58,7 +58,7 @@
                     },
                     "scale_in":{
                         "nodes_to_execute_on": 1,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/scale-in.sh",
                         "timeout": 86400
                     }
                 },
@@ -67,19 +67,19 @@
                 }
             },
             {
-                "role": "node_normal",
+                "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-enx2gc9x",
+                    "image": "img-ni836t52",
                     "zone": "sh1a"
                 },
                 "instance_class": 101,
-                "count": {{cluster.node_normal.count}},
-                "cpu": {{cluster.node_normal.cpu}},
-                "memory": {{cluster.node_normal.memory}},
+                "count": {{cluster.node_perf.count}},
+                "cpu": {{cluster.node_perf.cpu}},
+                "memory": {{cluster.node_perf.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.node_normal.volume_size}},
+                    "size": {{cluster.node_perf.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -96,26 +96,26 @@
                         "timeout": 1200
                     },
                     "stop": {
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/stop-node.sh",
                         "timeout": 1200
                     }
                 },
                 "advanced_actions": ["scale_horizontal"]
             },
             {
-                "role": "node_performance",
+                "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-enx2gc9x",
+                    "image": "img-ni836t52",
                     "zone": "sh1a"
                 },
                 "instance_class": 201,
-                "count": {{cluster.node_performance.count}},
-                "cpu": {{cluster.node_performance.cpu}},
-                "memory": {{cluster.node_performance.memory}},
+                "count": {{cluster.node_super_perf.count}},
+                "cpu": {{cluster.node_super_perf.cpu}},
+                "memory": {{cluster.node_super_perf.memory}},
                 "passphraseless": "ssh-rsa",
                 "volume": {
-                    "size": {{cluster.node_performance.volume_size}},
+                    "size": {{cluster.node_super_perf.volume_size}},
                     "mount_point": "/data",
                     "mount_options": "defaults,noatime",
                     "filesystem": "ext4"
@@ -132,7 +132,7 @@
                         "timeout": 1200
                     },
                     "stop": {
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/stop-node.sh",
                         "timeout": 1200
                     }
                 },
@@ -142,7 +142,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-enx2gc9x",
+                    "image": "img-ni836t52",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},

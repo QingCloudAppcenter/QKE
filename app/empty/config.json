@@ -143,7 +143,7 @@
           ]
         },
         {
-          "key": "node_normal",
+          "key": "node_perf",
           "label": "normal node",
           "description": "normal node properties",
           "type": "array",
@@ -207,9 +207,9 @@
           ]
         },
         {
-          "key": "node_performance",
-          "label": "performance node",
-          "description": "performance node properties",
+          "key": "node_super_perf",
+          "label": "high performance node",
+          "description": "high performance node properties",
           "type": "array",
           "properties": [
               {

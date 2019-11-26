@@ -8,10 +8,10 @@ cat >> /etc/hosts.swap << HOSTS_FILE
 {{- range $dir := lsdir "/hosts/master/"}}{{$ip := printf "/hosts/master/%s/ip" $dir}}{{$sid := printf "/hosts/master/%s/sid" $dir}}
 {{getv $ip}} {{$dir}} master{{getv $sid}}
 {{- end}}
-{{- range $dir := lsdir "/hosts/node_performance/"}}{{$ip := printf "/hosts/node_performance/%s/ip" $dir}}
+{{- range $dir := lsdir "/hosts/node_perf/"}}{{$ip := printf "/hosts/node_perf/%s/ip" $dir}}
 {{getv $ip}} {{$dir}}
 {{- end}}
-{{- range $dir := lsdir "/hosts/node_normal/"}}{{$ip := printf "/hosts/node_normal/%s/ip" $dir}}
+{{- range $dir := lsdir "/hosts/node_super_perf/"}}{{$ip := printf "/hosts/node_super_perf/%s/ip" $dir}}
 {{getv $ip}} {{$dir}}
 {{- end}}
 
