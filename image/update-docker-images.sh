@@ -25,7 +25,6 @@ docker pull gcr.azk8s.cn/google-containers/pause:3.1
 
 # Network
 docker pull gcr.azk8s.cn/google_containers/coredns:1.3.1
-docker pull gcr.azk8s.cn/google_containers/coredns:1.3.1
 docker pull calico/node:v3.8.4
 docker pull calico/cni:v3.8.4
 docker pull calico/kube-controllers:v3.8.4

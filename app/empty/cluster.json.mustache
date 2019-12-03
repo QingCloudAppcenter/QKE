@@ -12,7 +12,7 @@
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-a3dfybpv",
+                    "image": "img-rb50adt6",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -60,6 +60,12 @@
                         "nodes_to_execute_on": 1,
                         "cmd": "/opt/kubernetes/script/scale-in.sh",
                         "timeout": 86400
+                    },
+                    "upgrade": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                    },
+                    "rollback": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     }
                 },
                 "custom_metadata": {
@@ -70,7 +76,7 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-a3dfybpv",
+                    "image": "img-rb50adt6",
                     "zone": "sh1a"
                 },
                 "instance_class": 101,
@@ -98,6 +104,12 @@
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
                         "timeout": 1200
+                    },
+                    "upgrade": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                    },
+                    "rollback": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     }
                 },
                 "advanced_actions": ["scale_horizontal"]
@@ -106,7 +118,7 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-a3dfybpv",
+                    "image": "img-rb50adt6",
                     "zone": "sh1a"
                 },
                 "instance_class": 201,
@@ -134,6 +146,12 @@
                     "stop": {
                         "cmd": "/opt/kubernetes/script/stop-node.sh",
                         "timeout": 1200
+                    },
+                    "upgrade": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                    },
+                    "rollback": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     }
                 },
                 "advanced_actions": ["scale_horizontal"]
@@ -142,7 +160,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-a3dfybpv",
+                    "image": "img-rb50adt6",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},

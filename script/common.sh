@@ -22,6 +22,7 @@ KUBECONFIG="/etc/kubernetes/admin.conf"
 NODE_INIT_LOCK="/data/kubernetes/node-init.lock"
 PERMIT_RELOAD_LOCK="/data/kubernetes/permit-reload.lock"
 CLIENT_INIT_LOCK="/data/kubernetes/client-init.lock"
+UPGRADE_DIR="/upgrade"
 ORIGINAL_DIR=("/var/lib/docker" "/root/.docker"
 "/var/lib/etcd" "/var/lib/kubelet" 
 "/etc/kubernetes" "/root/.kube")
@@ -219,6 +220,13 @@ function install_csi(){
     retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
 }
 
+function uninstall_csi(){
+    retry kubectl delete configmap csi-qingcloud --namespace=kube-system  --kubeconfig ${KUBECONFIG}
+    retry kubectl delete -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-release-v1.1.0.yaml  --kubeconfig ${KUBECONFIG}
+    retry kubectl delete -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
+
+}
+
 function install_coredns(){
     kubeadm init phase addon coredns --config ${KUBEADM_CONFIG_PATH}  --kubeconfig ${KUBECONFIG}
     retry kubectl apply -f /opt/kubernetes/k8s/addons/coredns/coredns-rbac.yaml  --kubeconfig ${KUBECONFIG}
@@ -236,6 +244,12 @@ function install_cloud_controller_manager(){
     retry kubectl create configmap lbconfig --from-file=/opt/kubernetes/k8s/addons/cloud-controller-manager/qingcloud.yaml -n kube-system  --kubeconfig ${KUBECONFIG}
     retry kubectl create secret generic qcsecret --from-file=config.yaml=/etc/qingcloud/client.yaml -n kube-system  --kubeconfig ${KUBECONFIG}
     retry kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml  --kubeconfig ${KUBECONFIG}
+}
+
+# Uninstall cloud controller manager in QKE v1.0.x
+function uninstall_cloud_controller_manager(){
+    retry kubectl delete secret qcsecret -n kube-system  --kubeconfig ${KUBECONFIG}
+    retry kubectl delete -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml  --kubeconfig ${KUBECONFIG}
 }
 
 function replace_kv(){
@@ -356,4 +370,56 @@ function kubelet_active(){
 
 function docker_active(){
   retry systemctl is-active docker >/dev/null 2>&1
+}
+
+function upgrade_k8s_image(){
+    # load images
+    docker load < ${UPGRADE_DIR}/hyperkube-v1.15.5.img
+    docker load < ${UPGRADE_DIR}/pause-3.1.img
+
+    # Network
+    docker load < ${UPGRADE_DIR}/coredns-1.3.1.img
+    docker load < ${UPGRADE_DIR}/calico-node-v3.8.4.img
+    docker load < ${UPGRADE_DIR}/calico-cni-v3.8.4.img
+    docker load < ${UPGRADE_DIR}/calico-kube-controllers-v3.8.4.img
+    docker load < ${UPGRADE_DIR}/calico-pod2daemon-flexvol-v3.8.4.img
+    docker load < ${UPGRADE_DIR}/flannel-v0.11.0-amd64.img
+    docker load < ${UPGRADE_DIR}/cloud-controller-manager-v1.4.2.img
+
+    # Storage
+    docker load < ${UPGRADE_DIR}/csi-provisioner-v1.4.0.img
+    docker load < ${UPGRADE_DIR}/csi-attacher-v2.0.0.img
+    docker load < ${UPGRADE_DIR}/csi-snapshotter-v1.2.2.img
+    docker load < ${UPGRADE_DIR}/csi-resizer-v0.2.0.img
+    docker load < ${UPGRADE_DIR}/csi-qingcloud-v1.1.0.img
+    docker load < ${UPGRADE_DIR}/csi-node-driver-registrar-v1.2.0.img
+
+    # tiller
+    docker load < ${UPGRADE_DIR}/tiller-v2.12.3.img
+}
+
+function upgrade_copy_confd(){
+    rm -rf /etc/confd/conf.d/k8s/*
+    rm -rf /etc/confd/templates/k8s/*
+    cp -r ${UPGRADE_DIR}/kubernetes/confd/conf.d /etc/confd/
+    cp -r ${UPGRADE_DIR}/kubernetes/confd/templates /etc/confd/
+    /opt/qingcloud/app-agent/bin/confd -onetime
+}
+
+function upgrade_kubelet(){
+    systemctl stop kubelet
+    cp /upgrade/kubelet /usr/bin/kubelet
+    cp /upgrade/kubectl /usr/bin/kubectl
+    cp /upgrade/kubeadm /usr/bin/kubeadm
+    systemctl start kubelet
+}
+
+function upgrade_csi(){
+    uninstall_csi
+    install_csi
+}
+
+function upgrade_cloud_controller_manager(){
+    uninstall_cloud_controller_manager
+    install_cloud_controller_manager
 }

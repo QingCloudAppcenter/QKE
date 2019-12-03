@@ -691,7 +691,7 @@ spec:
           name: socket-dir
       - args:
         - --config=/etc/config/config.yaml
-        - --drivername=disk.csi.qingcloud.com
+        - --drivername=csi-qingcloud
         - --endpoint=$(CSI_ENDPOINT)
         - --maxvolume=10
         - --nodeid=$(NODE_ID)
@@ -754,7 +754,7 @@ spec:
       containers:
       - args:
         - --csi-address=$(ADDRESS)
-        - --kubelet-registration-path=/var/lib/kubelet/plugins/disk.csi.qingcloud.com/csi.sock
+        - --kubelet-registration-path=/var/lib/kubelet/plugins/csi-qingcloud/csi.sock
         - --v=5
         env:
         - name: ADDRESS
@@ -766,7 +766,7 @@ spec:
               command:
               - /bin/sh
               - -c
-              - rm -rf /registration/disk.csi.qingcloud.com /registration/disk.csi.qingcloud.com-reg.sock
+              - rm -rf /registration/csi-qingcloud /registration/csi-qingcloud-reg.sock
         name: node-registrar
         resources:
           limits:
@@ -782,7 +782,7 @@ spec:
           name: registration-dir
       - args:
         - --config=/etc/config/config.yaml
-        - --drivername=disk.csi.qingcloud.com
+        - --drivername=csi-qingcloud
         - --endpoint=$(CSI_ENDPOINT)
         - --maxvolume=10
         - --nodeid=$(NODE_ID)
@@ -841,7 +841,7 @@ spec:
           path: /data/var/lib/kubelet
         name: kubelet-dir
       - hostPath:
-          path: /var/lib/kubelet/plugins/disk.csi.qingcloud.com/
+          path: /var/lib/kubelet/plugins/csi-qingcloud/
           type: DirectoryOrCreate
         name: socket-dir
       - hostPath:
@@ -865,7 +865,7 @@ metadata:
     app: csi-qingcloud
     owner: yunify
     ver: v1.1.0
-  name: disk.csi.qingcloud.com
+  name: csi-qingcloud
   namespace: kube-system
 spec:
   attachRequired: true
