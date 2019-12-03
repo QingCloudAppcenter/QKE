@@ -2,5 +2,5 @@ zone: {{getv "/cluster/zone"}}
 defaultVxNetForLB: {{getv "/cluster/vxnet"}}
 clusterID: {{getv "/cluster/cluster_id"}}
 isApp: true
-tagIDs:
-- {{getv "/cluster/cluster_tag"}}
+{{if exists "/cluster/cluster_tag"}}tagIDs:
+- {{getv "/cluster/cluster_tag"}}{{end}}

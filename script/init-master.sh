@@ -110,9 +110,6 @@ kubeadm init phase kubeconfig all --config ${KUBEADM_CONFIG_PATH}
 # Restart the kubelet service 
 log "set kubelet args"
 kubeadm init phase kubelet-start --config ${KUBEADM_CONFIG_PATH}
-# Write Static Pod manifest
-log "write manifest"
-kubeadm init phase control-plane all --config ${KUBEADM_CONFIG_PATH}
 
 # Start Kubelet
 log "restart kubelet"
@@ -137,12 +134,12 @@ then
     # Create Token
     log "Create Token"
     retry kubeadm init phase bootstrap-token --config ${KUBEADM_CONFIG_PATH} --kubeconfig ${KUBECONFIG}
-    # Install Addons
-    log "Install Kube-Proxy"
-    retry install_kube_proxy
     # Install Network Plugin
     log "Install Network Plugin"
     retry install_network_plugin
+    # Install Addons
+    log "Install Kube-Proxy"
+    retry install_kube_proxy
     # Install Coredns
     log "Install Coredns"
     retry install_coredns
@@ -157,7 +154,6 @@ fi
 # Mark Master
 log "Mark Master"
 kubeadm init phase mark-control-plane --node-name ${HOST_INSTANCE_ID}
-retry kubectl patch node ${HOST_INSTANCE_ID} -p '{"metadata":{"labels":{"role":"master"}}}'
 
 touch ${PERMIT_RELOAD_LOCK}
 chmod 400 ${PERMIT_RELOAD_LOCK}

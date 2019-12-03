@@ -1,0 +1,6 @@
+[template]
+src = "k8s/kube-scheduler.yaml.tmpl"
+dest = "/etc/kubernetes/manifests/kube-scheduler.yaml"
+keys = [
+    "/",
+]

@@ -4,4 +4,4 @@ dest = "/opt/kubernetes/k8s/kubernetes/kubeadm-config.yaml"
 keys = [
     "/",
 ]
-reload_cmd = "/opt/kubernetes/script/reload-kubeadm-config.sh"
+# reload_cmd = "/opt/kubernetes/script/reload-kubeadm-config.sh"

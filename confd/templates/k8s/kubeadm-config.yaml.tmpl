@@ -2,21 +2,6 @@ apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 bootstrapTokens:
 - ttl: "0"
-nodeRegistration:
-  kubeletExtraArgs:
-    cgroup-driver: "cgroupfs"
-    max-pods: "{{getv "/env/max_pods"}}"
-    fail-swap-on: "true"
-    root-dir: "/data/var/lib/kubelet"
-    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
-    pod-infra-container-image: "gcr.azk8s.cn/google_containers/pause:3.1"
-    anonymous-auth: "true"
-    read-only-port: "10255"
-    rotate-certificates: "true"
-    authorization-mode: "AlwaysAllow"
-    v: "{{getv "/env/kube_log_level"}}"
-    kube-reserved: "cpu=200m,memory=512M"
-    system-reserved: "cpu=200m,memory=512M"
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
@@ -33,34 +18,9 @@ networking:
 kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
 controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServer:
-  extraArgs:
-    audit-policy-file: "{{getv "/env/kube_audit_file"}}"
-    audit-log-path: "/etc/kubernetes/audit/audit-log-file"
-    audit-log-maxage: "{{getv "/env/keep_audit_days"}}"
-    service-node-port-range: "{{getv "/env/cluster_port_range"}}"
-    etcd-prefix: "{{getv "/cluster/cluster_id"}}"
-    insecure-port: "8080"
-    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
-    v: "{{getv "/env/kube_log_level"}}"
-  extraVolumes:
-  - name: "audit-volume"
-    hostPath: "/etc/kubernetes/audit"
-    mountPath: "/etc/kubernetes/audit"
-    readOnly: false
-    pathType: Directory
   certSANs:
   - "{{if eq "3" (getv "/env/master_count")}}loadbalancer{{else}}{{ join (getvs "/hosts/master/*/instance_id") "" }}{{end}}"
 {{if ne "" (getv "/env/kubernetes_eip")}}  - "{{getv "/env/kubernetes_eip"}}"{{end}}  
-controllerManager:
-  extraArgs:
-    v: "{{getv "/env/kube_log_level"}}"
-    cloud-provider: "external"
-    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
-scheduler:
-  extraArgs:
-    v: "{{getv "/env/kube_log_level"}}"
-    address: "0.0.0.0"
-    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
 certificatesDir: "/etc/kubernetes/pki"
 imageRepository: "gcr.azk8s.cn/google_containers"
 useHyperKubeImage: true
@@ -71,21 +31,3 @@ mode: "{{getv "/env/proxy_mode"}}"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
----
-apiVersion: kubeadm.k8s.io/v1beta2
-kind: JoinConfiguration
-nodeRegistration:
-  kubeletExtraArgs:
-    cgroup-driver: "cgroupfs"
-    max-pods: "{{getv "/env/max_pods"}}"
-    fail-swap-on: "true"
-    root-dir: "/data/var/lib/kubelet"
-    feature-gates: "CSINodeInfo=true,CSIDriverRegistry=true,KubeletPluginsWatcher=true,VolumeSnapshotDataSource=true,ExpandCSIVolumes=true,VolumePVCDataSource=true"
-    pod-infra-container-image: "gcr.azk8s.cn/google_containers/pause:3.1"
-    anonymous-auth: "true"
-    read-only-port: "10255"
-    rotate-certificates: "true"
-    authorization-mode: "AlwaysAllow"
-    v: "{{getv "/env/kube_log_level"}}"
-    kube-reserved: "cpu=200m,memory=512M"
-    system-reserved: "cpu=200m,memory=512M"

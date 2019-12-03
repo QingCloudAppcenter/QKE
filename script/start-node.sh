@@ -36,9 +36,6 @@ log "join node"
 join_node
 log "finish joining node"
 
-# Write kubelet configuration to file "/var/lib/kubelet/config.yaml"
-# Write kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
-
 # Reload config
 log "daemon reload"
 systemctl daemon-reload

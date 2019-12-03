@@ -13,7 +13,7 @@ parameters:
   stepSize: "{{$type := getv "/host/volume_class"}}{{if or  (eq "1" $type) (eq "2" $type) (eq "5" $type)}}100{{else}}10{{end}}"
   fsType: "ext4"
   replica: "2"
-  tags: "{{getv "/cluster/cluster_tag"}}"
+{{if exists "/cluster/cluster_tag"}}  tags: "{{getv "/cluster/cluster_tag"}}"{{end}}
 reclaimPolicy: Delete
 {{- $records := split (getv "/cluster/resource_limits/valid_volume_classes") ","}}{{range $index, $element := $records}}{{if (eq "5" $element)}}
 ---
@@ -31,6 +31,6 @@ parameters:
   stepSize: "100"
   fsType: "ext4"
   replica: "2"
-  tags: "{{getv "/cluster/cluster_tag"}}"
+{{if exists "/cluster/cluster_tag"}}  tags: "{{getv "/cluster/cluster_tag"}}"{{end}}
 reclaimPolicy: Delete
 {{end}}{{- end}}
