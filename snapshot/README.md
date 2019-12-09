@@ -19,7 +19,7 @@ quit
 ## 格式化
 ```
 mkfs.ext4 /dev/vdc
-mount /dev/vdc /upgrade
+mount /dev/vdc /opt/upgrade
 ```
 
 # 拷贝数据

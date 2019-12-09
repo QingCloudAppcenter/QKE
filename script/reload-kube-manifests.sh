@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2019 The KubeSphere Authors.
+# Copyright 2018 The KubeSphere Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,4 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir -p /upgrade
+SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+K8S_HOME=$(dirname "${SCRIPTPATH}")
+
+source "${K8S_HOME}/script/common.sh"
+
+if [ "${HOST_ROLE}" != "master" ]
+then
+    rm -rf /etc/kubernetes/manifests/*
+fi
+exit 0

@@ -16,11 +16,21 @@
 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 K8S_HOME=$(dirname "${SCRIPTPATH}")
-SNAPSHOT_DIR="/upgrade"
+UPGRADE_DIR="/opt/upgrade"
+UPGRADE_IMAGE="${UPGRADE_DIR}/image"
+UPGRADE_BINARY="${UPGRADE_DIR}/binary"
+UPGRADE_SCRIPT="${UPGRADE_SCRIPT}/script"
 
 set -o errexit
 set -o nounset
 set -o pipefail
+
+${K8S_HOME}/snapshot/update-dir.sh
+if [[ $? != 0 ]]
+then
+    echo "[ERROR]: Update dir failed!"
+    exit 255
+fi
 
 # update images
 ${K8S_HOME}/snapshot/update-image.sh

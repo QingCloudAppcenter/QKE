@@ -22,7 +22,6 @@ KUBECONFIG="/etc/kubernetes/admin.conf"
 NODE_INIT_LOCK="/data/kubernetes/node-init.lock"
 PERMIT_RELOAD_LOCK="/data/kubernetes/permit-reload.lock"
 CLIENT_INIT_LOCK="/data/kubernetes/client-init.lock"
-UPGRADE_DIR="/upgrade"
 ORIGINAL_DIR=("/var/lib/docker" "/root/.docker"
 "/var/lib/etcd" "/var/lib/kubelet" 
 "/etc/kubernetes" "/root/.kube")
@@ -30,6 +29,11 @@ DATA_DIR=("/data/var/lib/docker" "/data/root/.docker"
 "/data/var/lib/etcd" "/data/var/lib/kubelet"
 "/data/kubernetes" "/data/root/.kube")
 PATH=$PATH:/usr/local/bin
+UPGRADE_DIR="/opt/upgrade"
+UPGRADE_IMAGE="${UPGRADE_DIR}/image"
+UPGRADE_BINARY="${UPGRADE_DIR}/binary"
+UPGRADE_SCRIPT="${UPGRADE_DIR}/kubernetes"
+
 source "/data/env.sh"
 source "${K8S_HOME}/version"
 
@@ -119,6 +123,12 @@ function make_dir(){
     retry mkdir -p /etc/kubernetes/pki
 }
 
+function init_client_dir(){
+    mkdir -p /etc/kubernetes
+    mkdir -p /root/.kube
+    touch ${CLIENT_INIT_LOCK}
+}
+
 # Copy dir into data volume
 function link_dir(){
     log "link dir"
@@ -174,6 +184,7 @@ function install_network_plugin(){
         retry kubectl apply -f /opt/kubernetes/k8s/addons/calico/calico-deploy.yaml  --kubeconfig ${KUBECONFIG}
         ;;
     "flannel")
+        retry kubectl delete -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml  --kubeconfig ${KUBECONFIG}
         retry kubectl apply -f /opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml  --kubeconfig ${KUBECONFIG}
         ;;
     *)
@@ -209,7 +220,7 @@ function join_node(){
     done
 
     log "Token: ${initToken}"
-    retry ${initToken}
+    retry ${initToken} --ignore-preflight-errors DirAvailable--etc-kubernetes-manifests
     touch ${NODE_INIT_LOCK}
     chmod 400 ${NODE_INIT_LOCK}
 }
@@ -218,13 +229,6 @@ function install_csi(){
     retry kubectl create configmap csi-qingcloud --from-file=config.yaml=/etc/qingcloud/client.yaml --namespace=kube-system  --kubeconfig ${KUBECONFIG}
     retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-release-v1.1.0.yaml  --kubeconfig ${KUBECONFIG}
     retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
-}
-
-function uninstall_csi(){
-    retry kubectl delete configmap csi-qingcloud --namespace=kube-system  --kubeconfig ${KUBECONFIG}
-    retry kubectl delete -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-release-v1.1.0.yaml  --kubeconfig ${KUBECONFIG}
-    retry kubectl delete -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
-
 }
 
 function install_coredns(){
@@ -373,53 +377,84 @@ function docker_active(){
 }
 
 function upgrade_k8s_image(){
+    docker image prune -a -f
     # load images
-    docker load < ${UPGRADE_DIR}/hyperkube-v1.15.5.img
-    docker load < ${UPGRADE_DIR}/pause-3.1.img
+    docker load < ${UPGRADE_IMAGE}/hyperkube-v1.15.5.img
+    docker load < ${UPGRADE_IMAGE}/pause-3.1.img
 
     # Network
-    docker load < ${UPGRADE_DIR}/coredns-1.3.1.img
-    docker load < ${UPGRADE_DIR}/calico-node-v3.8.4.img
-    docker load < ${UPGRADE_DIR}/calico-cni-v3.8.4.img
-    docker load < ${UPGRADE_DIR}/calico-kube-controllers-v3.8.4.img
-    docker load < ${UPGRADE_DIR}/calico-pod2daemon-flexvol-v3.8.4.img
-    docker load < ${UPGRADE_DIR}/flannel-v0.11.0-amd64.img
-    docker load < ${UPGRADE_DIR}/cloud-controller-manager-v1.4.2.img
+    docker load < ${UPGRADE_IMAGE}/coredns-1.3.1.img
+    docker load < ${UPGRADE_IMAGE}/calico-node-v3.8.4.img
+    docker load < ${UPGRADE_IMAGE}/calico-cni-v3.8.4.img
+    docker load < ${UPGRADE_IMAGE}/calico-kube-controllers-v3.8.4.img
+    docker load < ${UPGRADE_IMAGE}/calico-pod2daemon-flexvol-v3.8.4.img
+    docker load < ${UPGRADE_IMAGE}/flannel-v0.11.0-amd64.img
+    docker load < ${UPGRADE_IMAGE}/cloud-controller-manager-v1.4.2.img
 
     # Storage
-    docker load < ${UPGRADE_DIR}/csi-provisioner-v1.4.0.img
-    docker load < ${UPGRADE_DIR}/csi-attacher-v2.0.0.img
-    docker load < ${UPGRADE_DIR}/csi-snapshotter-v1.2.2.img
-    docker load < ${UPGRADE_DIR}/csi-resizer-v0.2.0.img
-    docker load < ${UPGRADE_DIR}/csi-qingcloud-v1.1.0.img
-    docker load < ${UPGRADE_DIR}/csi-node-driver-registrar-v1.2.0.img
+    docker load < ${UPGRADE_IMAGE}/csi-provisioner-v1.4.0.img
+    docker load < ${UPGRADE_IMAGE}/csi-attacher-v2.0.0.img
+    docker load < ${UPGRADE_IMAGE}/csi-snapshotter-v1.2.2.img
+    docker load < ${UPGRADE_IMAGE}/csi-resizer-v0.2.0.img
+    docker load < ${UPGRADE_IMAGE}/csi-qingcloud-v1.1.0.img
+    docker load < ${UPGRADE_IMAGE}/csi-node-driver-registrar-v1.2.0.img
 
     # tiller
-    docker load < ${UPGRADE_DIR}/tiller-v2.12.3.img
+    docker load < ${UPGRADE_IMAGE}/tiller-v2.12.3.img
+    docker load < ${UPGRADE_IMAGE}/nginx-1.14-alpine.img
 }
 
 function upgrade_copy_confd(){
+    rm -rf ${PERMIT_RELOAD_LOCK}
     rm -rf /etc/confd/conf.d/k8s/*
     rm -rf /etc/confd/templates/k8s/*
     cp -r ${UPGRADE_DIR}/kubernetes/confd/conf.d /etc/confd/
     cp -r ${UPGRADE_DIR}/kubernetes/confd/templates /etc/confd/
+    systemctl restart confd
     /opt/qingcloud/app-agent/bin/confd -onetime
+    touch ${PERMIT_RELOAD_LOCK}
+    chmod 400 ${PERMIT_RELOAD_LOCK}
 }
 
-function upgrade_kubelet(){
-    systemctl stop kubelet
-    cp /upgrade/kubelet /usr/bin/kubelet
-    cp /upgrade/kubectl /usr/bin/kubectl
-    cp /upgrade/kubeadm /usr/bin/kubeadm
-    systemctl start kubelet
+function upgrade_binary(){
+    retry systemctl stop kubelet
+    retry cp ${UPGRADE_BINARY}/kubelet /usr/bin/kubelet
+    retry cp ${UPGRADE_BINARY}/kubectl /usr/bin/kubectl
+    retry cp ${UPGRADE_BINARY}/kubeadm /usr/bin/kubeadm
+    retry systemctl start kubelet
 }
 
 function upgrade_csi(){
-    uninstall_csi
-    install_csi
+    # delete sts and ds
+    kubectl delete sts csi-qingcloud-controller -n kube-system --kubeconfig ${KUBECONFIG}
+    kubectl delete ds csi-qingcloud-node -n kube-system --kubeconfig ${KUBECONFIG}
+    # upgrade csi plugin
+    retry kubectl apply -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-release-v1.1.0.yaml  --kubeconfig ${KUBECONFIG}
+    # update storage class
+    kubectl delete -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
+    kubectl create -f /opt/kubernetes/k8s/addons/qingcloud-csi/csi-sc.yaml  --kubeconfig ${KUBECONFIG}
 }
 
 function upgrade_cloud_controller_manager(){
-    uninstall_cloud_controller_manager
-    install_cloud_controller_manager
+    kubectl delete secret qcsecret -n kube-system  --kubeconfig ${KUBECONFIG}
+    kubectl delete -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml  --kubeconfig ${KUBECONFIG}
+
+    kubectl create configmap lbconfig --from-file=/opt/kubernetes/k8s/addons/cloud-controller-manager/qingcloud.yaml -n kube-system  --kubeconfig ${KUBECONFIG}
+    kubectl create secret generic qcsecret --from-file=config.yaml=/etc/qingcloud/client.yaml -n kube-system  --kubeconfig ${KUBECONFIG}
+    kubectl apply -f /opt/kubernetes/k8s/addons/cloud-controller-manager/cloud-controller-manager.yaml  --kubeconfig ${KUBECONFIG}
+}
+
+function upgrade_scripts(){
+    mv /opt/kubernetes /opt/old-kubernetes
+    cp -r ${UPGRADE_SCRIPT} /opt
+}
+
+function upgrade_overlay(){
+    arr=$(ls -l /var/lib/docker/overlay2 | grep '^l' | awk '{print $9}')
+    for layer in ${arr[@]}
+    do
+        echo $layer
+        rm -rf /var/lib/docker/overlay2/$layer
+        cp -r /opt/overlay2/$layer /var/lib/docker/overlay2/
+    done
 }

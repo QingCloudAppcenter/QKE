@@ -42,5 +42,6 @@ docker pull quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
 
 # tiller
 docker pull gcr.azk8s.cn/kubernetes-helm/tiller:v2.12.3
+docker pull nginx:1.14-alpine
 
 systemctl stop docker

@@ -19,6 +19,5 @@ UPGRADE_IMAGE="${UPGRADE_DIR}/image"
 UPGRADE_BINARY="${UPGRADE_DIR}/binary"
 UPGRADE_SCRIPT="${UPGRADE_SCRIPT}/script"
 
-cp /usr/bin/kubelet ${UPGRADE_BINARY}
-cp /usr/bin/kubeadm ${UPGRADE_BINARY}
-cp /usr/bin/kubectl ${UPGRADE_BINARY}
+mkdir -p ${UPGRADE_BINARY}
+mkdir -p ${UPGRADE_IMAGE}

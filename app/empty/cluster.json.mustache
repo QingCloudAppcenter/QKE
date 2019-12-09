@@ -6,13 +6,58 @@
             "etcd_service": {{cluster.etcd_service}},
             "elk_service": {{cluster.elk_service}}
         },
+        "upgrade_policy": [
+            "appv-53p2pg79",
+            "appv-e5ni6ltd"
+        ],
+        "upgrading_policy": "in-place",
+        "in-place-upgrade-nodes": [{
+                "container":{
+                    "snapshot": "ss-81cj2dpv",
+                    "zone": "sh1a"
+                },
+                "copy":[{
+                        "mount_role": "master",
+                        "mount_point": "/upgrade",
+                        "mount_options": "defaults,noatime",
+                        "filesystem": "ext4",
+                        "source": "/upgrade",
+                        "destination": "/opt/upgrade"
+                    },
+                    {
+                        "mount_role": "node_perf",
+                        "mount_point": "/upgrade",
+                        "mount_options": "defaults,noatime",
+                        "filesystem": "ext4",
+                        "source": "/upgrade",
+                        "destination": "/opt/upgrade"
+                    },
+                    {
+                        "mount_role": "node_super_perf",
+                        "mount_point": "/upgrade",
+                        "mount_options": "defaults,noatime",
+                        "filesystem": "ext4",
+                        "source": "/upgrade",
+                        "destination": "/opt/upgrade"
+                    },
+                    {
+                        "mount_role": "client",
+                        "mount_point": "/upgrade",
+                        "mount_options": "defaults,noatime",
+                        "filesystem": "ext4",
+                        "source": "/upgrade",
+                        "destination": "/opt/upgrade"
+                    }
+                ]
+            }
+        ],
         "need_tag": true,
         "nodes": [
             {
                 "role": "master",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rb50adt6",
+                    "image": "img-uu1a1ulv",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.master.instance_class}},
@@ -62,7 +107,8 @@
                         "timeout": 86400
                     },
                     "upgrade": {
-                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                        "order": 1,
+                        "cmd": "/opt/upgrade/kubernetes/script/upgrade-master.sh"
                     },
                     "rollback": {
                         "cmd": "/opt/kubernetes/script/empty-script.sh"
@@ -76,10 +122,10 @@
                 "role": "node_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rb50adt6",
+                    "image": "img-uu1a1ulv",
                     "zone": "sh1a"
                 },
-                "instance_class": 101,
+                "instance_class": 0,
                 "count": {{cluster.node_perf.count}},
                 "cpu": {{cluster.node_perf.cpu}},
                 "memory": {{cluster.node_perf.memory}},
@@ -106,7 +152,8 @@
                         "timeout": 1200
                     },
                     "upgrade": {
-                        "cmd": "/opt/kubernetes/script/empty-script.sh"
+                        "order": 2,
+                        "cmd": "/opt/upgrade/kubernetes/script/upgrade-node.sh"
                     },
                     "rollback": {
                         "cmd": "/opt/kubernetes/script/empty-script.sh"
@@ -118,10 +165,10 @@
                 "role": "node_super_perf",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rb50adt6",
+                    "image": "img-uu1a1ulv",
                     "zone": "sh1a"
                 },
-                "instance_class": 201,
+                "instance_class": 1,
                 "count": {{cluster.node_super_perf.count}},
                 "cpu": {{cluster.node_super_perf.cpu}},
                 "memory": {{cluster.node_super_perf.memory}},
@@ -140,7 +187,7 @@
                     },
                     "start": {
                         "order": 2,
-                        "cmd": "/opt/kubernetes/script/empty-script.sh",
+                        "cmd": "/opt/kubernetes/script/start-node.sh",
                         "timeout": 1200
                     },
                     "stop": {
@@ -148,6 +195,7 @@
                         "timeout": 1200
                     },
                     "upgrade": {
+                        "order": 2,
                         "cmd": "/opt/kubernetes/script/empty-script.sh"
                     },
                     "rollback": {
@@ -160,7 +208,7 @@
                 "role": "client",
                 "container": {
                     "type": "kvm",
-                    "image": "img-rb50adt6",
+                    "image": "img-uu1a1ulv",
                     "zone": "sh1a"
                 },
                 "instance_class": {{cluster.client.instance_class}},
@@ -179,6 +227,13 @@
                         "order": 3,
                         "cmd": "/opt/kubernetes/script/start-client.sh",
                         "timeout": 1200
+                    },
+                    "upgrade": {
+                        "order": 3,
+                        "cmd": "/opt/upgrade/kubernetes/script/upgrade-client.sh"
+                    },
+                    "rollback": {
+                        "cmd": "/opt/kubernetes/script/empty-script.sh"
                     }
                 },
                 "custom_metadata": {
