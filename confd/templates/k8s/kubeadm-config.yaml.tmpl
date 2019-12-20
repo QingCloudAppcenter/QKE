@@ -15,7 +15,7 @@ networking:
   dnsDomain: "{{getv "/env/api_external_domain"}}"
   podSubnet: "{{getv "/env/pod_subnet"}}"
   serviceSubnet: "{{getv "/env/service_subnet"}}"
-kubernetesVersion: "{{getv "/env/kubernetes_version"}}"
+kubernetesVersion: "v1.15.5"
 controlPlaneEndpoint: "{{if eq "3" (getv "/env/master_count")}}{{$role := getv "/host/role"}}{{if or (eq "client" $role) (eq "master" $role)}}SHOULD_BE_REPLACED{{else}}{{range $dir := lsdir "/hosts/client/"}}{{$ip := printf "/hosts/client/%s/token" $dir}}{{getv $ip}}{{end}}{{end}}{{else}}{{ join (getvs "/hosts/master/*/ip") "" }}{{end}}:6443"
 apiServer:
   certSANs:

@@ -19,11 +19,8 @@ K8S_HOME=$(dirname "${SCRIPTPATH}")
 
 source "${K8S_HOME}/script/common.sh"
 
-if [ ! -f "${PERMIT_RELOAD_LOCK}" ]
+if [ "${HOST_ROLE}" != "master" ]
 then
-    exit 0
+    rm -rf /etc/kubernetes/manifests/*
 fi
-
-systemctl daemon-reload
-kubelet_active && systemctl restart kubelet
 exit 0

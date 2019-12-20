@@ -22,6 +22,14 @@ ${K8S_HOME}/script/check-env.sh
 source "${K8S_HOME}/script/common.sh"
 export KUBECONFIG="/etc/kubernetes/admin.conf"
 log "===start start client==="
+
+if [ ! -d "/root/.kube" ]; then
+    # for upgrade
+    link_dir
+    set_password
+    touch ${CLIENT_INIT_LOCK}
+fi
+
 log  "copy kubeconfig from master1"
 scp root@master1:${KUBECONFIG} /root/.kube/config
 cp /root/.kube/config ${KUBECONFIG}

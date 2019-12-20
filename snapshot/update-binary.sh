@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018 The KubeSphere Authors.
+# Copyright 2019 The KubeSphere Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
-K8S_HOME=$(dirname "${SCRIPTPATH}")
+UPGRADE_DIR="/opt/upgrade"
+UPGRADE_IMAGE="${UPGRADE_DIR}/image"
+UPGRADE_BINARY="${UPGRADE_DIR}/binary"
+UPGRADE_SCRIPT="${UPGRADE_SCRIPT}/script"
 
-source "${K8S_HOME}/script/common.sh"
-
-if [ ! -f "${PERMIT_RELOAD_LOCK}" ]
-then
-    exit 0
-fi
-
-systemctl daemon-reload
-kubelet_active && systemctl restart kubelet
-exit 0
+cp /usr/bin/kubelet ${UPGRADE_BINARY}
+cp /usr/bin/kubeadm ${UPGRADE_BINARY}
+cp /usr/bin/kubectl ${UPGRADE_BINARY}
