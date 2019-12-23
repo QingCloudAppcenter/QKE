@@ -41,11 +41,11 @@ if [ ! -f "${CLIENT_INIT_LOCK}" ]; then
     install_cloud_controller_manager
     log  "Pre-check tiller"
     retry is_tiller_available
-    # if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
-    # then
-    #     log  "Install KubeSphere"
-    #     install_kubesphere
-    # fi
+    if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
+    then
+        log  "Install KubeSphere"
+        install_kubesphere
+    fi
     log  "Finish install KubeSphere"
     chmod 400 ${CLIENT_INIT_LOCK}
 fi
@@ -54,8 +54,8 @@ fi
 if [ "${ENV_INSTALL_KUBESPHERE}" == "true" ]
 then
     log "install kubesphere resource"
-    # retry kubectl get nodes --kubeconfig ${KUBECONFIG}
-    # retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
+    retry kubectl get nodes --kubeconfig ${KUBECONFIG}
+    retry kubectl apply -f /opt/kubernetes/k8s/kubesphere/ks-console/ks-console-svc.yaml
 fi
 
 log  "===end start client==="

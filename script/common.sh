@@ -73,8 +73,8 @@ function wait_installer_job_completed(){
   local delay=10
 
   while true; do
-    job_status=`kubectl get job -n kubesphere-system kubesphere-installer -o jsonpath='{.status.conditions[0].type}'`
-    [ "$job_status" == "Complete" ] && break || {
+    job_status=`kubectl exec -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=ks-install -o jsonpath='{.items[0].metadata.name}') ls kubesphere/playbooks/kubesphere_running`
+    [ "$job_status" == "kubesphere/playbooks/kubesphere_running" ] && break || {
       if [[ $n -lt $max ]]; then
         ((n++))
         log "Command failed. Attempt $n/$max:"
@@ -280,18 +280,14 @@ function install_kubesphere(){
         scp master1:/etc/kubernetes/pki/* /etc/kubernetes/pki/
     fi
 
-    log "install_kubesphere: create kubesphere-ca secret"
+    log "install_kubesphere: kubernetes secret"
     retry kubectl -n kubesphere-system create secret generic kubesphere-ca \
     --from-file=ca.crt=/etc/kubernetes/pki/ca.crt \
     --from-file=ca.key=/etc/kubernetes/pki/ca.key 
 
-    log "install_kubesphere: create front-proxy-client secret"
-    retry kubectl -n kubesphere-system create secret generic front-proxy-client \
-    --from-file=front-proxy-client.crt=/etc/kubernetes/pki/front-proxy-client.crt \
-    --from-file=front-proxy-client.key=/etc/kubernetes/pki/front-proxy-client.key
-
-    log "install_kubesphere: create kube-etcd-client-certs secret"
+    log "install_kubesphere: etcd secret"
     retry kubectl -n kubesphere-monitoring-system create secret generic kube-etcd-client-certs
+
     if [ "${CLUSTER_ELK_ID}" != "null" ]
     then
         log "install_kubesphere: create external elk svc"
