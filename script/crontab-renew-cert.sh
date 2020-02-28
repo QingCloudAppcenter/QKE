@@ -48,6 +48,7 @@ function is_needed_renew_cert(){
 }
 
 function renew_cert_files(){
+    needRestart=false
     for i in "${!CERT_FILES[@]}"
     do
         if [ ! -f ${CERT_FILES[$i]} ]
@@ -58,12 +59,16 @@ function renew_cert_files(){
         if [ $? -eq 0 ]
         then
             kubeadm alpha certs renew ${CERT_SUB_CMD[$i]} --config ${KUBEADM_CONFIG_PATH}
+            needRestart=true
         fi
     done
+    if [ $needRestart == true ]
+    then
+        restart_kubernetes_control_plane
+    fi
 }
 
 if [ "${HOST_ROLE}" == "master" ]
 then
     renew_cert_files
-    restart_kubernetes_control_plane
 fi
