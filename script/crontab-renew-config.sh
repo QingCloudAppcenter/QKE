@@ -52,6 +52,7 @@ function is_needed_renew_config(){
 }
 
 function renew_config_files(){
+    needRestart=false
     for i in "${!CONFIG_FILES[@]}"
     do
         if [ ! -f ${CONFIG_FILES[$i]} ]
@@ -63,12 +64,16 @@ function renew_config_files(){
         then
             rm -rf ${CONFIG_FILES[$i]}
             kubeadm init phase kubeconfig ${CONFIG_SUB_CMD[$i]} --config ${KUBEADM_CONFIG_PATH}
+            needRestart=true
         fi
     done
+    if [ $needRestart == true ]
+    then
+        restart_kubernetes_control_plane
+    fi
 }
 
 if [ "${HOST_ROLE}" == "master" ]
 then
     renew_config_files
-    restart_kubernetes_control_plane
 fi
