@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter
+spec:
+  selector:
+    app: jupyter
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8888
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+  labels:
+    app: jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyter
+  template:
+    metadata:
+      labels:
+        app: jupyter
+    spec:
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: jupyter
+        image: tensorflow/tensorflow:1.15.0-gpu-py3-jupyter
+        ports:
+        - containerPort: 8888

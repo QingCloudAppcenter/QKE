@@ -1,0 +1,10 @@
+[Unit]
+Description=check and rotate kube certs every midnight
+
+[Timer]
+OnCalendar=*-*-* 02:25:00
+RandomizedDelaySec=600
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target

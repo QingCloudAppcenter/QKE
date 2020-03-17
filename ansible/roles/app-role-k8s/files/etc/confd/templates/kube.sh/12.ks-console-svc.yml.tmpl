@@ -1,0 +1,9 @@
+flush /opt/app/current/conf/k8s/ks-console-svc.yml << KS_CONSOLE_EOF
+metadata:
+  annotations:
+    {{ $ksEipId := getv "/env/kubesphere_eip" "" }}
+    service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids: {{ with $ksEipId }}{{ . }}{{ else }}null{{ end }}
+    service.beta.kubernetes.io/qingcloud-load-balancer-type: {{ with $ksEipId }}"0"{{ else }}null{{ end }}
+spec:
+  type: {{ if $ksEipId }}LoadBalancer{{ else }}NodePort{{ end }}
+KS_CONSOLE_EOF

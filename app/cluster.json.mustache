@@ -1,0 +1,453 @@
+{
+  "name": {{cluster.name}},
+  "description": {{cluster.description}},
+  "vxnet": {{cluster.vxnet}},
+  "links": {
+    "etcd_service": {{cluster.etcd_service}},
+    "elk_service": {{cluster.elk_service}}
+  },
+  "need_tag": true,
+  "need_intranet_api_server": true,
+  "advanced_actions": ["scale_horizontal"],
+  "unsupported_actions": ["rollback"],
+  "upgrade_policy": [
+    "appv-53p2pg79",
+    "appv-e5ni6ltd"
+  ],
+  "upgrading_policy": "in-place-parallel",
+  "in-place-upgrade-nodes": [{
+    "container":{
+      "snapshot": "ss-bqe5wnqg",
+      "zone": "pek3a"
+    },
+    "copy":[{
+      "mount_role": "master",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "source": "/upgrade",
+      "destination": "/tmp/upgrade"
+    }, {
+      "mount_role": "node_perf",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "source": "/upgrade",
+      "destination": "/tmp/upgrade"
+    }, {
+      "mount_role": "node_super_perf",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "source": "/upgrade",
+      "destination": "/tmp/upgrade"
+    }]
+  }, {
+    "container":{
+      "snapshot": "ss-jv10de25",
+      "zone": "pek3a"
+    },
+    "copy":[{
+      "mount_role": "client",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "source": "/upgrade",
+      "destination": "/tmp/upgrade"
+    }]
+  }],
+  "upgrade_roles": {
+    "add": [
+      "node_gpu"
+    ]
+  },
+  "nodes": [{
+    "role": "master",
+    "container": {
+      "type": "kvm",
+      "image": "img-6frfg9s6",
+      "zone": "pek3a"
+    },
+    "instance_class": {{cluster.master.instance_class}},
+    "count": {{cluster.master.count}},
+    "cpu_model": {{cluster.master.cpu_model}},
+    "cpu": {{cluster.master.cpu}},
+    "memory": {{cluster.master.memory}},
+    "extra_quota": {
+      "volume": {
+        "size": 230,
+        "count": 14
+      },
+      "loadbalancer": 2,
+      "security_group": 2
+    },
+    "passphraseless": "ssh-rsa",
+    "advanced_actions": [],
+    "unsupported_actions": ["change_instance_class"],
+    "vertical_scaling_policy": "sequential",
+    "volume": {
+      "size": {{cluster.master.volume_size}},
+      "mount_point": "/data",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
+    },
+    "services": {
+      "start": {
+        "order": 1,
+        "cmd": "printf '%s\\n%s\\n' 'name: ANSIBLE_CALLBACK_WHITELIST' 'value: profile_tasks' | yq p - spec.template.spec.containers[0].env[+] | yq m -i -d5 /opt/app/current/conf/k8s/ks-installer-stable.yml -; appctl start",
+        "timeout": 1200
+      },
+      "init": {
+        "order": 1,
+        "post_start_service": true,
+        "cmd": "appctl init",
+        "timeout": 1800
+      },
+      "stop": {
+        "cmd": "appctl stop",
+        "timeout": 1200
+      },
+      "restart": {
+        "cmd": "appctl restart"
+      },
+      "scale_in": {
+        "pre_check": "appctl preScaleIn",
+        "cmd": "appctl scaleIn",
+        "timeout": 7500
+      },
+      "scale_out": {
+        "pre_check": "appctl preScaleOut",
+        "cmd": "appctl scaleOut",
+        "timeout": 1200
+      },
+      "upgrade": {
+        "order": 1,
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
+        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 10800
+      },
+      "rollback": {
+        "cmd": "rm -rf /tmp/upgrade"
+      },
+      "get_nodes_order": {
+        "event": ["upgrade"],
+        "cmd": "appctl getUpgradeOrder"
+      },
+      "docker_prune": {
+        "type": "custom",
+        "cmd": "appctl runDockerPrune",
+        "timeout": 3600,
+        "service_params": {
+          "max_days": {{service_params.docker_prune_days}}
+        }
+      },
+      "renew_certs": {
+        "type": "custom",
+        "cmd": "appctl renewCerts",
+        "timeout": 300
+      }
+    }
+  }, {
+    "role": "node_perf",
+    "container": {
+      "type": "kvm",
+      "image": "img-6frfg9s6",
+      "zone": "pek3a"
+    },
+    "instance_class": {{cluster.node_perf.instance_class}},
+    "count": {{cluster.node_perf.count}},
+    "cpu_model": {{cluster.node_perf.cpu_model}},
+    "cpu": {{cluster.node_perf.cpu}},
+    "memory": {{cluster.node_perf.memory}},
+    "passphraseless": "ssh-rsa",
+    "vertical_scaling_policy": "sequential",
+    "volume": {
+      "size": {{cluster.node_perf.volume_size}},
+      "mount_point": "/data",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
+    },
+    "services": {
+      "start": {
+        "order": 1,
+        "cmd": "appctl start",
+        "timeout": 1200
+      },
+      "init": {
+        "order": 1,
+        "post_start_service": true,
+        "cmd": "appctl init",
+        "timeout": 1200
+      },
+      "stop": {
+        "cmd": "appctl stop",
+        "timeout": 1200
+      },
+      "destroy": {
+        "post_stop_service": true,
+        "cmd": "true"
+      },
+      "restart": {
+        "cmd": "appctl restart"
+      },
+      "upgrade": {
+        "order": 1,
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
+        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 10800
+      },
+      "rollback": {
+        "cmd": "rm -rf /tmp/upgrade"
+      },
+      "docker_prune": {
+        "type": "custom",
+        "cmd": "appctl runDockerPrune",
+        "timeout": 3600,
+        "service_params": {
+          "max_days": {{service_params.docker_prune_days}}
+        }
+      }
+    }
+  }, {
+    "role": "node_super_perf",
+    "container": {
+      "type": "kvm",
+      "image": "img-6frfg9s6",
+      "zone": "pek3a"
+    },
+    "instance_class": {{cluster.node_super_perf.instance_class}},
+    "count": {{cluster.node_super_perf.count}},
+    "cpu_model": {{cluster.node_super_perf.cpu_model}},
+    "cpu": {{cluster.node_super_perf.cpu}},
+    "memory": {{cluster.node_super_perf.memory}},
+    "passphraseless": "ssh-rsa",
+    "vertical_scaling_policy": "sequential",
+    "volume": {
+      "size": {{cluster.node_super_perf.volume_size}},
+      "mount_point": "/data",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
+    },
+    "services": {
+      "start": {
+        "order": 1,
+        "cmd": "appctl start",
+        "timeout": 1200
+      },
+      "init": {
+        "order": 1,
+        "post_start_service": true,
+        "cmd": "appctl init",
+        "timeout": 1200
+      },
+      "stop": {
+        "cmd": "appctl stop",
+        "timeout": 1200
+      },
+      "destroy": {
+        "post_stop_service": true,
+        "cmd": "true"
+      },
+      "restart": {
+        "cmd": "appctl restart"
+      },
+      "upgrade": {
+        "order": 1,
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
+        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 10800
+      },
+      "rollback": {
+        "cmd": "rm -rf /tmp/upgrade"
+      },
+      "docker_prune": {
+        "type": "custom",
+        "cmd": "appctl runDockerPrune",
+        "timeout": 3600,
+        "service_params": {
+          "max_days": {{service_params.docker_prune_days}}
+        }
+      }
+    }
+  }, {
+    "role": "node_gpu",
+    "container": {
+      "type": "kvm",
+      "image": "img-vrf8fh87",
+      "zone": "pek3a"
+    },
+    "instance_class": {{cluster.node_gpu.instance_class}},
+    "count": {{cluster.node_gpu.count}},
+    "cpu": {{cluster.node_gpu.cpu}},
+    "cpu_model": {{cluster.node_gpu.cpu_model}},
+    "memory": {{cluster.node_gpu.memory}},
+    "gpu": {{cluster.node_gpu.gpu}},
+    "gpu_class": {{cluster.node_gpu.gpu_class}},
+    "passphraseless": "ssh-rsa",
+    "vertical_scaling_policy": "sequential",
+    "volume": {
+      "size": {{cluster.node_gpu.volume_size}},
+      "mount_point": "/data",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
+    },
+    "services": {
+      "start": {
+        "order": 1,
+        "cmd": "appctl start",
+        "timeout": 1200
+      },
+      "init": {
+        "order": 1,
+        "post_start_service": true,
+        "cmd": "appctl init",
+        "timeout": 1200
+      },
+      "stop": {
+        "cmd": "appctl stop",
+        "timeout": 1200
+      },
+      "destroy": {
+        "post_stop_service": true,
+        "cmd": "true"
+      },
+      "restart": {
+        "cmd": "appctl restart"
+      },
+      "docker_prune": {
+        "type": "custom",
+        "cmd": "appctl runDockerPrune",
+        "timeout": 3600,
+        "service_params": {
+          "max_days": {{service_params.docker_prune_days}}
+        }
+      }
+    }
+  }, {
+    "role": "client",
+    "container": {
+      "type": "kvm",
+      "image": "img-cilukwwj",
+      "zone": "pek3a"
+    },
+    "instance_class": {{cluster.client.instance_class}},
+    "count": {{cluster.client.count}},
+    "cpu": {{cluster.client.cpu}},
+    "memory": {{cluster.client.memory}},
+    "user_access": true,
+    "passphraseless": "ssh-rsa",
+    "services": {
+      "start": {
+        "order": 2,
+        "cmd": "appctl start"
+      },
+      "init": {
+        "order": 2,
+        "post_start_service": true,
+        "cmd": "appctl init",
+        "timeout": 1200
+      },
+      "upgrade": {
+        "order": 2,
+        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 43200
+      },
+      "rollback": {
+        "cmd": "rm -rf /tmp/upgrade"
+      }
+    },
+    "health_check": {
+      "enable": false,
+      "check_cmd": "appctl check"
+    },
+    "monitor": {
+      "enable": false,
+      "cmd": "appctl measure"
+    }
+  }],
+  "health_check": {
+    "enable": true,
+    "interval_sec": 60,
+    "timeout_sec": 10,
+    "action_timeout_sec": 30,
+    "healthy_threshold": 3,
+    "unhealthy_threshold": 3,
+    "check_cmd": "appctl check",
+    "action_cmd": "appctl revive"
+  },
+  "monitor": {
+    "enable": true,
+    "cmd": "appctl measure",
+    "items": {
+      "kubelet_running_container_count": {
+        "unit": "",
+        "value_type": "int",
+        "statistics_type": "latest",
+        "scale_factor_when_display": 1
+      },
+      "kubelet_running_pod_count": {
+        "unit": "",
+        "value_type": "int",
+        "statistics_type": "latest",
+        "scale_factor_when_display": 1
+      }
+    },
+    "groups": {
+      "kubelet": ["kubelet_running_pod_count", "kubelet_running_container_count"]
+    },
+    "display": ["kubelet"],
+    "alarm": ["kubelet_running_container_count"]
+  },
+  "endpoints": {
+    "nodeport": {
+      "port": {{env.cluster_port_range}},
+      "protocol": "tcp"
+    },
+    "apiserver": {
+      "port": 6443,
+      "protocol": "tcp"
+    }
+  },
+  "env": {
+    "access_key_id": {{env.access_key_id}},
+    "user.ssh.key": {{env.user.ssh.key}},
+    "pod_subnet": {{env.pod_subnet}},
+    "service_subnet": {{env.service_subnet}},
+    "api_external_domain": {{env.api_external_domain}},
+    "cluster_port_range": {{env.cluster_port_range}},
+    "max_pods": {{env.max_pods}},
+    "network_plugin": {{env.network_plugin}},
+    "proxy_mode": {{env.proxy_mode}},
+    "host_aliases": {{env.host_aliases}},
+    "registry_mirrors": {{env.registry_mirrors}},
+    "insecure_registry": {{env.insecure_registry}},
+    "docker_bip": {{env.docker_bip}},
+    "keep_log_days": {{env.keep_log_days}},
+    "kube_audit_file": {{env.kube_audit_file}},
+    "kube_audit_log_maxsize": {{env.kube_audit_log_maxsize}},
+    "kube_audit_log_maxbackup": {{env.kube_audit_log_maxbackup}},
+    "keep_audit_days": {{env.keep_audit_days}},
+    "docker_prune_days": {{env.docker_prune_days}},
+    "kube_log_level": {{env.kube_log_level}},
+    "kubesphere_eip": {{env.kubesphere_eip}},
+    "kubernetes_eip": {{env.kubernetes_eip}},
+    "node.name.human.readable": false,
+    "nodelocaldns.enabled": false,
+    "extra.modules": {{env.extra.modules}},
+    "install_kubesphere": {{env.install_kubesphere}}
+  },
+  "display_tabs": {
+    "kubesphere_console": {
+      "cmd": "appctl getKsUrl",
+      "roles_to_execute_on": ["master"],
+      "description": "Get KubeSphere Console",
+      "timeout": 10
+    },
+    "Kubeconfig": {
+      "cmd": "appctl getKubeConfig",
+      "roles_to_execute_on": ["master"],
+      "description": "Get Kubeconfig",
+      "timeout": 10
+    }
+  }
+}

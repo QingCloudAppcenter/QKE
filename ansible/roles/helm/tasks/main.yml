@@ -1,0 +1,37 @@
+---
+- name: install packages
+  include_role:
+    name: install-1.0.5
+  vars:
+    opts:
+      pkg_name: helm
+      pkg_version: "{{ helm_version }}"
+      pkg_url: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
+      pkg_type: tgz
+      extracts: true
+      creates: helm
+      bin_links:
+      - src: helm
+        dest: /usr/local/bin/helm
+
+- name: copy configs
+  copy:
+    src: "{{ role_path }}/files/opt/app/"
+    dest: /opt/app/
+    owner: root
+    group: svc
+    mode: preserve
+    directory_mode: u=rwx,g=rx,o=
+
+- name: helm init
+  shell: helm init --client-only --stable-repo-url https://charts.kubesphere.io/mirror
+
+- name: generate Helm Tiller yaml
+  shell: |
+    helm init --history-max 200 --service-account tiller --stable-repo-url https://charts.kubesphere.io/mirror \
+              --override spec.selector.matchLabels.'app'='helm',spec.selector.matchLabels.'name'='tiller' \
+              --tiller-image kubesphere/tiller:v{{ helm_version }} \
+              -oyaml | sed -E 's#(apiVersion:) extensions/v1beta1#\1 apps/v1#' >> /opt/app/current/conf/helm/tiller.yml
+
+- name: helm completion for BASH
+  shell: helm completion bash > /etc/profile.d/helm-completion.sh

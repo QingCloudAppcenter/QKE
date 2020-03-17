@@ -1,0 +1,10 @@
+[Unit]
+Description=run docker system prune every midnight
+
+[Timer]
+OnCalendar=*-*-* 02:35:00
+RandomizedDelaySec=3600
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,30 @@
+- include_role:
+    name: golang-1.0.3
+    apply:
+      delegate_to: localhost
+
+- name: compile
+  shell:
+    chdir: "{{ role_path }}/files"
+    cmd: |
+      mkdir -p {{ local_cache_path }}/{{ role_name }}
+      go build -o {{ local_cache_path }}/{{ role_name }}/{{ role_name }} lbcli.go
+    creates: "{{ local_cache_path }}/{{ role_name }}/{{ role_name }}"
+  delegate_to: localhost
+
+- name: prepare dir
+  file:
+    path: /opt/lbcli/0.0.1
+    state: directory
+
+- name: prepare link
+  file:
+    src: 0.0.1
+    dest: /opt/lbcli/current
+    state: link
+
+- name: install
+  copy:
+    src: "{{ local_cache_path }}/{{ role_name }}/{{ role_name }}"
+    dest: /opt/lbcli/current/lbcli
+    mode: a+x

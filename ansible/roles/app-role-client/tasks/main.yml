@@ -1,0 +1,48 @@
+---
+- name: install confd files
+  include_role:
+    name: confd-files-1.0.6
+
+- name: copy binaries
+  copy:
+    src: "{{ role_path }}/files/opt/app/current/"
+    dest: /opt/app/current/
+    owner: root
+    group: svc
+    mode: preserve
+    directory_mode: u=rwx,g=rx,o=
+
+- name: set up k8s env
+  copy:
+    dest: /opt/app/current/bin/envs/confd.env
+    content: |
+      APISERVER_LB_FILE=/data/appctl/data/apiserver-lb
+      KUBE_CONFIG=/data/kubernetes/admin.conf
+
+- name: set up password
+  include_role:
+    name: set-passwd-1.0.0
+  loop:
+  - username: ubuntu
+    password: k8s
+    requires_change_pwd: "{{ target_env != 'dev' }}"
+  - username: root
+    password: k8s
+    requires_change_pwd: "{{ target_env != 'dev' }}"
+  loop_control:
+    loop_var: vm_user
+
+- name: allow ssh by password
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PasswordAuthentication' line='PasswordAuthentication yes'
+
+- name: prepare upgrade snapshot
+  vars:
+    snapshot_sources:
+    - /opt/app
+    - /opt/k8s-client
+    - /opt/helm
+    - /opt/jq
+    - /opt/yq
+    - /root/.helm
+  include_role:
+    name: app-upgrade

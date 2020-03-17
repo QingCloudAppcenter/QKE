@@ -1,0 +1,45 @@
+buildNodeName() {
+  if [[ "$1" =~ ^node_ ]]; then local format="03"; fi
+  printf "%s%${format}d" $(echo $1 | sed -r 's/node_(.).*/worker-\1/') $2
+}
+
+allNodes="$(sort -V << ALL_NODES_EOF
+{{- range $nodeRole := lsdir "/hosts" }}
+{{- range $instanceId := lsdir (printf "/hosts/%s" $nodeRole) }}
+all/
+{{- $nodeRole }}/
+{{- $nodeSid := getv (printf "/hosts/%s/%s/sid" $nodeRole $instanceId) }}
+{{- $nodeSid }}/
+{{- $instanceId }}/$(buildNodeName {{ $nodeRole }} {{ $nodeSid }})/
+{{- getv (printf "/hosts/%s/%s/node_id" $nodeRole $instanceId) }}/
+{{- getv (printf "/hosts/%s/%s/ip" $nodeRole $instanceId) }}
+{{- end }}
+{{- end }}
+ALL_NODES_EOF
+)"
+
+hostsFile=/etc/hosts
+rotate $hostsFile.swap
+sed "/^# >> QKE nodes./,/^# << QKE nodes./d" $hostsFile > $hostsFile.swap
+firstMasterIp="$(echo "$allNodes" | grep ^all/master/1/ | cut -d/ -f7)"
+{{- with $lbIpFromV1 }}
+lbIp={{ . }}
+{{- else }}
+lbIp="$(awk -F/ '{print $2}' $APISERVER_LB_FILE | grep . || echo -n)"
+{{- end }}
+
+printHostEntry() {
+  echo $1$'\t'$2
+}
+
+flush >> $hostsFile.swap << HOSTS_FILE
+# >> QKE nodes. WARNING: this is managed by script and please don't touch manually.
+$(printHostEntry ${lbIp:-$firstMasterIp} loadbalancer)
+$(echo "$allNodes" | awk -F/ '{printf("%s\t%s %s%s\n", $7, $4, $5, $2~/^n/ ? " "$2$3 : "")}')
+
+{{- with (getv "/env/host_aliases" "") }}
+{{ replace . "," "\n" -1 }}
+{{- end }}
+# << QKE nodes. WARNING: this is managed by script and please don't touch manually.
+HOSTS_FILE
+cp $hostsFile.swap $hostsFile

@@ -1,0 +1,618 @@
+{
+  "type": "array",
+  "properties": [{
+    "key": "cluster",
+    "description": "QKE properties",
+    "type": "array",
+    "properties": [{
+      "key": "name",
+      "label": "name",
+      "description": "The name of the QKE cluster",
+      "type": "string",
+      "default": "KubeSphere",
+      "required": "yes"
+    }, {
+      "key": "description",
+      "label": "description",
+      "description": "Description of QKE cluster",
+      "type": "string",
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "resource_group",
+      "label": "Resource Configuration",
+      "description": "The resource configuration of the service. Single master cluster cannot upgrade to HA mster cluster.",
+      "disable_when_scale": true,
+      "type": "string",
+      "default": "standard test",
+      "range": [
+        "standard test",
+        "high-performance test",
+        "standard prod",
+        "high-performance prod"
+     ]
+    }, {
+      "key": "vxnet",
+      "label": "VxNet",
+      "description": "Choose a vxnet to join",
+      "type": "string",
+      "default": "",
+      "required": "yes"
+    }, {
+      "key": "etcd_service",
+      "label": "etcd service",
+      "description": "Choose an etcd cluster to store QKE cluster data, leave empty if you choose to use internal etcd service in QKE cluster. For better performance, It is recommended that using external etcd service",
+      "type": "service",
+      "limits": {
+        "app-fdyvu2wk": []
+      },
+      "tag": [
+        "ETCD",
+        "etcd"
+     ],
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "elk_service",
+      "label": "ELK service",
+      "description": "Choose an external ELK cluster to store QKE logging data, leave empty if you choose to use internal ES service in QKE cluster. For resizing ES, It is recommended that using external ELK service",
+      "type": "service",
+      "limits": {
+        "app-p6au3oyq": []
+      },
+      "tag": [
+        "ELK",
+        "elk"
+     ],
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "master",
+      "label": "master",
+      "description": "master properties",
+      "type": "array",
+      "properties": [{
+        "key": "instance_class",
+        "label": "resource type",
+        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "type": "integer",
+        "range": [101, 202],
+        "default": 202,
+        "required": "yes",
+        "resource_group": [101, 202, 101, 202]
+      }, {
+        "key": "count",
+        "label": "count",
+        "description": "Number of master for the cluster to create",
+        "type": "integer",
+        "default": 3,
+        "range": [1, 3],
+        "required": "yes",
+        "changeable": false,
+        "resource_group": [1, 1, 3, 3]
+      }, {
+        "key": "cpu_model",
+        "label": "CPU Model",
+        "description": "CPU model of each node",
+        "type": "string",
+        "default": "",
+        "range": ["", "Westmere", "SandyBridge", "IvyBridge", "Haswell", "Broadwell", "Skylake", "CascadeLake"],
+        "required": "no"
+      }, {
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 8,
+        "range": [4, 8, 12, 16, 24, 32, 64],
+        "required": "yes",
+        "resource_group": [4, 4, 8, 8]
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "memory of each node (in MB)",
+        "type": "integer",
+        "default": 16384,
+        "range": [8192, 12288, 16384, 24576, 32768, 49152, 65536, 98304, 131072, 196608, 262144],
+        "required": "yes",
+        "resource_group": [8192, 8192, 16384, 16384]
+      }, {
+        "key": "volume_size",
+        "label": "volume size",
+        "description": "The volume size for each instance",
+        "type": "integer",
+        "default": 200,
+        "min": 40,
+        "max": 2000,
+        "step": 10,
+        "required": "yes",
+        "resource_group": [80, 80, 200, 200]
+      }]
+    }, {
+      "key": "node_perf",
+      "label": "standard node",
+      "description": "standard node properties",
+      "type": "array",
+      "properties": [{
+        "key": "instance_class",
+        "label": "resource type",
+        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "type": "integer",
+        "range": [101],
+        "default": 101,
+        "changeable_when_create": false,
+        "required": "yes"
+      }, {
+        "key": "count",
+        "label": "count",
+        "description": "Number of nodes for the cluster to create",
+        "type": "integer",
+        "default": 0,
+        "auto_scale_step": 1,
+        "min": 0,
+        "max": 100,
+        "required": "yes",
+        "resource_group": [2, 0, 3, 0]
+      }, {
+        "key": "cpu_model",
+        "label": "CPU Model",
+        "description": "CPU model of each node",
+        "type": "string",
+        "default": "",
+        "range": ["", "Westmere", "SandyBridge", "IvyBridge", "Haswell", "Broadwell", "Skylake", "CascadeLake"],
+        "required": "no"
+      }, {
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 8,
+        "range": [4, 8, 12, 16, 24, 32, 64],
+        "required": "yes"
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "memory of each node (in MB)",
+        "type": "integer",
+        "default": 16384,
+        "range": [8192, 12288, 16384, 24576, 32768, 49152, 65536, 98304, 131072, 196608, 262144],
+        "required": "yes"
+      }, {
+        "key": "volume_size",
+        "label": "volume size",
+        "description": "The volume size for each instance",
+        "type": "integer",
+        "default": 80,
+        "min": 40,
+        "max": 2000,
+        "step": 10,
+        "required": "yes"
+      }]
+    }, {
+      "key": "node_super_perf",
+      "label": "high-performance node",
+      "description": "high-performance node properties",
+      "type": "array",
+      "properties": [{
+        "key": "instance_class",
+        "label": "resource type",
+        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "type": "integer",
+        "range": [202],
+        "default": 202,
+        "changeable_when_create": false,
+        "required": "yes"
+      }, {
+        "key": "count",
+        "label": "count",
+        "description": "Number of nodes for the cluster to create",
+        "type": "integer",
+        "default": 3,
+        "auto_scale_step": 1,
+        "min": 0,
+        "max": 100,
+        "required": "yes",
+        "resource_group": [0, 2, 0, 3]
+      }, {
+        "key": "cpu_model",
+        "label": "CPU Model",
+        "description": "CPU model of each node",
+        "type": "string",
+        "default": "",
+        "range": ["", "Westmere", "SandyBridge", "IvyBridge", "Haswell", "Broadwell", "Skylake", "CascadeLake"],
+        "required": "no"
+      }, {
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 8,
+        "range": [4, 8, 12, 16, 24, 32, 64],
+        "required": "yes"
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "memory of each node (in MB)",
+        "type": "integer",
+        "default": 16384,
+        "range": [8192, 12288, 16384, 24576, 32768, 49152, 65536, 98304, 131072, 196608, 262144],
+        "required": "yes"
+      }, {
+        "key": "volume_size",
+        "label": "volume size",
+        "description": "The volume size for each instance",
+        "type": "integer",
+        "default": 200,
+        "min": 40,
+        "max": 2000,
+        "step": 10,
+        "required": "yes"
+      }]
+    }, {
+      "key": "node_gpu",
+      "label": "gpu node",
+      "description": "gpu node properties",
+      "type": "array",
+      "properties": [{
+        "key": "instance_class",
+        "label": "resource type",
+        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "type": "integer",
+        "range": [201],
+        "default": 201,
+        "changeable_when_create": false,
+        "required": "yes"
+      }, {
+        "key": "count",
+        "label": "count",
+        "description": "Number of nodes for the cluster to create",
+        "type": "integer",
+        "min": 0,
+        "max": 100,
+        "default": 0,
+        "resource_group": [0, 0, 0, 0],
+        "auto_scale_step": 1,
+        "required": "yes"
+      }, {
+        "key": "cpu_model",
+        "label": "CPU Model",
+        "description": "CPU model of each node",
+        "type": "string",
+        "default": "Broadwell",
+        "range": ["Broadwell", "Skylake", "CascadeLake"],
+        "required": "yes"
+      }, {
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 16,
+        "range": [16],
+        "required": "yes"
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "memory of each node (in MB)",
+        "type": "integer",
+        "default": 65536,
+        "range": [65536],
+        "required": "yes"
+      }, {
+        "key": "gpu",
+        "label": "GPU",
+        "description": "GPUs of each node",
+        "type": "integer",
+        "default": 1,
+        "range": [1],
+        "changeable_when_create": false,
+        "required": "yes"
+      }, {
+        "key": "gpu_class",
+        "label": "GPU Class",
+        "description": "GPU class",
+        "type": "integer",
+        "default": 0,
+        "range": [0],
+        "changeable_when_create": false,
+        "required": "yes"
+      }, {
+        "key": "volume_size",
+        "label": "volume size",
+        "description": "The volume size for each instance",
+        "type": "integer",
+        "default": 200,
+        "min": 40,
+        "max": 2000,
+        "step": 10,
+        "required": "yes"
+      }]
+    }, {
+      "key": "client",
+      "label": "client",
+      "description": "client properties",
+      "type": "array",
+      "properties": [{
+        "key": "instance_class",
+        "label": "resource type",
+        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "type": "integer",
+        "range": [101, 202],
+        "default": 202,
+        "required": "yes",
+        "resource_group": [101, 202, 101, 202]
+      }, {
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 2,
+        "range": [1, 2],
+        "required": "yes",
+        "resource_group": [1, 2, 1, 2]
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "memory of each node (in MB)",
+        "type": "integer",
+        "default": 4096,
+        "range": [1024, 2048, 4096],
+        "required": "yes",
+        "resource_group": [2048, 4096, 2048, 4096]
+      }, {
+        "key": "count",
+        "label": "count",
+        "description": "Number of nodes for the cluster to create",
+        "type": "integer",
+        "range": [0, 1],
+        "default": 1,
+        "required": "yes"
+      }]
+    }]
+  }, {
+    "key": "env",
+    "description": "application configuration properties",
+    "type": "array",
+    "properties": [{
+      "key": "access_key_id",
+      "label": "Access key id",
+      "description": "API access key id",
+      "type": "accesskey",
+      "changeable": false,
+      "required": "yes"
+    }, {
+      "key": "kubernetes_eip",
+      "label": "Kubernetes EIP Address",
+      "description": "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "required": "no",
+      "pattern": "^$|^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+    }, {
+      "key": "host_aliases",
+      "label": "host aliases",
+      "description": "Set host aliases",
+      "type": "string",
+      "changeable": true,
+      "pattern": "^$|^((\\d{1,3}\\.){3}(\\d{1,3})\\s+(\\w|\\.|\\-)+,)*((\\d{1,3}\\.){3}(\\d{1,3})\\s+(\\w|\\.|\\-)+){1}$",
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "registry_mirrors",
+      "label": "registry-mirrors",
+      "description": "The Docker hub registry mirrors, use a blank to split multi registry mirrors",
+      "type": "string",
+      "default": "",
+      "pattern": "^$|^https?:\/\/[^\\s]+(\\shttps?:\/\/[^\\s]+)*$",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "insecure_registry",
+      "label": "insecure-registries",
+      "description": "The insecure Docker registry, use a blank to split multi registry",
+      "type": "string",
+      "default": "",
+      "pattern": "^$|^(\\S+\\s)*(\\S+)$",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "docker_bip",
+      "label": "IP address and netmask for Docker bridge network",
+      "description": "IP address and netmask for Docker bridge network, using standard CIDR notation. For example: 192.168.1.5/24",
+      "type": "string",
+      "default": "172.30.0.1/16",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "docker_prune_days",
+      "label": "Docker prune days",
+      "description": "Keep Docker for x days, 0 indicates that the log is not cleared",
+      "type": "integer",
+      "default": 3,
+      "min": 0,
+      "max": 30,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "pod_subnet",
+      "label": "Pod Subnet",
+      "description": "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16",
+      "type": "string",
+      "default": "10.10.0.0/16",
+      "changeable": false,
+      "pattern": "^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2]\\d|3[0-2])$",
+      "required": "no"
+    }, {
+      "key": "service_subnet",
+      "label": "Service Subnet",
+      "description": "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16",
+      "type": "string",
+      "default": "10.96.0.0/16",
+      "pattern": "^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/([1-9]|[1-2]\\d|3[0-2])$",
+      "changeable": false,
+      "required": "no"
+    }, {
+      "key": "api_external_domain",
+      "label": "DNS Domain",
+      "description": "the dns domain used by k8s services",
+      "type": "string",
+      "default": "cluster.local",
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?)$",
+      "changeable": false,
+      "required": "no"
+    }, {
+      "key": "cluster_port_range",
+      "label": "Port range of each node",
+      "description": "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range.",
+      "type": "string",
+      "default": "30000-32767",
+      "pattern": "^\\d+-\\d+$",
+      "changeable": false,
+      "required": "no"
+    }, {
+      "key": "max_pods",
+      "label": "max-pods",
+      "description": "Number of Pods that can run on each working node/kubelet",
+      "type": "integer",
+      "changeable": true,
+      "default": 120,
+      "range": [60, 120, 180, 240],
+      "required": "no"
+    }, {
+      "key": "network_plugin",
+      "label": "network plugin",
+      "description": "Choose a network plugin",
+      "type": "string",
+      "changeable": false,
+      "default": "calico",
+      "range": ["calico", "flannel"],
+      "required": "no"
+    }, {
+      "key": "proxy_mode",
+      "label": "Proxy Mode",
+      "description": "Choose a proxy mode",
+      "type": "string",
+      "changeable": false,
+      "default": "ipvs",
+      "range": ["ipvs", "iptables"],
+      "required": "no"
+    }, {
+      "key": "kube_log_level",
+      "label": "Kubernetes log level",
+      "description": "The log level for Kubernetes system",
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 10,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "keep_log_days",
+      "label": "Keep log days",
+      "description": "Keep log on log node for x days, 0 indicates that the log is not cleared. This is a KubeSphere parameter",
+      "type": "integer",
+      "default": 3,
+      "min": 0,
+      "max": 30,
+      "changeable": false,
+      "required": "no"
+    }, {
+      "key": "kube_audit_file",
+      "label": "audit-policy-file",
+      "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/policies/default.yaml; audit file path: /etc/kubernetes/audit/policies/",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "pattern": "^(\/((\\w|\\-|\\.)+\/?)+((\\w|\\-|\\.)+))$|^$",
+      "required": "no"
+    }, {
+      "key": "keep_audit_days",
+      "label": "audit-log-maxage",
+      "description": "Defined the maximum number of days to retain old audit log files",
+      "type": "integer",
+      "default": 3,
+      "min": 0,
+      "max": 30,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "kube_audit_log_maxsize",
+      "label": "audit-log-maxsize",
+      "description": "the maximum size in megabytes of the audit log file before it gets rotated",
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 200,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "kube_audit_log_maxbackup",
+      "label": "audit-log-maxbackup",
+      "description": "the maximum number of audit log files to retain",
+      "type": "integer",
+      "default": 100,
+      "min": 1,
+      "max": 100,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "install_kubesphere",
+      "label": "Install KubeSphere",
+      "description": "Whether to install kubesphere",
+      "type": "boolean",
+      "changeable": false,
+      "default": true,
+      "required": "no"
+    }, {
+      "key": "kubesphere_eip",
+      "label": "KubeSphere Dashboard EIP ID",
+      "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
+      "type": "eip",
+      "default": "",
+      "changeable": true,
+      "expanded": true,
+      "pattern": "^(eip-)(\\w{8})$|^$",
+      "required": "no"
+    }, {
+      "key": "extra.modules",
+      "label": "Extra Modules",
+      "description": "extra modules to install with KubeSphere",
+      "type": "string",
+      "range": [
+        "metrics-server",
+        "ks-logging",
+        "ks-openpitrix",
+        "ks-devops",
+        "ks-servicemesh",
+        "ks-notification",
+        "ks-alerting"
+      ],
+      "default": "",
+      "multichoice": true,
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "user.ssh.key",
+      "label": "User SSH Key",
+      "description": "User's SSH key to connect to client node",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }]
+  }, {
+    "key": "service_params",
+    "description": "Custom service configuration properties",
+    "type": "array",
+    "properties": [{
+      "key": "docker_prune_days",
+      "label": "Docker prune days",
+      "description": "only remove containers, images, and networks created before given days",
+      "type": "integer",
+      "min": 1,
+      "max": 365,
+      "default": 3,
+      "required": "yes"
+    }]
+  }]
+}

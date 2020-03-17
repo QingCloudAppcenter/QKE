@@ -1,0 +1,78 @@
+flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v$K8S_VERSION
+controlPlaneEndpoint: loadbalancer
+imageRepository: $GCR_MIRROR
+useHyperKubeImage: true
+etcd:
+  external:
+    endpoints:
+    {{- range getvs "/links/etcd_service/hosts/etcd_node/*/ip" }}
+    - http://{{ . }}:2379
+    {{- else }}
+    - http://127.0.0.1:2379
+    {{- end }}
+dns:
+  imageRepository: coredns
+  imageTag: $COREDNS_VERSION
+apiServer:
+  certSANs:
+  {{- with join (getvs "/env/kubernetes_eip") "" }}
+  - {{ . }}
+  {{- end }}
+  $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
+  extraArgs:
+    service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
+    advertise-address: 0.0.0.0
+    {{- with getv "/env/kube_audit_file" "" }}
+    $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
+    audit-policy-file: {{ . }}
+    audit-log-maxage: "{{ getv "/env/keep_audit_days" }}"
+    audit-log-path: /etc/kubernetes/audit/logs/audit.log
+    audit-log-maxsize: "{{ getv "/env/kube_audit_log_maxsize" "1" }}"
+    audit-log-maxbackup: "{{ getv "/env/kube_audit_log_maxbackup" "100" }}"
+    '; fi)
+    {{- end }}
+    etcd-prefix: {{ getv "/cluster/cluster_id" }}
+    v: "{{ getv "/env/kube_log_level" }}"
+  {{- with getv "/env/kube_audit_file" "" }}
+  $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
+  extraVolumes:
+  - name: audit-policy
+    hostPath: /etc/kubernetes/audit
+    mountPath: /etc/kubernetes/audit
+    pathType: DirectoryOrCreate
+  '; fi)
+  {{- end }}
+controllerManager:
+  extraArgs:
+    v: "{{ getv "/env/kube_log_level" }}"
+scheduler:
+  extraArgs:
+    v: "{{ getv "/env/kube_log_level" }}"
+networking:
+  dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
+  podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
+  serviceSubnet: {{ getv "/env/service_subnet" "10.96.0.0/12" }}
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+cgroupDriver: {{ if $upgradedFromV1 }}cgroupfs{{ else }}systemd{{ end }}
+featureGates:
+  VolumeSnapshotDataSource: true
+imageGCHighThresholdPercent: 100
+kubeReserved:
+  cpu: 200m
+  memory: 512M
+systemReserved:
+  cpu: 200m
+  memory: 512M
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: {{ getv "/env/proxy_mode" "ipvs" }}
+KUBEADM_CONFIG_EOF

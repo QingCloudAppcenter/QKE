@@ -1,0 +1,39 @@
+---
+- name: copy binaries
+  copy:
+    src: "{{ role_path }}/files/opt/app/"
+    dest: /opt/app/
+    owner: root
+    group: svc
+    mode: preserve
+    directory_mode: u=rwx,g=rx,o=
+
+- name: create filesystem on attached volume
+  filesystem:
+    fstype: ext4
+    dev: /dev/vdc
+
+- name: mount the volume for upgrade
+  mount:
+    path: /upgrade
+    src: /dev/vdc
+    fstype: ext4
+    state: mounted
+
+- name: remove lost+found
+  file:
+    path: /upgrade/lost+found
+    state: absent
+
+- name: prepare dirs
+  file:
+    path: /upgrade/vm-files
+    state: directory
+
+- name: copy vm files
+  shell: rsync -aAXR {{ snapshot_sources | join(' ') }} /upgrade/vm-files
+
+- name: unmount the volume for upgrade
+  mount:
+    path: /upgrade
+    state: absent
