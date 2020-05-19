@@ -1,5 +1,0 @@
-{{if ne (getv "/host/role") "client"}}{{$client_pub_key := getvs "/hosts/client/*/pub_key" -}}
-{{index $client_pub_key 0 -}}
-{{range gets "/hosts/master/*/pub_key"}}
-{{.Value}}{{end}}
-{{end}}

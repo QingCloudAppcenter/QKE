@@ -1,0 +1,9 @@
+[Unit]
+Description=create kube-apiserver load balancer
+
+[Service]
+ExecStart=/usr/bin/appctl setUpKubeLb
+ExecStopPost=/usr/bin/appctl distributeKubeLbFile
+
+[Install]
+WantedBy=multi-user.target

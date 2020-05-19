@@ -1,7 +1,0 @@
-[template]
-src = "k8s/kubeadm-config.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/kubernetes/kubeadm-config.yaml"
-keys = [
-    "/",
-]
-reload_cmd = "/opt/kubernetes/script/reload-kubeadm-config.sh"

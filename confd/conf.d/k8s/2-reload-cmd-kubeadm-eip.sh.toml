@@ -1,8 +1,0 @@
-[template]
-src = "k8s/2-reload-cmd-kubeadm-eip.sh.tmpl"
-dest = "/opt/kubernetes/k8s/kubernetes/reload-cmd-kubeadm-eip.sh"
-keys = [
-    "/env/kubernetes_eip",
-]
-mode = "0700"
-reload_cmd = "/opt/kubernetes/k8s/kubernetes/reload-cmd-kubeadm-eip.sh"

@@ -1,0 +1,25 @@
+{{- $upgradedFromV1 := getvs "/hosts/master/*/token" }}
+
+flush /etc/docker/daemon.json << DOCKER_EOF
+{
+  "registry-mirrors": $(echo -n {{ getv "/env/registry_mirrors" "" }} | jq -Rsc '[ split(" ")[] | select(test("dockerhub\\.qingcloud\\.com$") == false) ]'),
+  "insecure-registries": {{ with getv "/env/insecure_registry" "" }}{{ split . " " | toJson }}{{ else }}[]{{ end }},
+  "bip": "{{ getv "/env/docker_bip" "172.30.0.1/16" }}",
+  "exec-opts": ["native.cgroupdriver={{ if $upgradedFromV1 }}cgroupfs{{ else }}systemd{{ end }}"],
+  "data-root": "/data/var/lib/docker",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  {{- if eq (getv "/host/role") "node_gpu" }}
+  "runtimes": {
+		"nvidia": {
+			"path": "nvidia-container-runtime"
+		}
+	},
+  "default-runtime": "nvidia",
+  {{- end }}
+  "storage-driver": "overlay2"
+}
+DOCKER_EOF

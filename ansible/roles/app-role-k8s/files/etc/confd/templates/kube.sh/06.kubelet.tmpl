@@ -1,0 +1,10 @@
+flush /etc/default/kubelet << KUBELET_EOF
+KUBELET_EXTRA_ARGS="$(xargs <<< "
+--max-pods={{ getv "/env/max_pods" "120" }}
+--root-dir=/data/var/lib/kubelet
+{{- if eq (getv "/host/role") "node_gpu" }}
+--register-with-taints=nvidia.com/gpu=true:NoSchedule
+{{- end }}
+--v={{ getv "/env/kube_log_level" }}
+")"
+KUBELET_EOF

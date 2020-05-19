@@ -1,0 +1,8 @@
+flush $QINGCLOUD_CONFIG << QINGCLOUD_CFG_EOF
+qy_access_key_id: {{ getv "/env/access_key_id/access_key_id" }}
+qy_secret_access_key: {{ getv "/env/access_key_id/secret_access_key" }}
+zone: {{ getv "/cluster/zone" }}
+protocol: {{ getv "/cluster/api_server/protocol" "https" }}
+host: {{ getv "/cluster/api_server/host" "api.qingcloud.com" }}
+port: {{ getv "/cluster/api_server/port" "443" }}
+QINGCLOUD_CFG_EOF

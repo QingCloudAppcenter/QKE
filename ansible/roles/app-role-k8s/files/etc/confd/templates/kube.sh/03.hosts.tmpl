@@ -1,0 +1,26 @@
+hostsFile=/etc/hosts
+sed "/^# >> QKE nodes./,/^# << QKE nodes./d" $hostsFile > $hostsFile.swap
+firstMasterIp="$(echo "$allNodes" | grep ^stable/master/1/ | cut -d/ -f7)"
+{{- with $lbIpFromV1 }}
+lbIp={{ . }}
+{{- else }}
+lbIp="$(awk -F/ '{print $2}' $APISERVER_LB_FILE | grep . || echo -n)"
+{{- end }}
+
+printHostEntry() {
+  echo $1$'\t'$2
+}
+
+flush >> $hostsFile.swap << HOSTS_FILE
+# >> QKE nodes. WARNING: this is managed by script and please don't touch manually.
+$(printHostEntry 127.0.1.1 $myNodeName)
+$(printHostEntry 0.0.0.0 dl.k8s.io)
+$(printHostEntry ${lbIp:-$firstMasterIp} loadbalancer)
+$(echo "$allNodes" | awk -F/ '{printf("%s\t%s %s%s\n", $7, $4, $5, $2~/^n/ ? " "$2$3 : "")}')
+
+{{- with (getv "/env/host_aliases" "") }}
+{{ replace . "," "\n" -1 }}
+{{- end }}
+# << QKE nodes. WARNING: this is managed by script and please don't touch manually.
+HOSTS_FILE
+mv $hostsFile.swap $hostsFile

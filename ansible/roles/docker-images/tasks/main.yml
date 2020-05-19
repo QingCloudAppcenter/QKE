@@ -1,0 +1,32 @@
+---
+- name: start docker service
+  systemd:
+    name: docker
+    masked: no
+    state: started
+
+- name: pull Docker images
+  shell: docker pull {{ image_name }}
+  loop:
+  - "quay.io/coreos/flannel:v0.11.0-amd64"
+  - "quay.io/coreos/flannel-cni:v0.3.0-amd64"
+  - kubesphere/cloud-controller-manager:v1.4.2
+  - kubesphere/nginx-ingress-controller:0.25.0
+  - nvidia/k8s-device-plugin:1.0.0-beta4
+  loop_control:
+    loop_var: image_name
+
+- name: stop docker service
+  systemd:
+    name: docker
+    masked: no
+    state: stopped
+
+- name: archive images
+  shell: tar cf /tmp/docker.tar /var/lib/docker
+
+- name: fetch images
+  fetch:
+    src: /tmp/docker.tar
+    dest: /tmp/
+    flat: yes

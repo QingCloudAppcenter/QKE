@@ -1,0 +1,72 @@
+{
+  "pek3a": {
+    "instance_class": [{
+      "src": "101",
+      "dst": 0
+    }, {
+      "src": "201",
+      "dst": 1
+    }, {
+      "src": "202",
+      "dst": 1
+    }],
+    "volume_class": [{
+      "src": "100",
+      "dst": 0
+    }, {
+      "src": "6",
+      "dst": 2
+    }, {
+      "src": "200",
+      "dst": 3
+    }]
+  },
+  "pek3b": {
+    "volume_class": [{
+      "src": "6",
+      "dst": 5
+    }]
+  },
+  "pek3c": {
+    "volume_class": [{
+      "src": "6",
+      "dst": 5
+    }]
+  },
+  "sh1a": {
+    "volume_class": [{
+      "src": "6",
+      "dst": 5
+    }]
+  },
+  "gd2a": {
+    "instance_class": [{
+      "src": "202",
+      "dst": 201
+    }],
+    "volume_class": [{
+      "src": "6",
+      "dst": 5
+    }]
+  },
+  "gd2b": {
+    "instance_class": [{
+      "src": "202",
+      "dst": 201
+    }],
+    "volume_class": [{
+      "src": "6",
+      "dst": 5
+    }]
+  },
+  "ap2a": {
+    "instance_class": [{
+      "src": "202",
+      "dst": 201
+    }],
+    "volume_class": [{
+      "src": "6",
+      "dst": 200
+    }]
+  }
+}

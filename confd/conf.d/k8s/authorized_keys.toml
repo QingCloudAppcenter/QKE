@@ -1,6 +1,0 @@
-[template]
-src = "k8s/authorized_keys.tmpl"
-dest = "/root/.ssh/authorized_keys"
-keys = [
-    "/",
-]

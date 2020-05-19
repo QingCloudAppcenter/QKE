@@ -1,7 +1,0 @@
-[template]
-src = "k8s/kube-controller-manager.yaml.tmpl"
-dest = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
-keys = [
-    "/",
-]
-reload_cmd = "/opt/kubernetes/script/reload-kube-manifests.sh"

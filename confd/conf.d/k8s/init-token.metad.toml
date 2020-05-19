@@ -1,6 +1,0 @@
-[template]
-src = "k8s/init-token.metad.tmpl"
-dest = "/opt/kubernetes/k8s/kubernetes/init-token.metad"
-keys = [
-    "/",
-]

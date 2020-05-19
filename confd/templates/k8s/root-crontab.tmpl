@@ -1,3 +1,0 @@
-0 0 * * * test $(expr $(date +\%j | sed 's/^0*//') % {{getv "/env/docker_prune_days"}}) -eq 0 && docker system prune -f
-0 0 * * * /opt/kubernetes/script/crontab-renew-cert.sh
-0 0 * * * /opt/kubernetes/script/crontab-renew-config.sh

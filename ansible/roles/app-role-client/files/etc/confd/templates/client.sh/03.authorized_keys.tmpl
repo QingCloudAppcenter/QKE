@@ -1,0 +1,13 @@
+authKeysFile=/root/.ssh/authorized_keys
+sed "/^# >> QKE nodes./,/^# << QKE nodes./d" $authKeysFile > $authKeysFile.swap
+flush >> $authKeysFile.swap << AUTH_KEYS_FILE
+# >> QKE nodes. WARNING: this is managed by script and please don't touch manually.
+{{ join (getvs "/env/user.ssh.*") "\n" }}
+{{- range $instanceId := ls "/hosts/master" }}
+{{- if eq (getv (printf "/hosts/master/%s/sid" $instanceId)) "1" }}
+{{ getv (printf "/hosts/master/%s/pub_key" $instanceId) }}
+{{- end }}
+{{- end }}
+# << QKE nodes. WARNING: this is managed by script and please don't touch manually.
+AUTH_KEYS_FILE
+cat $authKeysFile.swap > $authKeysFile

@@ -1,0 +1,9 @@
+[Unit]
+Description=install KubeSphere
+
+[Service]
+ExecStart=/usr/bin/appctl setUpKs
+ExecStopPost=/usr/bin/appctl reloadKsEip
+
+[Install]
+WantedBy=multi-user.target

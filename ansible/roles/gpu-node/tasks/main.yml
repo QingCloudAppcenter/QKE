@@ -1,0 +1,89 @@
+---
+- name: set vars
+  set_fact:
+    packages:
+    - https://nvidia.github.io/libnvidia-container/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64/libnvidia-container1_1.0.7-1_amd64.deb
+    - https://nvidia.github.io/libnvidia-container/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64/libnvidia-container-tools_1.0.7-1_amd64.deb
+    - https://nvidia.github.io/nvidia-container-runtime/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64/nvidia-container-toolkit_1.0.5-1_amd64.deb
+    - https://nvidia.github.io/nvidia-container-runtime/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/amd64/nvidia-container-runtime_3.1.4-1_amd64.deb
+    dest_path: /tmp
+
+- name: install packages required by nvidia
+  apt:
+    name: ['gcc', 'make']
+
+- name: dependencies
+  lineinfile:
+    dest: /var/lib/dpkg/arch
+    line: "{{ content }}"
+    create: yes
+  register: arch_i386
+  loop:
+  - amd64
+  - i386
+  loop_control:
+    loop_var: content
+
+- name: install packages required by nvidia
+  apt:
+    name: ['libc6:i386', 'libstdc++6:i386']
+    update_cache: "{{ arch_i386.changed }}"
+
+- name: disable nouveau
+  modprobe:
+    name: nouveau
+    state: absent
+
+- name: blacklist the nouveau driver module
+  copy:
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+
+- name: update kernel
+  shell: update-initramfs -u
+
+- name: reboot machine to take effect
+  reboot:
+
+- name: download nvidia driver
+  include_role:
+    name: install-1.0.5
+  vars:
+    opts:
+      pkg_name: nvidia-tesla
+      pkg_version: "{{ nvidia_tesla_version }}"
+      dest_path: "{{ dest_path }}"
+      pkg_url: http://cn.download.nvidia.com/tesla/{{ nvidia_tesla_version }}/NVIDIA-Linux-x86_64-{{ nvidia_tesla_version }}.run
+      pkg_type: run
+
+- name: install nvidia driver
+  shell:
+    cmd: bash {{ dest_path }}/nvidia-tesla-{{ nvidia_tesla_version }}.run --silent
+    creates: /usr/bin/nvidia-smi
+
+- name: download nvidia packages
+  include_role:
+    name: install-1.0.5
+  vars:
+    opts:
+      pkg_name: "{{ pkg_url | basename | regex_replace('(^[^_]+).*$', '\\1') }}"
+      pkg_version: "{{ pkg_url | basename | regex_replace('^[^_]+_([0-9.]+).*$', '\\1') }}"
+      pkg_type: deb
+      dest_path: "{{ dest_path }}"
+      pkg_url: "{{ pkg_url }}"
+  loop: "{{ packages }}"
+  loop_control:
+    loop_var: pkg_url
+
+- name: install nvidia packages
+  vars:
+    basename: "{{ pkg_url | basename }}"
+  apt:
+    deb: "{{ dest_path }}/{{ basename.split('_').0 }}-{{ basename.split('_').1 | regex_search('^[0-9.]+') }}.deb"
+    policy_rc_d: 101
+    state: present
+  loop: "{{ packages }}"
+  loop_control:
+    loop_var: pkg_url
