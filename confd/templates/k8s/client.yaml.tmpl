@@ -1,7 +1,0 @@
-qy_access_key_id: "{{getv "/env/access_key_id/access_key_id"}}"
-qy_secret_access_key: "{{getv "/env/access_key_id/secret_access_key"}}"
-zone: "{{getv "/cluster/zone"}}"
-{{- $kube_log_level := getv "/env/kube_log_level" }}
-host: "{{getv "/cluster/api_server/host"}}"
-port: {{getv "/cluster/api_server/port"}}
-protocol: "{{getv "/cluster/api_server/protocol"}}"

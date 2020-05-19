@@ -1,6 +1,0 @@
-[template]
-src = "k8s/calico-deploy.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/addons/calico/calico-deploy.yaml"
-keys = [
-    "/",
-]

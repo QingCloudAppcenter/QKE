@@ -1,6 +1,0 @@
-[template]
-src = "k8s/qingcloud.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/addons/cloud-controller-manager/qingcloud.yaml"
-keys = [
-    "/",
-]

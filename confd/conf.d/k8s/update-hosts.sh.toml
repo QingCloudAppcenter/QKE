@@ -1,8 +1,0 @@
-[template]
-src = "k8s/update-hosts.sh.tmpl"
-dest = "/opt/kubernetes/k8s/linux/hosts/update-hosts.sh"
-keys = [
-    "/",
-]
-mode = "0700"
-reload_cmd = "/opt/kubernetes/k8s/linux/hosts/update-hosts.sh"

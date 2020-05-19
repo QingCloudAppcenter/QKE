@@ -1,6 +1,0 @@
-[template]
-src = "k8s/flannel-deploy.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/addons/flannel/flannel-deploy.yaml"
-keys = [
-    "/",
-]

@@ -1,6 +1,0 @@
-[template]
-src = "k8s/kube-proxy-cm.yaml.tmpl"
-dest = "/opt/kubernetes/k8s/addons/kube-proxy/kube-proxy-cm.yaml"
-keys = [
-    "/",
-]
