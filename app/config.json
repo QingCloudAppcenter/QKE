@@ -380,6 +380,44 @@
       "changeable": false,
       "required": "yes"
     }, {
+      "key": "install_kubesphere",
+      "label": "Install KubeSphere",
+      "description": "Whether to install kubesphere",
+      "type": "boolean",
+      "changeable": false,
+      "default": true,
+      "expanded": true,
+      "required": "no"
+    }, {
+      "key": "extra.modules",
+      "label": "Extra Modules",
+      "description": "extra modules to install with KubeSphere",
+      "type": "string",
+      "range": [
+        "metrics-server",
+        "ks-logging",
+        "ks-openpitrix",
+        "ks-devops",
+        "ks-servicemesh",
+        "ks-notification",
+        "ks-alerting"
+      ],
+      "default": "",
+      "multichoice": true,
+      "changeable": true,
+      "expanded": true,
+      "required": "no"
+    }, {
+      "key": "kubesphere_eip",
+      "label": "KubeSphere Dashboard EIP ID",
+      "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
+      "type": "eip",
+      "default": "",
+      "changeable": true,
+      "expanded": true,
+      "pattern": "^(eip-)(\\w{8})$|^$",
+      "required": "no"
+    }, {
       "key": "kubernetes_eip",
       "label": "Kubernetes EIP Address",
       "description": "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23",
@@ -388,6 +426,15 @@
       "changeable": true,
       "required": "no",
       "pattern": "^$|^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+    }, {
+      "key": "network_plugin",
+      "label": "network plugin",
+      "description": "Choose a network plugin",
+      "type": "string",
+      "changeable": false,
+      "default": "calico",
+      "range": ["calico", "flannel"],
+      "required": "no"
     }, {
       "key": "host_aliases",
       "label": "host aliases",
@@ -479,15 +526,6 @@
       "range": [60, 120, 180, 240],
       "required": "no"
     }, {
-      "key": "network_plugin",
-      "label": "network plugin",
-      "description": "Choose a network plugin",
-      "type": "string",
-      "changeable": false,
-      "default": "calico",
-      "range": ["calico", "flannel"],
-      "required": "no"
-    }, {
       "key": "proxy_mode",
       "label": "Proxy Mode",
       "description": "Choose a proxy mode",
@@ -553,42 +591,6 @@
       "default": 100,
       "min": 1,
       "max": 100,
-      "changeable": true,
-      "required": "no"
-    }, {
-      "key": "install_kubesphere",
-      "label": "Install KubeSphere",
-      "description": "Whether to install kubesphere",
-      "type": "boolean",
-      "changeable": false,
-      "default": true,
-      "required": "no"
-    }, {
-      "key": "kubesphere_eip",
-      "label": "KubeSphere Dashboard EIP ID",
-      "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
-      "type": "eip",
-      "default": "",
-      "changeable": true,
-      "expanded": true,
-      "pattern": "^(eip-)(\\w{8})$|^$",
-      "required": "no"
-    }, {
-      "key": "extra.modules",
-      "label": "Extra Modules",
-      "description": "extra modules to install with KubeSphere",
-      "type": "string",
-      "range": [
-        "metrics-server",
-        "ks-logging",
-        "ks-openpitrix",
-        "ks-devops",
-        "ks-servicemesh",
-        "ks-notification",
-        "ks-alerting"
-      ],
-      "default": "",
-      "multichoice": true,
       "changeable": true,
       "required": "no"
     }, {
