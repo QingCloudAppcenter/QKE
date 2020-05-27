@@ -86,6 +86,7 @@ getUpgradeOrder() {
 }
 
 upgrade() {
+  upgradeCniConf
   docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
   if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
   fixOverlays
@@ -357,6 +358,11 @@ distributeKubeConfig() {
 
 checkKubeLbHealthy() {
   [ "$(curl -sk -m3 https://loadbalancer:6443/healthz)" = "ok" ]
+}
+
+upgradeCniConf() {
+  [ "$NET_PLUGIN" = "flannel" ] || return 0
+  yq w -ijP /etc/cni/net.d/10-flannel.conflist cniVersion 0.2.0
 }
 
 setUpNetwork() {
