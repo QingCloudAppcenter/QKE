@@ -14,7 +14,6 @@ EC_OVERLAY_ERR
 
 initNode() {
   _initNode
-  test -e "/data/var/lib/docker" || tar xzf /archive/dockerfs.tgz -C /data
   mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.helm} var/lib/kubelet; do

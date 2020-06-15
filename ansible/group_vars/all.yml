@@ -36,13 +36,12 @@ docker_images_k8s:
 - mirrorgooglecontainers/defaultbackend-amd64:1.4
 - mirrorgooglecontainers/pause-amd64:3.1
 - nvidia/k8s-device-plugin:1.0.0-beta4
-- quay.io/coreos/flannel:v0.11.0-amd64
-- quay.io/coreos/flannel-cni:v0.3.0-amd64
-- quay.io/k8scsi/csi-attacher:v2.0.0
-- quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
-- quay.io/k8scsi/csi-provisioner:v1.4.0
-- quay.io/k8scsi/csi-resizer:v0.2.0
-- quay.io/k8scsi/csi-snapshotter:v1.2.2
+- kubesphere/flannel:v0.11.0
+- csiplugin/csi-attacher:v2.0.0
+- csiplugin/csi-node-driver-registrar:v1.2.0
+- csiplugin/csi-provisioner:v1.4.0
+- csiplugin/csi-resizer:v0.2.0
+- csiplugin/csi-snapshotter:v1.2.2
 docker_images_ks:
 - alpine:3.10.4
 - busybox:1.31.1
