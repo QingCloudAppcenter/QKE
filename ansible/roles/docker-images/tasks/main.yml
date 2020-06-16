@@ -1,20 +1,46 @@
 ---
+- name: set vars
+  set_fact:
+    compressed_file_name: "{{ compressed_file_name }}"
+    src_file: "/tmp/{{ compressed_file_name }}"
+    local_path: "{{ playbook_dir }}/files/tmp"
+  loop:
+    - "dockerfs.tgz"
+  loop_control:
+    loop_var: compressed_file_name
+    
 - name: start docker service
   systemd:
     name: docker
     masked: no
     state: started
 
+- name: install pip3
+  apt:
+    name: python3-pip
+    update_cache: yes
+
+- name: install docker.py
+  pip:
+    executable: pip3
+    name: docker.py
+
 - name: pull Docker images
-  shell: docker pull {{ image_name }}
+  docker_image: 
+    source: pull
+    name: "{{ image_name }}"
   loop:
-  - "quay.io/coreos/flannel:v0.11.0-amd64"
-  - "quay.io/coreos/flannel-cni:v0.3.0-amd64"
-  - kubesphere/cloud-controller-manager:v1.4.2
-  - kubesphere/nginx-ingress-controller:0.25.0
-  - nvidia/k8s-device-plugin:1.0.0-beta4
+    - "kubesphere/flannel:v0.11.0"
+    - "kubesphere/flannel-cni:v0.3.0"
+    - "kubesphere/cloud-controller-manager:v1.4.4"
+    - "kubesphere/nginx-ingress-controller:0.25.0"
+    - "nvidia/k8s-device-plugin:1.0.0-beta4"
+    - "kubesphere/hyperkube:v1.18.3"
+    - "kubesphere/pause:3.2"
+    - "coredns/coredns:1.6.0"
   loop_control:
     loop_var: image_name
+
 
 - name: stop docker service
   systemd:
@@ -23,10 +49,20 @@
     state: stopped
 
 - name: archive images
-  shell: tar cf /tmp/docker.tar /var/lib/docker
+  shell: test -e  {{ src_file }} || tar czf {{ src_file }} /var/lib/docker
+
+- name: prepare tmp dir
+  file:
+    path: "{{ local_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  delegate_to: localhost
 
 - name: fetch images
-  fetch:
-    src: /tmp/docker.tar
-    dest: /tmp/
-    flat: yes
+  synchronize:
+    src: "{{ src_file }}"
+    dest: "{{ local_path }}/{{ compressed_file_name }}"
+    mode: pull
+  delegate_to: localhost
