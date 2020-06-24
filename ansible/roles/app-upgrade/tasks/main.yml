@@ -27,12 +27,39 @@
 
 - name: prepare dirs
   file:
-    path: /upgrade/vm-files
+    path: "{{ upgrade_path }}"
     state: directory
+  loop:
+    - /upgrade/vm-files
+    - /upgrade/docker-images
+  loop_control:
+    loop_var: upgrade_path
 
 - name: copy vm files
   shell: rsync -aAXR {{ snapshot_sources | join(' ') }} /upgrade/vm-files
 
+- name: copy images package 
+  synchronize:
+    src: "{{ local_images_path }}/"
+    dest: /upgrade/docker-images/
+  delegate_to: localhost
+  when: "'k8s-node' in group_names"
+
+- name: start docker service
+  systemd:
+    name: docker
+    masked: no
+    state: started
+
+- name: load images
+  shell: docker load -qi /upgrade/docker-images/ks.tgz;docker load -qi /upgrade/docker-images/k8s.tgz
+
+- name: stop docker service
+  systemd:
+    name: docker
+    masked: no
+    state: stopped
+ 
 - name: unmount the volume for upgrade
   mount:
     path: /upgrade

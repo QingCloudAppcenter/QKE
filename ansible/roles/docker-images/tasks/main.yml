@@ -1,14 +1,36 @@
 ---
 - name: set vars
   set_fact:
-    compressed_file_name: "{{ compressed_file_name }}"
-    src_file: "/tmp/{{ compressed_file_name }}"
-    local_path: "{{ playbook_dir }}/files/tmp"
-  loop:
-    - "dockerfs.tgz"
-  loop_control:
-    loop_var: compressed_file_name
-    
+    src_path: "/tmp"
+    local_path: "{{ local_images_path }}"
+
+- name: Check that the src_ks_image_package exists
+  stat:
+    path: "{{ src_path }}/{{ ks_images_package }}"
+  register: src_ks_result
+
+- name: Check that the src_k8s_image_package exists
+  stat:
+    path: "{{ src_path }}/{{ k8s_images_package }}"
+  register: src_k8s_result
+
+- name: Check that the local_ks_image_package exists
+  stat:
+    path: "{{ local_path }}/{{ ks_images_package }}"
+  register: local_ks_result
+  delegate_to: localhost
+
+- name: Check that the local_k8s_image_package exists
+  stat:
+    path: "{{ local_path }}/{{ k8s_images_package }}"
+  register: local_k8s_result
+  delegate_to: localhost
+
+- name: set image package variable
+  set_fact:
+    src_exists: src_k8s_result.stat.exists and src_ks_result.stat.exists
+    local_exists: local_k8s_result.stat.exists and local_ks_result.stat.exists
+
 - name: start docker service
   systemd:
     name: docker
@@ -25,31 +47,42 @@
     executable: pip3
     name: docker.py
 
-- name: pull Docker images
+- name: pull k8s images
   docker_image: 
     source: pull
     name: "{{ image_name }}"
   loop:
-    - "kubesphere/flannel:v0.11.0"
-    - "kubesphere/flannel-cni:v0.3.0"
-    - "kubesphere/cloud-controller-manager:v1.4.4"
-    - "kubesphere/nginx-ingress-controller:0.25.0"
-    - "nvidia/k8s-device-plugin:1.0.0-beta4"
-    - "kubesphere/hyperkube:v1.18.3"
-    - "kubesphere/pause:3.2"
-    - "coredns/coredns:1.6.0"
+    "{{ docker_images_k8s }}"
   loop_control:
     loop_var: image_name
+  when: "{{ src_exists }} == False and {{ local_exists }} == False"
 
+- name: pull ks images
+  docker_image: 
+    source: pull
+    name: "{{ image_name }}"
+  loop:
+    "{{ docker_images_ks }}"
+  loop_control:
+    loop_var: image_name
+  when: "{{ src_exists }} == False and {{ local_exists }} == False"
+
+- name: prepare images packages
+  shell: docker save -o "{{ src_path }}"/"{{ image_package.package_name }}" "{{ image_package.images_names | join(" ") }}"
+  loop:
+    - package_name: "{{ ks_images_package }}"
+      images_names: "{{ docker_images_ks }}"
+    - package_name: "{{ k8s_images_package }}"
+      images_names: "{{ docker_images_k8s }}"
+  loop_control:
+    loop_var: image_package
+  when: "{{ src_exists }} == False and {{ local_exists }} == False"
 
 - name: stop docker service
   systemd:
     name: docker
     masked: no
     state: stopped
-
-- name: archive images
-  shell: test -e  {{ src_file }} || tar czf {{ src_file }} /var/lib/docker
 
 - name: prepare tmp dir
   file:
@@ -62,7 +95,13 @@
 
 - name: fetch images
   synchronize:
-    src: "{{ src_file }}"
-    dest: "{{ local_path }}/{{ compressed_file_name }}"
+    src: "{{ src_path }}/{{ image_package }}"
+    dest: "{{ local_path }}/{{ image_package }}"
     mode: pull
   delegate_to: localhost
+  loop:
+    - "{{ ks_images_package }}"
+    - "{{ k8s_images_package }}"
+  loop_control:
+    loop_var: image_package
+  when: "{{ local_exists }} == False"

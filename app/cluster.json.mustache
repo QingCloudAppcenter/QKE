@@ -12,14 +12,13 @@
   "advanced_actions": ["scale_horizontal"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-53p2pg79",
-    "appv-e5ni6ltd"
+    "appv-39iiioy3"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-s9h7ohfv",
-      "zone": "pek3a"
+      "snapshot": "ss-sz9vhayn",
+      "zone": "pek3"
     },
     "copy":[{
       "mount_role": "master",
@@ -27,26 +26,26 @@
       "mount_options": "defaults,noatime",
       "filesystem": "ext4",
       "source": "/upgrade",
-      "destination": "/tmp/upgrade"
+      "destination": "/data/tmp"
     }, {
       "mount_role": "node_perf",
       "mount_point": "/upgrade",
       "mount_options": "defaults,noatime",
       "filesystem": "ext4",
       "source": "/upgrade",
-      "destination": "/tmp/upgrade"
+      "destination": "/data/tmp"
     }, {
       "mount_role": "node_super_perf",
       "mount_point": "/upgrade",
       "mount_options": "defaults,noatime",
       "filesystem": "ext4",
       "source": "/upgrade",
-      "destination": "/tmp/upgrade"
+      "destination": "/data/tmp"
     }]
   }, {
     "container":{
       "snapshot": "ss-jv10de25",
-      "zone": "pek3a"
+      "zone": "pek3"
     },
     "copy":[{
       "mount_role": "client",
@@ -54,20 +53,15 @@
       "mount_options": "defaults,noatime",
       "filesystem": "ext4",
       "source": "/upgrade",
-      "destination": "/tmp/upgrade"
+      "destination": "/data/tmp"
     }]
   }],
-  "upgrade_roles": {
-    "add": [
-      "node_gpu"
-    ]
-  },
   "nodes": [{
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-6frfg9s6",
-      "zone": "pek3a"
+      "image": "img-alg62zld",
+      "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
     "count": {{cluster.master.count}},
@@ -123,12 +117,12 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
-        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi && mkdir -p /data/tmp'",
+        "cmd": "/data/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
       "rollback": {
-        "cmd": "rm -rf /tmp/upgrade"
+        "cmd": "rm -rf /data/tmp/upgrade"
       },
       "get_nodes_order": {
         "event": ["upgrade"],
@@ -152,8 +146,8 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-6frfg9s6",
-      "zone": "pek3a"
+      "image": "img-alg62zld",
+      "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
     "count": {{cluster.node_perf.count}},
@@ -193,12 +187,12 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
-        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi && mkdir -p /data/tmp'",
+        "cmd": "/data/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
       "rollback": {
-        "cmd": "rm -rf /tmp/upgrade"
+        "cmd": "rm -rf /data/tmp/upgrade"
       },
       "docker_prune": {
         "type": "custom",
@@ -213,8 +207,8 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-6frfg9s6",
-      "zone": "pek3a"
+      "image": "img-alg62zld",
+      "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
     "count": {{cluster.node_super_perf.count}},
@@ -254,12 +248,12 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
-        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi && mkdir -p /data/tmp'",
+        "cmd": "/data/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
       "rollback": {
-        "cmd": "rm -rf /tmp/upgrade"
+        "cmd": "rm -rf /data/tmp/upgrade"
       },
       "docker_prune": {
         "type": "custom",
@@ -275,7 +269,7 @@
     "container": {
       "type": "kvm",
       "image": "img-vrf8fh87",
-      "zone": "pek3a"
+      "zone": "pek3"
     },
     "instance_class": {{cluster.node_gpu.instance_class}},
     "count": {{cluster.node_gpu.count}},
@@ -329,7 +323,7 @@
     "container": {
       "type": "kvm",
       "image": "img-cilukwwj",
-      "zone": "pek3a"
+      "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
     "count": {{cluster.client.count}},
@@ -350,11 +344,11 @@
       },
       "upgrade": {
         "order": 2,
-        "cmd": "/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "cmd": "/data/tmp/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 43200
       },
       "rollback": {
-        "cmd": "rm -rf /tmp/upgrade"
+        "cmd": "rm -rf /data/tmp/upgrade"
       }
     },
     "health_check": {

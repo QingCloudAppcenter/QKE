@@ -702,7 +702,7 @@ checkCertDaysBeyond() {
 }
 
 getCertValidDays() {
-  local earliestExpireDate; earliestExpireDate="$(date -d "$(runKubeadm alpha certs check-expiration | awk '{$1=$7=$8=""} NR>1' | sort -M | head -1)" +%s)"
+  local earliestExpireDate; earliestExpireDate="$(runKubeadm alpha certs check-expiration |sed '/EXPIRES/d' |sed '/^$/d' |awk '{print "date -d\"",$2,$3,$4,$5,"\" +%s"|"/bin/bash"}'|sort -n |head -1)"
   local today; today="$(date +%s)"
   echo -n $(( ($earliestExpireDate - $today) / (24 * 60 * 60) ))
 }
