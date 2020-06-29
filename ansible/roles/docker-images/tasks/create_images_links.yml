@@ -23,11 +23,6 @@
     path: "{{ dest_file }}"
   register: dest_file_result
 
-- debug: 
-    msg: test1={{ docker_data_path }}/overlay2/l
-- debug: 
-    msg: test2={{ dest_ppath }}{{ docker_data_path }}/overlay2/l
-
 - name: copy image dir to dest docker path
   copy:
     remote_src: yes
