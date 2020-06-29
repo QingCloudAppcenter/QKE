@@ -1,0 +1,6 @@
+{
+    "Get KubeSphere Console": "KubeSphere Console URL (default username：admin@kubesphere.io password：P@88w0rd); please change the password after the first login.",
+    "KS is not installed.": "KubeSphere is not installed.\nTo install KubeSphere, you can refer to [docs](https://docs.qingcloud.com/product/container/qke/), or [submit a ticket](https://console.qingcloud.com/tickets/) for support.",
+    "Using master node IP. Please try again later when external IP is ready.": "The LB with EIP is being created, please refresh this tab later; currently the IP of the first control plane is displayed; if this message appears for a long time, please check the ks-console service under kubesphere-system namespace",
+    "API access key id": "QingCloud IaaS API [Access Key](https://console.qingcloud.com/access_keys/), which will be used to create QingCloud resources, such as load balancers, volumes, etc."
+}
