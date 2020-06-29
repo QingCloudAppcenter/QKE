@@ -40,10 +40,15 @@
 
 - name: copy images package 
   synchronize:
-    src: "{{ local_images_path }}/"
-    dest: /upgrade/docker-images/
+    src: "{{ local_images_path }}/{{ image_package }}"
+    dest: "/upgrade/docker-images/{{ image_package }}"
   delegate_to: localhost
   when: "'k8s-node' in group_names"
+  loop:
+    - "{{ ks_images_package }}"
+    - "{{ k8s_images_package }}"
+  loop_control:
+    loop_var: image_package
 
 - name: start docker service
   systemd:

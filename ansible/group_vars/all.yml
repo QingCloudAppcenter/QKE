@@ -18,6 +18,8 @@ nvidia_plugin_version: 1.0.0-beta4
 local_images_path: /root/.ansible/cache/images
 ks_images_package: ks.tgz
 k8s_images_package: k8s.tgz
+dokcerfs_package: dockerfs.tgz
+archive: /archive
 binaries:
 - /opt/crictl
 - /opt/etcd

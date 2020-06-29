@@ -1,17 +1,27 @@
 ---
 - name: set vars
   set_fact:
-    src_path: "/tmp"
+    src_data_path: "/root/data"
     local_path: "{{ local_images_path }}"
+
+- name: create data directory if they don't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  loop:
+    - "{{ src_data_path }}"
 
 - name: Check that the src_ks_image_package exists
   stat:
-    path: "{{ src_path }}/{{ ks_images_package }}"
+    path: "{{ src_data_path }}/{{ ks_images_package }}"
   register: src_ks_result
 
 - name: Check that the src_k8s_image_package exists
   stat:
-    path: "{{ src_path }}/{{ k8s_images_package }}"
+    path: "{{ src_data_path }}/{{ k8s_images_package }}"
   register: src_k8s_result
 
 - name: Check that the local_ks_image_package exists
@@ -28,8 +38,8 @@
 
 - name: set image package variable
   set_fact:
-    src_exists: src_k8s_result.stat.exists and src_ks_result.stat.exists
-    local_exists: local_k8s_result.stat.exists and local_ks_result.stat.exists
+    src_exists: "{% if src_k8s_result.stat.exists and src_ks_result.stat.exists %}True{% else %}False{% endif %}"
+    local_exists: "{% if local_k8s_result.stat.exists and local_ks_result.stat.exists %}True{% else %}False{% endif %}"
 
 - name: start docker service
   systemd:
@@ -55,7 +65,7 @@
     "{{ docker_images_k8s }}"
   loop_control:
     loop_var: image_name
-  when: "{{ src_exists }} == False and {{ local_exists }} == False"
+  when: not src_exists 
 
 - name: pull ks images
   docker_image: 
@@ -65,10 +75,10 @@
     "{{ docker_images_ks }}"
   loop_control:
     loop_var: image_name
-  when: "{{ src_exists }} == False and {{ local_exists }} == False"
+  when: not src_exists 
 
 - name: prepare images packages
-  shell: docker save -o "{{ src_path }}"/"{{ image_package.package_name }}" "{{ image_package.images_names | join(" ") }}"
+  shell: docker save -o {{ src_data_path }}/{{ image_package.package_name }} {{ image_package.images_names | join(" ") }}
   loop:
     - package_name: "{{ ks_images_package }}"
       images_names: "{{ docker_images_ks }}"
@@ -76,7 +86,7 @@
       images_names: "{{ docker_images_k8s }}"
   loop_control:
     loop_var: image_package
-  when: "{{ src_exists }} == False and {{ local_exists }} == False"
+  when: not src_exists
 
 - name: stop docker service
   systemd:
@@ -84,7 +94,12 @@
     masked: no
     state: stopped
 
-- name: prepare tmp dir
+- name: create images links
+  vars:
+    dest_ppath: "{{ src_data_path }}/dockerfs"
+  include_tasks: create_images_links.yml
+
+- name: prepare local dir
   file:
     path: "{{ local_path }}"
     state: directory
@@ -95,7 +110,7 @@
 
 - name: fetch images
   synchronize:
-    src: "{{ src_path }}/{{ image_package }}"
+    src: "{{ src_data_path }}/{{ image_package }}"
     dest: "{{ local_path }}/{{ image_package }}"
     mode: pull
   delegate_to: localhost
@@ -104,4 +119,4 @@
     - "{{ k8s_images_package }}"
   loop_control:
     loop_var: image_package
-  when: "{{ local_exists }} == False"
+  when: not local_exists

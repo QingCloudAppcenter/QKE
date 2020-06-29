@@ -70,8 +70,15 @@
 
 - name: prepare archive dir
   file:
-    path: /archive
+    path: "{{ archive }}"
     state: directory
+
+- name: upload dockerfs.tgz
+  synchronize:
+    src: "{{ local_images_path }}/{{ dokcerfs_package }}"
+    dest: "{{ archive }}/"
+  delegate_to: localhost
+  when: "'k8s-node' in group_names"
 
 - name: k8s network requirements
   modprobe:
