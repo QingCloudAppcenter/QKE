@@ -94,11 +94,6 @@
     masked: no
     state: stopped
 
-- name: create images links
-  vars:
-    dest_ppath: "{{ src_data_path }}/dockerfs"
-  include_tasks: create_images_links.yml
-
 - name: prepare local dir
   file:
     path: "{{ local_path }}"

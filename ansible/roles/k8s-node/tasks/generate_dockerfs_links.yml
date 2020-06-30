@@ -1,12 +1,16 @@
+
 ---
 - name: set vars
   set_fact:
     docker_data_path: "/var/lib/docker"
-    # {{ dest_ppath }} 为存储所有文件的路径，需要从外部导入
-    dest_ppath: "{{ dest_ppath }}"
     overlay2: "overlay2"
     image: "image"
-    dest_file: "{{ dest_ppath }}/dockerfs.tgz"
+    dest_file: "{{ archive }}/dockerfs.tgz"
+
+- name: prepare archive dir
+  file:
+    path: "{{ archive }}"
+    state: directory
 
 - name: create dest docker directory if they don't exist
   file:
@@ -16,7 +20,7 @@
     group: root
     mode: '0777'
   loop:
-    - "{{ dest_ppath }}{{ docker_data_path }}/{{ overlay2 }}"
+    - "{{ archive }}{{ docker_data_path }}/{{ overlay2 }}"
 
 - name: register dockerfs.tgz
   stat:
@@ -27,34 +31,32 @@
   copy:
     remote_src: yes
     src: "{{ docker_data_path }}/{{ image }}"
-    dest: "{{ dest_ppath }}{{ docker_data_path }}/"
+    dest: "{{ archive }}{{ docker_data_path }}/"
     owner: root
     group: root
     mode: '0777'
-    follow: yes
 
 - name: copy overlay2/l dir to dest docker path
   copy:
     remote_src: yes
     src: "{{ docker_data_path }}/{{ overlay2 }}/l"
-    dest: "/{{ dest_ppath }}{{ docker_data_path }}/{{ overlay2 }}/"
+    dest: "{{ archive }}{{ docker_data_path }}/{{ overlay2 }}/"
     owner: root
     group: root
     mode: '0777'
-    follow: yes
 
 - name: list all images layers
-  shell: ls {{ docker_data_path }}/{{ overlay2 }}/ |grep -vE "^l$"
+  shell: find {{ docker_data_path }}/{{ overlay2 }}/ -mindepth 1 -maxdepth 1 ! -name l
   register: all_images_layers
 
 - name: set vars
   set_fact:
-     all_images_layers="{{ all_images_layers.stdout.split("\n")}}"
+    all_images_layers="{{ all_images_layers.stdout.split("\n")}}"
 
 - name: generate links to all images layers 
   file:
-    dest: "{{ dest_ppath }}{{ docker_data_path }}/{{ overlay2 }}/{{ image_layer  }}"
-    src: "{{ docker_data_path }}/{{ overlay2 }}/{{ image_layer }}"
+    dest: "{{ archive }}{{ image_layer  }}"
+    src: "{{ image_layer }}"
     state: link
   loop:
     "{{ all_images_layers }}"
@@ -63,14 +65,12 @@
 
 - name: Compress directory var into dockerfs.tgz
   archive:
-    path: "{{ dest_ppath }}/var"
+    path: "{{ archive }}/var"
     dest: "{{ dest_file }}"
   when: not dest_file_result.stat.exists
 
-- name: fetch dockerfs.tgz to localhost
-  synchronize:
-    src: "{{ dest_file }}"
-    dest: "{{ local_path }}/dockerfs.tgz"
-    mode: pull
-  delegate_to: localhost
+- name: Recursively remove directory
+  file:
+    path: "{{ archive }}/var"
+    state: absent
   

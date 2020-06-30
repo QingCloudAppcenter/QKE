@@ -8,6 +8,7 @@
     mode: preserve
     directory_mode: u=rwx,g=rx,o=
 
+# 会格式化掉该磁盘
 - name: create filesystem on attached volume
   filesystem:
     fstype: ext4

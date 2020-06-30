@@ -68,17 +68,8 @@
   loop_control:
     loop_var: dir_path
 
-- name: prepare archive dir
-  file:
-    path: "{{ archive }}"
-    state: directory
-
-- name: upload dockerfs.tgz
-  synchronize:
-    src: "{{ local_images_path }}/{{ dokcerfs_package }}"
-    dest: "{{ archive }}/"
-  delegate_to: localhost
-  when: "'k8s-node' in group_names"
+- name: create images links
+  include_tasks: generate_dockerfs_links.yml
 
 - name: k8s network requirements
   modprobe:
