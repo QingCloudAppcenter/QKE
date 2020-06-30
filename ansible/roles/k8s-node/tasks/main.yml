@@ -70,6 +70,7 @@
 
 - name: create images links
   include_tasks: generate_dockerfs_links.yml
+  when: "'k8s-node' in group_names"
 
 - name: k8s network requirements
   modprobe:
