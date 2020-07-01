@@ -65,7 +65,7 @@ preScaleIn() {
   isFirstMaster && test -n "$LEAVING_WORKER_NODES" || return 0
   test $(echo $STABLE_WORKER_NODES | wc -w) -ge 2 || return $EC_BELOW_MIN_WORKERS_COUNT
   local -r nodes="$(getNodeNames $LEAVING_WORKER_NODES)"
-  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
+  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --delete-local-data --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
     log "ERROR: failed to remove nodes '$nodes' ($?): '$result'. Reverting changes ..."
     runKubectl uncordon $nodes || return $EC_UNCORDON_FAILED
     return $EC_DRAIN_FAILED
@@ -83,6 +83,26 @@ destroy() {
 
 getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
+}
+
+upgradeFrom2x(){
+  docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
+  if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
+  if isMaster; then
+    waitPreviousMastersUpgraded
+    runKubeadm init phase control-plane all
+    restartSvc kubelet
+    if isFirstMaster; then
+      local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
+        distributeFile $path $STABLE_WORKER_NODES
+      done
+      distributeKubeConfig
+    fi
+  else
+    retry 3600 1 0 test -s $KUBE_CONFIG
+    restartSvc kubelet
+  fi
+   
 }
 
 upgrade() {

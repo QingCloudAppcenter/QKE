@@ -9,10 +9,10 @@
     directory_mode: u=rwx,g=rx,o=
 
 # 会格式化掉该磁盘
-- name: create filesystem on attached volume
-  filesystem:
-    fstype: ext4
-    dev: /dev/vdc
+# - name: create filesystem on attached volume
+#   filesystem:
+#     fstype: ext4
+#     dev: /dev/vdc
 
 - name: mount the volume for upgrade
   mount:
@@ -67,6 +67,10 @@
     name: docker
     masked: no
     state: stopped
+  when: "'k8s-node' in group_names"
+
+- name: create images links
+  include_tasks: generate_dockerfs_links.yml
   when: "'k8s-node' in group_names"
  
 - name: unmount the volume for upgrade
