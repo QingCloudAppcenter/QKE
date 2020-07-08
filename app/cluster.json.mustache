@@ -12,12 +12,14 @@
   "advanced_actions": ["scale_horizontal"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-53p2pg79"
+    "appv-39iiioy3",
+    "appv-53p2pg79",
+    "appv-e5ni6ltd"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-6yepodrb",
+      "snapshot": "ss-sbupi59t",
       "zone": "pek3"
     },
     "copy":[{
@@ -44,7 +46,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-0t7rst8i",
+      "snapshot": "ss-udkckmox",
       "zone": "pek3"
     },
     "copy":[{
@@ -61,7 +63,7 @@
       "node_gpu"	
     ]	
   },
-  "nodes": [{
+    "nodes": [{
     "role": "master",
     "container": {
       "type": "kvm",

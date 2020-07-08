@@ -86,23 +86,38 @@ getUpgradeOrder() {
 }
 
 upgradeFrom2x(){
+   upgradeCniConf
   docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
   if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
+  fixOverlays
+  start
   if isMaster; then
     waitPreviousMastersUpgraded
+    if ! $ETCD_PROVIDED; then restartSvc etcd; fi
+    updateApiserverCerts
     runKubeadm init phase control-plane all
+    runKubeadm init phase kubelet-start
     restartSvc kubelet
     if isFirstMaster; then
       local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
         distributeFile $path $STABLE_WORKER_NODES
       done
       distributeKubeConfig
+      waitAllNodesUpgraded
     fi
   else
+    waitAllMasterNodesUpgradedAndReady
     retry 3600 1 0 test -s $KUBE_CONFIG
     restartSvc kubelet
   fi
-   
+  if $IS_HA_CLUSTER; then
+    saveLbFile $lbId/$LB_IP_FROM_V1
+  fi
+  if isFirstMaster && $KS_ENABLED; then
+    waitHelmReady 1800
+    launchKs
+  fi
+  _initCluster
 }
 
 upgrade() {
@@ -336,6 +351,16 @@ waitPreviousMastersUpgraded() {
 
 waitAllNodesUpgraded() {
   retry 3600 2 0 checkNodeStats '$5=="v'$K8S_VERSION'"'
+}
+
+waitAllMasterNodesUpgradedAndReady(){
+  retry 3600 2 0 checkMasterNodesStats
+}
+
+checkMasterNodesStats(){
+  local expected; expected="$(getNodeNames ${nodes:-$STABLE_MASTER_NODES $JOINING_MASTER_NODES} | sort)"
+  local actual; actual="$(runKubectl get no --no-headers |awk '{if($2=="Ready" && $3~/master/ && $5=="v'$K8S_VERSION'"){print $1}}' |sort)"
+  [ "$expected" = "$actual" ]
 }
 
 checkNodeStats() {
@@ -737,13 +762,16 @@ renewCerts() {
 fixOverlays() {
   local persistentRoot=/data/var/lib/docker/overlay2 transientRoot=/opt/overlay2
   local layer; for layer in $(find $persistentRoot -mindepth 1 -maxdepth 1 -type l -exec basename {} \;); do
-    rsync -aAX $transientRoot/$layer/ $persistentRoot/$layer.tmp/ || {
-      log "ERROR: failed to copy '$layer' from '$transientRoot' to '$persistentRoot'. Reverting ..."
-      rm -rf $persistentRoot/$layer.tmp
-      return $EC_OVERLAY_ERR
-    }
-    rm -f $persistentRoot/$layer
-    mv $persistentRoot/$layer.tmp $persistentRoot/$layer
+    local transientLayer="$transientRoot/$layer/"
+    if [[ -d "$transientLayer" ]]; then 
+      rsync -aAX $transientRoot/$layer/ $persistentRoot/$layer.tmp/ || {
+        log "ERROR: failed to copy '$layer' from '$transientRoot' to '$persistentRoot'. Reverting ..."
+        rm -rf $persistentRoot/$layer.tmp
+        return $EC_OVERLAY_ERR
+      }
+      rm -f $persistentRoot/$layer
+      mv $persistentRoot/$layer.tmp $persistentRoot/$layer
+    fi
   done
 }
 
