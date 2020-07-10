@@ -3,7 +3,7 @@ gcr_mirror: kubesphere
 etcd_version: 3.2.24
 cni_version: 0.7.5
 cri_version: 1.13.0
-k8s_version: 1.18.3
+k8s_version: 1.17.8
 flannel_version: 0.11.0
 coredns_version: 1.6.0
 calico_version: 3.7.3
@@ -32,7 +32,7 @@ docker_images_k8s:
 - coredns/coredns:1.6.0
 - csiplugin/csi-qingcloud:v1.1.1
 - kubesphere/cloud-controller-manager:v1.4.4
-- kubesphere/hyperkube:v1.18.3
+- kubesphere/hyperkube:v1.17.8
 - kubesphere/k8s-dns-node-cache:1.15.5
 - kubesphere/metrics-server-amd64:v0.3.1
 - kubesphere/nfs-client-provisioner:v3.1.0-k8s1.11
