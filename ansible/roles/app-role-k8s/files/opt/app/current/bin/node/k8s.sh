@@ -12,12 +12,23 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
+generateDockerLayerLinks(){
+  if [ ! -d "/data/var/lib/docker" ]; then
+    mkdir -p /data/var/lib/docker/{overlay2,image}
+    local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
+      ln -snf $layerName /data$layerName
+    done
+    rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
+    rsync -aAX /var/lib/docker/image /data/var/lib/docker/
+  fi
+}
+
 initNode() {
   _initNode
-  test -e "/data/var/lib/docker" || tar xzf /archive/dockerfs.tgz -C /data
+  generateDockerLayerLinks
   mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
-  local migratingPath; for migratingPath in root/{.docker,.kube,.helm} var/lib/kubelet; do
+  local migratingPath; for migratingPath in root/{.docker,.kube} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
       rm -rf /$migratingPath
     else
@@ -65,7 +76,7 @@ preScaleIn() {
   isFirstMaster && test -n "$LEAVING_WORKER_NODES" || return 0
   test $(echo $STABLE_WORKER_NODES | wc -w) -ge 2 || return $EC_BELOW_MIN_WORKERS_COUNT
   local -r nodes="$(getNodeNames $LEAVING_WORKER_NODES)"
-  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --delete-local-data --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
+  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
     log "ERROR: failed to remove nodes '$nodes' ($?): '$result'. Reverting changes ..."
     runKubectl uncordon $nodes || return $EC_UNCORDON_FAILED
     return $EC_DRAIN_FAILED
@@ -85,42 +96,11 @@ getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
 }
 
-upgradeFrom2x(){
-   upgradeCniConf
-  docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
-  if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
-  fixOverlays
-  start
-  if isMaster; then
-    waitPreviousMastersUpgraded
-    if ! $ETCD_PROVIDED; then restartSvc etcd; fi
-    updateApiserverCerts
-    runKubeadm init phase control-plane all
-    runKubeadm init phase kubelet-start
-    restartSvc kubelet
-    if isFirstMaster; then
-      local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
-        distributeFile $path $STABLE_WORKER_NODES
-      done
-      distributeKubeConfig
-      waitAllNodesUpgraded
-    fi
-  else
-    waitAllMasterNodesUpgradedAndReady
-    retry 3600 1 0 test -s $KUBE_CONFIG
-    restartSvc kubelet
-  fi
-  if $IS_HA_CLUSTER; then
-    saveLbFile $lbId/$LB_IP_FROM_V1
-  fi
-  if isFirstMaster && $KS_ENABLED; then
-    waitHelmReady 1800
-    launchKs
-  fi
-  _initCluster
-}
-
 upgrade() {
+  if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
+    log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
+    return $UPGRADE_VERSION_DETECTED_ERR
+  fi
   upgradeCniConf
   docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
   if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
@@ -139,26 +119,30 @@ upgrade() {
         distributeFile $path $STABLE_WORKER_NODES
       done
       distributeKubeConfig
-      if $IS_HA_CLUSTER; then
+      
+      if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
         local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
       fi
       waitAllNodesUpgraded
-      runKubeadm init phase upload-config all
-      # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
-      # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
-      # runKubectlPatch cm kubeadm-config -p "$(yq n data.ClusterStatus -- "$(yq w /tmp/cm.yml data.ClusterStatus -- "$(for m in $STABLE_MASTER_NODES; do printf "%s:\n  advertiseAddress: %s\n  bindPort: 6443\n" $(echo $m | awk -F/ '{print $4, $7}'); done | yq p - apiEndpoints)")")"
-      kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
-      applyKubeProxyLogLevel
-      setUpNetwork
-      setUpHelm
-      setUpCloudControllerMgr
-      setUpStorage
+      if $IS_UPGRADING_FROM_V1; then
+        runKubeadm init phase upload-config all
+        # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
+        # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
+        # runKubectlPatch cm kubeadm-config -p "$(yq n data.ClusterStatus -- "$(yq w /tmp/cm.yml data.ClusterStatus -- "$(for m in $STABLE_MASTER_NODES; do printf "%s:\n  advertiseAddress: %s\n  bindPort: 6443\n" $(echo $m | awk -F/ '{print $4, $7}'); done | yq p - apiEndpoints)")")"
+        kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
+        applyKubeProxyLogLevel
+        setUpNetwork
+        setUpHelm
+        setUpCloudControllerMgr
+        setUpStorage
+      fi
     fi
   else
+    waitAllMasterNodesUpgradedAndReady
     retry 3600 1 0 test -s $KUBE_CONFIG
     restartSvc kubelet
   fi
-  if $IS_HA_CLUSTER; then
+  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
     saveLbFile $lbId/$LB_IP_FROM_V1
     updateLbIp
   fi
@@ -354,13 +338,7 @@ waitAllNodesUpgraded() {
 }
 
 waitAllMasterNodesUpgradedAndReady(){
-  retry 3600 2 0 checkMasterNodesStats
-}
-
-checkMasterNodesStats(){
-  local expected; expected="$(getNodeNames ${nodes:-$STABLE_MASTER_NODES $JOINING_MASTER_NODES} | sort)"
-  local actual; actual="$(runKubectl get no --no-headers |awk '{if($2=="Ready" && $3~/master/ && $5=="v'$K8S_VERSION'"){print $1}}' |sort)"
-  [ "$expected" = "$actual" ]
+  retry 3600 2 0 checkNodeStats '$2=="Ready"&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 checkNodeStats() {
@@ -748,7 +726,7 @@ checkCertDaysBeyond() {
 }
 
 getCertValidDays() {
-  local earliestExpireDate; earliestExpireDate="$(runKubeadm alpha certs check-expiration |sed '/EXPIRES/d' |sed '/^$/d' |awk '{print "date -d\"",$2,$3,$4,$5,"\" +%s"|"/bin/bash"}'|sort -n |head -1)"
+  local earliestExpireDate; earliestExpireDate="$(runKubeadm alpha certs check-expiration | awk '$1!~/^$|^CERTIFICATE/ {print "date -d\"",$2,$3,$4,$5,"\" +%s" | "/bin/bash"}' | sort -n | head -1)"
   local today; today="$(date +%s)"
   echo -n $(( ($earliestExpireDate - $today) / (24 * 60 * 60) ))
 }
@@ -760,7 +738,12 @@ renewCerts() {
 }
 
 fixOverlays() {
-  local persistentRoot=/data/var/lib/docker/overlay2 transientRoot=/opt/overlay2
+  local transientRoot persistentRoot; persistentRoot=/data/var/lib/docker/overlay2 
+  if $IS_UPGRADING_FROM_V1; then
+    transientRoot=/opt/overlay2
+  elif $IS_UPGRADING_FROM_V2; then
+    transientRoot=/var/lib/docker/overlay2
+  fi
   local layer; for layer in $(find $persistentRoot -mindepth 1 -maxdepth 1 -type l -exec basename {} \;); do
     local transientLayer="$transientRoot/$layer/"
     if [[ -d "$transientLayer" ]]; then 

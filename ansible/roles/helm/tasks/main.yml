@@ -23,12 +23,18 @@
     mode: preserve
     directory_mode: u=rwx,g=rx,o=
 
+- name: helm add repo
+  shell: helm repo add stable "{{ helm_stable_repo }}"
+  when: "{{ helm_version.split('.')[0] == 3 }}"
+
 - name: helm init
-  shell: helm init --client-only --stable-repo-url https://charts.kubesphere.io/mirror
+  shell: helm init --client-only --stable-repo-url "{{ helm_stable_repo }}"
+  when: "{{ helm_version.split('.')[0] == 2 }}"
 
 - name: generate Helm Tiller yaml
+  when: "{{ helm_version.split('.')[0] == 2 }}"
   shell: |
-    helm init --history-max 200 --service-account tiller --stable-repo-url https://charts.kubesphere.io/mirror \
+    helm init --history-max 200 --service-account tiller --stable-repo-url "{{ helm_stable_repo }}" \
               --override spec.selector.matchLabels.'app'='helm',spec.selector.matchLabels.'name'='tiller' \
               --tiller-image kubesphere/tiller:v{{ helm_version }} \
               -oyaml | sed -E 's#(apiVersion:) extensions/v1beta1#\1 apps/v1#' >> /opt/app/current/conf/helm/tiller.yml

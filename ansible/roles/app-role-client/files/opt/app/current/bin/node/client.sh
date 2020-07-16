@@ -23,6 +23,7 @@ initNode() {
 }
 
 initCluster() {
+  mkdir -p /data/appctl/data/
   _initCluster
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG
@@ -33,7 +34,12 @@ initCluster() {
 }
 
 upgrade() {
+  if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
+    log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
+    return $UPGRADE_VERSION_DETECTED_ERR
+  fi
   execute start
+  mkdir -p /data/appctl/data/
   _initCluster
   if $IS_HA_CLUSTER; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
   setUpConfigs

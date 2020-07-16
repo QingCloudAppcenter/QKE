@@ -69,13 +69,7 @@ main() {
   extractFiles
   backUpFiles $(date +%y%m%d.%H%M%S)
   setUpFiles
-  if echo "$UPGRADING_FROM_VERSION" grep -q "appv-39iiioy3"; then
-    echo "upgrading from version $UPGRADING_FROM_VERSION"
-    appctl upgradeFrom2x
-  elif echo "$UPGRADING_FROM_VERSION" grep -Eq "(appv-e5ni6ltd|appv-53p2pg79)"; then
-    echo "upgrading from version $UPGRADING_FROM_VERSION"
-    appctl upgrade
-  fi
+  appctl upgrade
   cleanUp
 }
 

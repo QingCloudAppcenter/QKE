@@ -601,6 +601,30 @@
       "default": "",
       "changeable": true,
       "required": "no"
+    }, {
+      "key": "controller.manager.params",
+      "label": "Controller Manager parameters",
+      "description": "parameters for controller manager",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "apiserver.params",
+      "label": "Apiserver Parameters",
+      "description": "parameters for apiserver ",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "scheduler.params",
+      "label": "Scheduler Parameters",
+      "description": "parameters for scheduler",
+      "type": "string",
+      "default": "",
+      "changeable": true,
+      "required": "no"
     }]
   }, {
     "key": "service_params",

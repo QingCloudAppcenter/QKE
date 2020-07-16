@@ -43,6 +43,6 @@
     - /opt/helm
     - /opt/jq
     - /opt/yq
-    - /root/.helm
+    # - /root/.helm
   include_role:
     name: app-upgrade

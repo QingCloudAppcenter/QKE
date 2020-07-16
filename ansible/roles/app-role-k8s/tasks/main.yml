@@ -178,6 +178,9 @@
     path: /etc/kubernetes
     state: absent
 
+- name: load images from localhost
+  include_tasks: load-images.yml
+
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:
@@ -189,7 +192,7 @@
     - /opt/lbcli
     - /opt/jq
     - /opt/yq
-    - /root/.helm
+    # - /root/.helm
   include_role:
     name: app-upgrade
   when: "'k8s-node' in group_names"

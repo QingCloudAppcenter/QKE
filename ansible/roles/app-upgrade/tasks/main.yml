@@ -57,21 +57,13 @@
     state: started
   when: "'k8s-node' in group_names"
 
-- name: load images
-  shell: docker load -qi /upgrade/docker-images/ks.tgz;docker load -qi /upgrade/docker-images/k8s.tgz
-  when: "'k8s-node' in group_names"
-
 - name: stop docker service
   systemd:
     name: docker
     masked: no
     state: stopped
   when: "'k8s-node' in group_names"
-
-- name: create images links
-  include_tasks: generate_dockerfs_links.yml
-  when: "'k8s-node' in group_names"
- 
+  
 - name: unmount the volume for upgrade
   mount:
     path: /upgrade
