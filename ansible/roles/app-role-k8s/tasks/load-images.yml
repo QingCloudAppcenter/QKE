@@ -28,13 +28,30 @@
     state: started
     daemon_reload: yes
 
-
 - name: load k8s and ks images from localhost
-  shell: docker -H {{ inventory_hostname }}:{{ docker_port }} load -i {{ local_images_path }}/{{ images_package }}
+  debug: 
+    msg: if {{ images_package.enabled }};then docker -H {{ inventory_hostname }}:{{ docker_port }} load -i {{ local_images_path }}/{{ images_package.package_name }};fi
   delegate_to: localhost
   loop:
-    - "{{ ks_images_package }}"
-    - "{{ k8s_images_package }}"
+    - package_name: "{{ ks_images_package }}"
+      enabled: "{{ ks_enabled }}"
+
+    - package_name: "{{ k8s_images_package }}"
+      enabled: "{{ k8s_enabled }}"
+
+  loop_control:
+    loop_var: images_package
+
+- name: load k8s and ks images from localhost
+  shell: if {{ images_package.enabled }};then docker -H {{ inventory_hostname }}:{{ docker_port }} load -i {{ local_images_path }}/{{ images_package.package_name }};fi
+  delegate_to: localhost
+  loop:
+    - package_name: "{{ ks_images_package }}"
+      enabled: "{{ ks_enabled }}"
+
+    - package_name: "{{ k8s_images_package }}"
+      enabled: "{{ k8s_enabled }}"
+
   loop_control:
     loop_var: images_package
     

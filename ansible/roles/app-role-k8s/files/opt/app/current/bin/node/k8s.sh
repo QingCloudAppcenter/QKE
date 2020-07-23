@@ -28,7 +28,7 @@ initNode() {
   generateDockerLayerLinks
   mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
-  local migratingPath; for migratingPath in root/{.docker,.kube} var/lib/kubelet; do
+  local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
       rm -rf /$migratingPath
     else
@@ -96,7 +96,20 @@ getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
 }
 
+initControlPlane(){
+  log --debug "init phase control-plane all"
+  runKubeadm init phase control-plane all
+  log --debug "init phase control-plane all end"
+}
+
+updateKubeComponentConf(){
+  local componentConf; for componentConf in $(ls -d /etc/kubernetes/manifests/*);do
+    yq w -i $componentConf spec.containers[0].image kubesphere/hyperkube:v$K8S_VERSION
+  done
+}
+
 upgrade() {
+  log "IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
   if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
     log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
     return $UPGRADE_VERSION_DETECTED_ERR
@@ -107,24 +120,35 @@ upgrade() {
   fixOverlays
   start
   if isMaster; then
+    log --debug "I am master node"
     waitPreviousMastersUpgraded
     if ! $ETCD_PROVIDED; then restartSvc etcd; fi
     updateApiserverCerts
-    runKubeadm init phase control-plane all
+    log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
+    initControlPlane
+    log --debug "init phase kubelet-start"
     runKubeadm init phase kubelet-start
+    log --debug "init phase kubelet-start end"
+    log --debug "restart kubelet"
     restartSvc kubelet
-
+    log --debug "restart kubelet end"
+    updateKubeComponentConf
+    
     if isFirstMaster; then
+      log --debug "distributeFile"
       local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
+        log --debug "$path:$(cat $path)"
+        log --debug "distributeFile $path $STABLE_WORKER_NODES"
         distributeFile $path $STABLE_WORKER_NODES
+        log --debug "distributeFile $path $STABLE_WORKER_NODES end"
       done
       distributeKubeConfig
       
       if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
         local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
       fi
-      waitAllNodesUpgraded
       if $IS_UPGRADING_FROM_V1; then
+        log --debug "configure other process"
         runKubeadm init phase upload-config all
         # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
         # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
@@ -135,12 +159,16 @@ upgrade() {
         setUpHelm
         setUpCloudControllerMgr
         setUpStorage
+        log --debug "configure other process end "
       fi
     fi
+    log --debug "I am master node end"
   else
+    log --debug "I am worker node"
     waitAllMasterNodesUpgradedAndReady
     retry 3600 1 0 test -s $KUBE_CONFIG
     restartSvc kubelet
+    log --debug "worker node end"
   fi
   if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
     saveLbFile $lbId/$LB_IP_FROM_V1
@@ -747,7 +775,7 @@ fixOverlays() {
   local layer; for layer in $(find $persistentRoot -mindepth 1 -maxdepth 1 -type l -exec basename {} \;); do
     local transientLayer="$transientRoot/$layer/"
     if [[ -d "$transientLayer" ]]; then 
-      rsync -aAX $transientRoot/$layer/ $persistentRoot/$layer.tmp/ || {
+      rsync -aAX $transientLayer $persistentRoot/$layer.tmp/ || {
         log "ERROR: failed to copy '$layer' from '$transientRoot' to '$persistentRoot'. Reverting ..."
         rm -rf $persistentRoot/$layer.tmp
         return $EC_OVERLAY_ERR

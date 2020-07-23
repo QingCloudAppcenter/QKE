@@ -25,14 +25,14 @@
 
 - name: helm add repo
   shell: helm repo add stable "{{ helm_stable_repo }}"
-  when: "{{ helm_version.split('.')[0] == 3 }}"
+  when: "helm_version.split('.')[0] == '3'"
 
 - name: helm init
   shell: helm init --client-only --stable-repo-url "{{ helm_stable_repo }}"
-  when: "{{ helm_version.split('.')[0] == 2 }}"
+  when: "helm_version.split('.')[0] == '2'"
 
 - name: generate Helm Tiller yaml
-  when: "{{ helm_version.split('.')[0] == 2 }}"
+  when: "helm_version.split('.')[0] == '2'"
   shell: |
     helm init --history-max 200 --service-account tiller --stable-repo-url "{{ helm_stable_repo }}" \
               --override spec.selector.matchLabels.'app'='helm',spec.selector.matchLabels.'name'='tiller' \

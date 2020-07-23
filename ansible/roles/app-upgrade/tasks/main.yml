@@ -45,24 +45,10 @@
   delegate_to: localhost
   when: "'k8s-node' in group_names"
   loop:
-    - "{{ ks_images_package }}"
-    - "{{ k8s_images_package }}"
+    - "{{ upgrade_ks_images_package }}"
+    - "{{ upgrade_k8s_images_package }}"
   loop_control:
     loop_var: image_package
-
-- name: start docker service
-  systemd:
-    name: docker
-    masked: no
-    state: started
-  when: "'k8s-node' in group_names"
-
-- name: stop docker service
-  systemd:
-    name: docker
-    masked: no
-    state: stopped
-  when: "'k8s-node' in group_names"
   
 - name: unmount the volume for upgrade
   mount:
