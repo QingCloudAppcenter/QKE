@@ -47,6 +47,6 @@
     - /root/.config
     - /root/.cache
     # 初始化的 helm 暂时没有 ~/.local 路径，做 migrate 时添加上
-    # - /root/.local
+    - /root/.local
   include_role:
     name: app-upgrade

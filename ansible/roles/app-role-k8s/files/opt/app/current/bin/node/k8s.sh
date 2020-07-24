@@ -28,7 +28,7 @@ initNode() {
   generateDockerLayerLinks
   mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
-  local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache} var/lib/kubelet; do
+  local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
       rm -rf /$migratingPath
     else
@@ -117,7 +117,7 @@ upgrade() {
   upgradeCniConf
   docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
   if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
-  fixOverlays
+  # fixOverlays
   start
   if isMaster; then
     log --debug "I am master node"
@@ -179,6 +179,9 @@ upgrade() {
     launchKs
   fi
   _initCluster
+  waitAllNodesUpgradedAndReady
+  . /opt/app/current/bin/node/upgradeHelm.sh
+  upgradeHelm
 }
 
 checkSvc() {
@@ -367,6 +370,10 @@ waitAllNodesUpgraded() {
 
 waitAllMasterNodesUpgradedAndReady(){
   retry 3600 2 0 checkNodeStats '$2=="Ready"&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+}
+
+waitAllNodesUpgradedAndReady(){
+  retry 600 1 0 checkNodeStats '$2=="Ready"&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES $STABLE_CLIENT_NODES $STABLE_WORKER_NODES
 }
 
 checkNodeStats() {
@@ -663,7 +670,7 @@ distributeFile() {
     ip="$(getColumns $INDEX_NODE_IP $node)"
     role="$(getColumns $INDEX_NODE_ROLE $node)"
     if [ "$ip" != "$MY_IP" ]; then
-      scp $1 $ip:$1 || [ "$role" = "client" ] || return $?
+      scp -r $1 $ip:$1 || [ "$role" = "client" ] || return $?
     fi
   done
 }
