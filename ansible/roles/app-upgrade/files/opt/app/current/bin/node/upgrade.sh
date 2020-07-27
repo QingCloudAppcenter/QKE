@@ -36,7 +36,7 @@ backUpFiles() {
   backUpToDir /opt/k8s-node/$version/node/bin/ /usr/bin/{kubeadm,kubectl,kubelet}
   backUpToDir /opt/helm/$version/ /usr/bin/helm
   backUpToDir --keep-old $BACKUP_DIR/$version/ /data/kubernetes/
-  backUpToDir --keep-old $BACKUP_DIR/$version/kubelet/ /data/var/lib/kubelet/{config.yaml,kubeadm-flags.env}
+  backUpToDir --keep-old $BACKUP_DIR/$version/kubelet/ /data/var/lib/kubelet/{config.yaml,kubeadm-flags.env,pki}
   if crontab -l; then crontab -r; fi
 }
 

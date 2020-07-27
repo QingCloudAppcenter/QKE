@@ -102,12 +102,6 @@ initControlPlane(){
   log --debug "init phase control-plane all end"
 }
 
-updateKubeComponentConf(){
-  local componentConf; for componentConf in $(ls -d /etc/kubernetes/manifests/*);do
-    yq w -i $componentConf spec.containers[0].image kubesphere/hyperkube:v$K8S_VERSION
-  done
-}
-
 upgrade() {
   log "IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
   if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
@@ -115,52 +109,46 @@ upgrade() {
     return $UPGRADE_VERSION_DETECTED_ERR
   fi
   upgradeCniConf
-  docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
-  if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
-  # fixOverlays
+  if ! isDev; then
+    docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
+    if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
+    fixOverlays
+  fi
   start
   if isMaster; then
     log --debug "I am master node"
     waitPreviousMastersUpgraded
-    if ! $ETCD_PROVIDED; then restartSvc etcd; fi
+    if ! $ETCD_PROVIDED && $IS_UPGRADING_FROM_V1; then restartSvc etcd; fi
     updateApiserverCerts
     log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
     initControlPlane
     log --debug "init phase kubelet-start"
     runKubeadm init phase kubelet-start
-    log --debug "init phase kubelet-start end"
     log --debug "restart kubelet"
     restartSvc kubelet
-    log --debug "restart kubelet end"
-    updateKubeComponentConf
-    
+
     if isFirstMaster; then
       log --debug "distributeFile"
       local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
         log --debug "$path:$(cat $path)"
-        log --debug "distributeFile $path $STABLE_WORKER_NODES"
         distributeFile $path $STABLE_WORKER_NODES
-        log --debug "distributeFile $path $STABLE_WORKER_NODES end"
       done
       distributeKubeConfig
-      
+
       if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
         local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
       fi
-      if $IS_UPGRADING_FROM_V1; then
-        log --debug "configure other process"
-        runKubeadm init phase upload-config all
-        # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
-        # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
-        # runKubectlPatch cm kubeadm-config -p "$(yq n data.ClusterStatus -- "$(yq w /tmp/cm.yml data.ClusterStatus -- "$(for m in $STABLE_MASTER_NODES; do printf "%s:\n  advertiseAddress: %s\n  bindPort: 6443\n" $(echo $m | awk -F/ '{print $4, $7}'); done | yq p - apiEndpoints)")")"
-        kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
-        applyKubeProxyLogLevel
-        setUpNetwork
-        setUpHelm
-        setUpCloudControllerMgr
-        setUpStorage
-        log --debug "configure other process end "
-      fi
+      waitAllNodesUpgraded
+      runKubeadm init phase upload-config all
+      # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
+      # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
+      # runKubectlPatch cm kubeadm-config -p "$(yq n data.ClusterStatus -- "$(yq w /tmp/cm.yml data.ClusterStatus -- "$(for m in $STABLE_MASTER_NODES; do printf "%s:\n  advertiseAddress: %s\n  bindPort: 6443\n" $(echo $m | awk -F/ '{print $4, $7}'); done | yq p - apiEndpoints)")")"
+      kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
+      applyKubeProxyLogLevel
+      setUpNetwork
+      setUpHelm
+      setUpCloudControllerMgr
+      setUpStorage
     fi
     log --debug "I am master node end"
   else
@@ -175,13 +163,10 @@ upgrade() {
     updateLbIp
   fi
   if isFirstMaster && $KS_ENABLED; then
-    waitHelmReady 1800
     launchKs
   fi
   _initCluster
   waitAllNodesUpgradedAndReady
-  . /opt/app/current/bin/node/upgradeHelm.sh
-  upgradeHelm
 }
 
 checkSvc() {
