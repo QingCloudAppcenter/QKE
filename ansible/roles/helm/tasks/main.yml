@@ -24,7 +24,8 @@
     directory_mode: u=rwx,g=rx,o=
 
 - name: check plugins
-  command: helm plugin list | grep -o ^2to3
+  shell: helm plugin list | grep -o ^2to3
+  ignore_errors: yes
   register: installed_2to3
 
 - name: install plugins

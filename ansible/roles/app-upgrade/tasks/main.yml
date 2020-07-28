@@ -45,7 +45,7 @@
   delegate_to: localhost
   when:
   - "'k8s-node' in group_names"
-  - target_env == 'dev'
+  - target_env != 'dev'
   loop:
     - "{{ upgrade_ks_images_package }}"
     - "{{ upgrade_k8s_images_package }}"

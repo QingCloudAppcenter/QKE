@@ -97,7 +97,7 @@
     loop_var: image_name
   when:
   - not src_exists
-  - target_env == 'dev'
+  - target_env != 'dev'
 
 - name: pull ks images
   docker_image:
@@ -109,7 +109,7 @@
     loop_var: image_name
   when:
   - not src_exists
-  - target_env == 'dev'
+  - target_env != 'dev'
 
 - name: prepare images packages
   shell: if ！{{ image_package.file_exists }};then docker save -o {{ src_data_path }}/{{ image_package.package_name }} {{ image_package.images_names | join(" ") }};fi
@@ -133,7 +133,7 @@
     loop_var: image_package
   when:
   - not src_exists
-  - target_env == 'dev'
+  - target_env != 'dev'
 
 - name: stop docker service
   systemd:
@@ -165,4 +165,4 @@
     loop_var: image_package
   when:
   - not src_exists
-  - target_env == 'dev'
+  - target_env != 'dev'
