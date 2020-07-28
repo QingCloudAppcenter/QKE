@@ -180,6 +180,7 @@
 
 - name: load images from localhost
   include_tasks: load-images.yml
+  when: target_env != 'dev'
 
 - name: prepare upgrade snapshot
   vars:
@@ -192,7 +193,6 @@
     - /opt/lbcli
     - /opt/jq
     - /opt/yq
-    # - /root/.helm
     - /root/.config
     - /root/.cache
     # 初始化的 helm 暂时没有 ~/.local 路径，做 migrate 时添加上

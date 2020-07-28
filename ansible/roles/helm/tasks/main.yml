@@ -1,8 +1,4 @@
 ---
-- name: set vars
-  set_fact:
-    helm_version_prefix: "{{ helm_version.split('.')[0] }}"
-
 - name: install packages
   include_role:
     name: install-1.0.5
@@ -27,32 +23,23 @@
     mode: preserve
     directory_mode: u=rwx,g=rx,o=
 
+- name: check plugins
+  command: helm plugin list | grep -o ^2to3
+  register: installed_2to3
+
 - name: install plugins
+  vars:
+    plugin_2to3_version: 0.6.0
   shell: helm plugin install {{ plugin_url }}
-  when: "helm_version_prefix == '3'"
-  # 已经安装了插件，再次安装会报错
-  ignore_errors: True
   loop:
-    - "https://github.com/helm/helm-2to3"
+    - https://github.com/helm/helm-2to3/tree/v{{ plugin_2to3_version }}/
   loop_control:
     loop_var:
       plugin_url
+  when: installed_2to3.rc != 0
 
 - name: helm add repo
   shell: helm repo add stable "{{ helm_stable_repo }}"
-  when: "helm_version_prefix == '3'"
-
-- name: helm init
-  shell: helm init --client-only --stable-repo-url "{{ helm_stable_repo }}"
-  when: "helm_version_prefix == '2'"
-
-- name: generate Helm Tiller yaml
-  when: "helm_version_prefix == '2'"
-  shell: |
-    helm init --history-max 200 --service-account tiller --stable-repo-url "{{ helm_stable_repo }}" \
-              --override spec.selector.matchLabels.'app'='helm',spec.selector.matchLabels.'name'='tiller' \
-              --tiller-image kubesphere/tiller:v{{ helm_version }} \
-              -oyaml | sed -E 's#(apiVersion:) extensions/v1beta1#\1 apps/v1#' >> /opt/app/current/conf/helm/tiller.yml
 
 - name: helm completion for BASH
   shell: helm completion bash > /etc/profile.d/helm-completion.sh

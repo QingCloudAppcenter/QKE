@@ -146,7 +146,6 @@ upgrade() {
       kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
       applyKubeProxyLogLevel
       setUpNetwork
-      setUpHelm
       setUpCloudControllerMgr
       setUpStorage
     fi
@@ -231,8 +230,6 @@ initFirstNode() {
     log --debug "marking master-only cluster nodes ..."
     markAllInOne
   fi
-  log --debug "setting up helm ..."
-  setUpHelm
   log --debug "setting up DNS ..."
   setUpDns
   log --debug "waiting for kube-dns resolving qingcloud api server ..."
@@ -464,19 +461,6 @@ checkStorageReady() {
   runKubectl get sc csi-qingcloud -o jsonpath={.metadata.annotations.'storageclass\.kubernetes\.io/is-default-class'}
 }
 
-setUpHelm() {
-  runKubectl apply -f /opt/app/current/conf/helm/tiller.yml
-}
-
-waitHelmReady() {
-  retry ${1:-180} 1 0 checkHelmReady
-}
-
-checkHelmReady() {
-  runKubectl -n kube-system get po -l app=helm,name=tiller --field-selector status.phase=Running -oname --no-headers | grep -o ^pod/tiller-deploy-
-  /usr/local/bin/helm ls --kubeconfig=$KUBE_CONFIG
-}
-
 setUpCloudControllerMgr() {
   runKubectlCreate -n kube-system configmap lbconfig --from-file=/opt/app/current/conf/qingcloud/qingcloud.yaml
   runKubectlCreate -n kube-system secret generic qcsecret --from-file=$QINGCLOUD_CONFIG
@@ -485,8 +469,6 @@ setUpCloudControllerMgr() {
 
 # called by systemd
 setUpKs() {
-  log --debug "waiting for helm to be ready ..."
-  waitHelmReady
   log --debug "launching kubesphere ..."
   launchKs
   log --debug "wating kubesphere to be ready ..."
