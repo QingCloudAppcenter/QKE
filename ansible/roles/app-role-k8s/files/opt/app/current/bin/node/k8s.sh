@@ -98,7 +98,7 @@ getUpgradeOrder() {
 
 initControlPlane(){
   log --debug "init phase control-plane all"
-  runKubeadm init phase control-plane all
+  runKubeadm init phase control-plane ${@:-all}
   log --debug "init phase control-plane all end"
 }
 
@@ -138,7 +138,7 @@ upgrade() {
       if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
         local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
       fi
-      waitAllNodesUpgraded
+      waitAllNodesUpgradedAndReady
       runKubeadm init phase upload-config all
       # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
       # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
@@ -153,7 +153,7 @@ upgrade() {
   else
     log --debug "I am worker node"
     waitAllMasterNodesUpgradedAndReady
-    retry 3600 1 0 test -s $KUBE_CONFIG
+    if $IS_UPGRADING_FROM_V1; then retry 3600 1 0 test -s $KUBE_CONFIG; fi
     restartSvc kubelet
     log --debug "worker node end"
   fi
@@ -165,7 +165,6 @@ upgrade() {
     launchKs
   fi
   _initCluster
-  waitAllNodesUpgradedAndReady
 }
 
 checkSvc() {
@@ -658,7 +657,7 @@ reloadKubeApiserverCerts() {
 reloadKubeApiserverArgs() {
   isMaster || return 0
   rotate /etc/kubernetes/manifests/kube-apiserver.yaml
-  runKubeadm init phase control-plane apiserver
+  initControlPlane apiserver
   if isFirstMaster; then runKubeadm init phase upload-config kubeadm; fi
 }
 
@@ -676,7 +675,7 @@ reloadKubeLogLevel() {
   retry 60 1 0 applyKubeProxyLogLevel
   sleep $(( $RANDOM % 5 + 1 ))
   rotate $(find /etc/kubernetes/manifests -mindepth 1 -maxdepth 1 -name '*.yaml')
-  runKubeadm init phase control-plane all
+  initControlPlane
 }
 
 applyKubeProxyLogLevel() {

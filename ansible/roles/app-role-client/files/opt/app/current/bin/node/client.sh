@@ -23,7 +23,6 @@ initNode() {
 }
 
 initCluster() {
-  mkdir -p /data/appctl/data/
   _initCluster
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG
@@ -39,7 +38,6 @@ upgrade() {
     return $UPGRADE_VERSION_DETECTED_ERR
   fi
   execute start
-  mkdir -p /data/appctl/data/
   _initCluster
   if $IS_HA_CLUSTER; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
   setUpConfigs
