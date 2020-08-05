@@ -68,11 +68,6 @@
   loop_control:
     loop_var: dir_path
 
-- name: prepare archive dir
-  file:
-    path: /archive
-    state: directory
-
 - name: k8s network requirements
   modprobe:
     name: br_netfilter

@@ -27,12 +27,31 @@
 
 - name: prepare dirs
   file:
-    path: /upgrade/vm-files
+    path: "{{ upgrade_path }}"
     state: directory
+  loop:
+    - /upgrade/vm-files
+    - /upgrade/docker-images
+  loop_control:
+    loop_var: upgrade_path
 
 - name: copy vm files
   shell: rsync -aAXR {{ snapshot_sources | join(' ') }} /upgrade/vm-files
 
+- name: copy images package 
+  synchronize:
+    src: "{{ local_images_path }}/{{ image_package }}"
+    dest: "/upgrade/docker-images/{{ image_package }}"
+  delegate_to: localhost
+  when:
+  - "'k8s-node' in group_names"
+  - target_env != 'dev'
+  loop:
+    - "{{ upgrade_ks_images_package }}"
+    - "{{ upgrade_k8s_images_package }}"
+  loop_control:
+    loop_var: image_package
+  
 - name: unmount the volume for upgrade
   mount:
     path: /upgrade

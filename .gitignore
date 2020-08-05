@@ -4,3 +4,4 @@ vendor
 appcenter-cli
 __generated
 .idea
+*.zip

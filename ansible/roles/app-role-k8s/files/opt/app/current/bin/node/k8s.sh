@@ -12,12 +12,23 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
+generateDockerLayerLinks(){
+  if [ ! -d "/data/var/lib/docker" ]; then
+    mkdir -p /data/var/lib/docker/{overlay2,image}
+    local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
+      ln -snf $layerName /data$layerName
+    done
+    rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
+    rsync -aAX /var/lib/docker/image /data/var/lib/docker/
+  fi
+}
+
 initNode() {
   _initNode
-  test -e "/data/var/lib/docker" || tar xzf /archive/dockerfs.tgz -C /data
+  generateDockerLayerLinks
   mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
-  local migratingPath; for migratingPath in root/{.docker,.kube,.helm} var/lib/kubelet; do
+  local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
       rm -rf /$migratingPath
     else
@@ -85,29 +96,49 @@ getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
 }
 
+initControlPlane(){
+  log --debug "init phase control-plane all"
+  runKubeadm init phase control-plane ${@:-all}
+  log --debug "init phase control-plane all end"
+}
+
 upgrade() {
+  log "IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
+  if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
+    log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
+    return $UPGRADE_VERSION_DETECTED_ERR
+  fi
   upgradeCniConf
-  docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
-  if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
-  fixOverlays
+  if ! isDev; then
+    docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
+    if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
+    fixOverlays
+  fi
   start
   if isMaster; then
+    log --debug "I am master node"
     waitPreviousMastersUpgraded
-    if ! $ETCD_PROVIDED; then restartSvc etcd; fi
+    if ! $ETCD_PROVIDED && $IS_UPGRADING_FROM_V1; then restartSvc etcd; fi
     updateApiserverCerts
-    runKubeadm init phase control-plane all
+    log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
+    initControlPlane
+    log --debug "init phase kubelet-start"
     runKubeadm init phase kubelet-start
+    log --debug "restart kubelet"
     restartSvc kubelet
 
     if isFirstMaster; then
+      log --debug "distributeFile"
       local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
+        log --debug "$path:$(cat $path)"
         distributeFile $path $STABLE_WORKER_NODES
       done
       distributeKubeConfig
-      if $IS_HA_CLUSTER; then
+
+      if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
         local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
       fi
-      waitAllNodesUpgraded
+      waitAllNodesUpgradedAndReady
       runKubeadm init phase upload-config all
       # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
       # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
@@ -115,20 +146,22 @@ upgrade() {
       kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
       applyKubeProxyLogLevel
       setUpNetwork
-      setUpHelm
       setUpCloudControllerMgr
       setUpStorage
     fi
+    log --debug "I am master node end"
   else
-    retry 3600 1 0 test -s $KUBE_CONFIG
+    log --debug "I am worker node"
+    waitAllMasterNodesUpgradedAndReady
+    if $IS_UPGRADING_FROM_V1; then retry 3600 1 0 test -s $KUBE_CONFIG; fi
     restartSvc kubelet
+    log --debug "worker node end"
   fi
-  if $IS_HA_CLUSTER; then
+  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
     saveLbFile $lbId/$LB_IP_FROM_V1
     updateLbIp
   fi
   if isFirstMaster && $KS_ENABLED; then
-    waitHelmReady 1800
     launchKs
   fi
   _initCluster
@@ -157,6 +190,7 @@ measure() {
 
 reloadChanges() {
   isClusterInitialized || return 0
+  if $IS_UPGRADING_FROM_V2; then return 0; fi
   local cmd; for cmd in $RELOAD_COMMANDS; do
     execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|ApiserverArgs)$ ]]; then return 0; fi
   done
@@ -196,8 +230,6 @@ initFirstNode() {
     log --debug "marking master-only cluster nodes ..."
     markAllInOne
   fi
-  log --debug "setting up helm ..."
-  setUpHelm
   log --debug "setting up DNS ..."
   setUpDns
   log --debug "waiting for kube-dns resolving qingcloud api server ..."
@@ -318,6 +350,14 @@ waitAllNodesUpgraded() {
   retry 3600 2 0 checkNodeStats '$5=="v'$K8S_VERSION'"'
 }
 
+waitAllMasterNodesUpgradedAndReady() {
+  retry 3600 2 0 checkNodeStats '$2=="Ready"&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+}
+
+waitAllNodesUpgradedAndReady() {
+  retry 600 1 0 checkNodeStats '$2=="Ready"&&$5=="v'$K8S_VERSION'"'
+}
+
 checkNodeStats() {
   local nodes="${@:2}"
   local expected; expected="$(getNodeNames ${nodes:-$STABLE_MASTER_NODES $JOINING_MASTER_NODES $STABLE_WORKER_NODES $JOINING_WORKER_NODES} | sort)"
@@ -421,19 +461,6 @@ checkStorageReady() {
   runKubectl get sc csi-qingcloud -o jsonpath={.metadata.annotations.'storageclass\.kubernetes\.io/is-default-class'}
 }
 
-setUpHelm() {
-  runKubectl apply -f /opt/app/current/conf/helm/tiller.yml
-}
-
-waitHelmReady() {
-  retry ${1:-180} 1 0 checkHelmReady
-}
-
-checkHelmReady() {
-  runKubectl -n kube-system get po -l app=helm,name=tiller --field-selector status.phase=Running -oname --no-headers | grep -o ^pod/tiller-deploy-
-  /usr/local/bin/helm ls --kubeconfig=$KUBE_CONFIG
-}
-
 setUpCloudControllerMgr() {
   runKubectlCreate -n kube-system configmap lbconfig --from-file=/opt/app/current/conf/qingcloud/qingcloud.yaml
   runKubectlCreate -n kube-system secret generic qcsecret --from-file=$QINGCLOUD_CONFIG
@@ -442,8 +469,6 @@ setUpCloudControllerMgr() {
 
 # called by systemd
 setUpKs() {
-  log --debug "waiting for helm to be ready ..."
-  waitHelmReady
   log --debug "launching kubesphere ..."
   launchKs
   log --debug "wating kubesphere to be ready ..."
@@ -612,7 +637,7 @@ distributeFile() {
     ip="$(getColumns $INDEX_NODE_IP $node)"
     role="$(getColumns $INDEX_NODE_ROLE $node)"
     if [ "$ip" != "$MY_IP" ]; then
-      scp $1 $ip:$1 || [ "$role" = "client" ] || return $?
+      scp -r $1 $ip:$1 || [ "$role" = "client" ] || return $?
     fi
   done
 }
@@ -632,7 +657,7 @@ reloadKubeApiserverCerts() {
 reloadKubeApiserverArgs() {
   isMaster || return 0
   rotate /etc/kubernetes/manifests/kube-apiserver.yaml
-  runKubeadm init phase control-plane apiserver
+  initControlPlane apiserver
   if isFirstMaster; then runKubeadm init phase upload-config kubeadm; fi
 }
 
@@ -650,7 +675,7 @@ reloadKubeLogLevel() {
   retry 60 1 0 applyKubeProxyLogLevel
   sleep $(( $RANDOM % 5 + 1 ))
   rotate $(find /etc/kubernetes/manifests -mindepth 1 -maxdepth 1 -name '*.yaml')
-  runKubeadm init phase control-plane all
+  initControlPlane
 }
 
 applyKubeProxyLogLevel() {
@@ -703,7 +728,7 @@ checkCertDaysBeyond() {
 }
 
 getCertValidDays() {
-  local earliestExpireDate; earliestExpireDate="$(date -d "$(runKubeadm alpha certs check-expiration | awk '{$1=$7=$8=""} NR>1' | sort -M | head -1)" +%s)"
+  local earliestExpireDate; earliestExpireDate="$(runKubeadm alpha certs check-expiration | awk '$1!~/^$|^CERTIFICATE/ {print "date -d\"",$2,$3,$4,$5,"\" +%s" | "/bin/bash"}' | sort -n | head -1)"
   local today; today="$(date +%s)"
   echo -n $(( ($earliestExpireDate - $today) / (24 * 60 * 60) ))
 }
@@ -715,15 +740,23 @@ renewCerts() {
 }
 
 fixOverlays() {
-  local persistentRoot=/data/var/lib/docker/overlay2 transientRoot=/opt/overlay2
+  local transientRoot persistentRoot; persistentRoot=/data/var/lib/docker/overlay2 
+  if $IS_UPGRADING_FROM_V1; then
+    transientRoot=/opt/overlay2
+  elif $IS_UPGRADING_FROM_V2; then
+    transientRoot=/var/lib/docker/overlay2
+  fi
   local layer; for layer in $(find $persistentRoot -mindepth 1 -maxdepth 1 -type l -exec basename {} \;); do
-    rsync -aAX $transientRoot/$layer/ $persistentRoot/$layer.tmp/ || {
-      log "ERROR: failed to copy '$layer' from '$transientRoot' to '$persistentRoot'. Reverting ..."
-      rm -rf $persistentRoot/$layer.tmp
-      return $EC_OVERLAY_ERR
-    }
-    rm -f $persistentRoot/$layer
-    mv $persistentRoot/$layer.tmp $persistentRoot/$layer
+    local transientLayer="$transientRoot/$layer/"
+    if [[ -d "$transientLayer" ]]; then 
+      rsync -aAX $transientLayer $persistentRoot/$layer.tmp/ || {
+        log "ERROR: failed to copy '$layer' from '$transientRoot' to '$persistentRoot'. Reverting ..."
+        rm -rf $persistentRoot/$layer.tmp
+        return $EC_OVERLAY_ERR
+      }
+      rm -f $persistentRoot/$layer
+      mv $persistentRoot/$layer.tmp $persistentRoot/$layer
+    fi
   done
 }
 

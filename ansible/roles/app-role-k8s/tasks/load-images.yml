@@ -1,0 +1,75 @@
+---
+- name: set vars
+  set_fact:
+    docker_start_cmd: ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+    replace_docker_start_cmd: ExecStart=/usr/bin/dockerd --containerd=/run/containerd/containerd.sock
+    docker_port: 5000
+    service_path: /lib/systemd/system/docker.service
+    config_path: /etc/docker/daemon.json
+
+- name: update docker.service
+  lineinfile:
+    path: "{{ service_path }}"
+    regexp: ^ExecStart=
+    line: "{{ replace_docker_start_cmd }}"
+
+- name: update docker daemon.json
+  copy:
+    dest: "{{ config_path }}"
+    content: |
+        {
+        "hosts": ["0.0.0.0:{{ docker_port }}"]
+        }
+
+- name: run docker server
+  systemd:
+    name: docker
+    masked: no
+    state: started
+    daemon_reload: yes
+
+- name: load k8s and ks images from localhost
+  debug: 
+    msg: if {{ images_package.enabled }};then docker -H {{ inventory_hostname }}:{{ docker_port }} load -i {{ local_images_path }}/{{ images_package.package_name }};fi
+  delegate_to: localhost
+  loop:
+    - package_name: "{{ ks_images_package }}"
+      enabled: "{{ ks_enabled }}"
+
+    - package_name: "{{ k8s_images_package }}"
+      enabled: "{{ k8s_enabled }}"
+
+  loop_control:
+    loop_var: images_package
+
+- name: load k8s and ks images from localhost
+  shell: if {{ images_package.enabled }};then docker -H {{ inventory_hostname }}:{{ docker_port }} load -i {{ local_images_path }}/{{ images_package.package_name }};fi
+  delegate_to: localhost
+  loop:
+    - package_name: "{{ ks_images_package }}"
+      enabled: "{{ ks_enabled }}"
+
+    - package_name: "{{ k8s_images_package }}"
+      enabled: "{{ k8s_enabled }}"
+
+  loop_control:
+    loop_var: images_package
+    
+- name: update docker.service
+  lineinfile:
+    path: "{{ service_path }}"
+    regexp: ^ExecStart=
+    line: "{{ docker_start_cmd }}"
+
+- name: update docker daemon.json
+  copy:
+    dest: "{{ config_path }}"
+    content: |
+        {}
+
+- name: run docker server
+  systemd:
+    name: docker
+    masked: no
+    state: stopped
+    daemon_reload: yes

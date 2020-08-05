@@ -26,6 +26,7 @@ apiServer:
   {{- end }}
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
+    {{ join (getvs "/env/apiserver.params") "" }}
     service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
     advertise-address: 0.0.0.0
     {{- with getv "/env/kube_audit_file" "" }}
@@ -50,9 +51,11 @@ apiServer:
   {{- end }}
 controllerManager:
   extraArgs:
+    {{ join (getvs "/env/controller.manager.params") "" }}
     v: "{{ getv "/env/kube_log_level" }}"
 scheduler:
   extraArgs:
+    {{ join (getvs "/env/scheduler.params") "" }}
     v: "{{ getv "/env/kube_log_level" }}"
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}

@@ -69,6 +69,12 @@
   shell: |
     yq w -i -d21 /opt/app/current/conf/k8s/calico-stable.yml spec.selector.matchLabels.k8s-app calico-kube-controllers
 
+- name: align flannel with offline image version
+  replace:
+    path: /opt/app/current/conf/k8s/flannel-stable.yml
+    regexp: '(image:\squay.io/coreos/flannel:v{{ flannel_version }}-amd64)'
+    replace: 'image: kubesphere/flannel:v{{ flannel_version }}'
+
 - name: align image version with ks offline images
   replace:
     path: /opt/app/current/conf/k8s/{{ yml_file.path }}
@@ -89,6 +95,12 @@
   - nodelocaldns-{{ k8s_version }}.yml
   loop_control:
     loop_var: yml_file
+
+- name: align csi with offline image version
+  replace:
+    path: /opt/app/current/conf/k8s/csi-qingcloud-{{ qingcloud_csi_version }}.yml
+    regexp: '(image:\s)quay.io/k8scsi/'
+    replace: '\1csiplugin/'
 
 - name: backward compatible
   replace:
@@ -166,6 +178,10 @@
     path: /etc/kubernetes
     state: absent
 
+- name: load images from localhost
+  include_tasks: load-images.yml
+  when: target_env != 'dev'
+
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:
@@ -177,7 +193,11 @@
     - /opt/lbcli
     - /opt/jq
     - /opt/yq
-    - /root/.helm
+    - /root/.config
+    - /root/.cache
+    # 初始化的 helm 暂时没有 ~/.local 路径，做 migrate 时添加上
+    - /root/.local
+    target_env: "{{ lookup('env', 'target') }}"
   include_role:
     name: app-upgrade
   when: "'k8s-node' in group_names"

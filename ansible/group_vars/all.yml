@@ -1,19 +1,27 @@
-app_version: 2.0.0
+app_version: 3.0.0
 gcr_mirror: kubesphere
 etcd_version: 3.2.24
 cni_version: 0.7.5
 cri_version: 1.13.0
-k8s_version: 1.16.7
+k8s_version: 1.17.8
+flannel_version: 0.11.0
 coredns_version: 1.6.0
 calico_version: 3.7.3
 qingcloud_csi_version: 1.1.1
 qingcloud_ccm_version: 1.4.4
 ks_version: 2.1.1
-helm_version: 2.14.3
+helm_version: 3.2.4
 helm_stable_repo: https://charts.kubesphere.io/mirror
 nodelocaldns_version: 1.15.5
 nvidia_tesla_version: 418.116.00
 nvidia_plugin_version: 1.0.0-beta4
+local_images_path: /images
+ks_images_package: allks.tgz
+k8s_images_package: allk8s.tgz
+upgrade_ks_images_package: ks.tgz
+upgrade_k8s_images_package: k8s.tgz
+dokcerfs_package: dockerfs.tgz
+archive: /archive
 binaries:
 - /opt/crictl
 - /opt/etcd
@@ -26,23 +34,21 @@ docker_images_k8s:
 - coredns/coredns:1.6.0
 - csiplugin/csi-qingcloud:v1.1.1
 - kubesphere/cloud-controller-manager:v1.4.4
-- kubesphere/hyperkube:v1.16.7
+- kubesphere/hyperkube:v1.17.8
 - kubesphere/k8s-dns-node-cache:1.15.5
 - kubesphere/metrics-server-amd64:v0.3.1
 - kubesphere/nfs-client-provisioner:v3.1.0-k8s1.11
 - kubesphere/nginx-ingress-controller:0.24.1
 - kubesphere/pause:3.1
-- kubesphere/tiller:v2.14.3
 - mirrorgooglecontainers/defaultbackend-amd64:1.4
 - mirrorgooglecontainers/pause-amd64:3.1
 - nvidia/k8s-device-plugin:1.0.0-beta4
-- quay.io/coreos/flannel:v0.11.0-amd64
-- quay.io/coreos/flannel-cni:v0.3.0-amd64
-- quay.io/k8scsi/csi-attacher:v2.0.0
-- quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
-- quay.io/k8scsi/csi-provisioner:v1.4.0
-- quay.io/k8scsi/csi-resizer:v0.2.0
-- quay.io/k8scsi/csi-snapshotter:v1.2.2
+- kubesphere/flannel:v0.11.0
+- csiplugin/csi-attacher:v2.0.0
+- csiplugin/csi-node-driver-registrar:v1.2.0
+- csiplugin/csi-provisioner:v1.4.0
+- csiplugin/csi-resizer:v0.2.0
+- csiplugin/csi-snapshotter:v1.2.2
 docker_images_ks:
 - alpine:3.10.4
 - busybox:1.31.1
@@ -148,3 +154,17 @@ docker_images_ks:
 - redis:5.0.5-alpine
 - sonarqube:7.4-community
 - wordpress:4.8-apache
+
+upgrade_docker_images_k8s:
+- kubesphere/flannel:v0.11.0
+- csiplugin/csi-attacher:v2.0.0
+- csiplugin/csi-node-driver-registrar:v1.2.0
+- csiplugin/csi-provisioner:v1.4.0
+- csiplugin/csi-resizer:v0.2.0
+- csiplugin/csi-snapshotter:v1.2.2
+
+upgrade_docker_images_ks:
+- alpine:3.10.4
+
+ks_enabled: "true"
+k8s_enabled: "true"

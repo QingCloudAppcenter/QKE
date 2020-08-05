@@ -2,7 +2,7 @@
 - name: pull docker images
   hosts: builder
   roles:
-  - docker-1.0.5
+  - docker-1.0.6
   - docker-images
 
 - hosts: k8s-client,k8s-node,gpu-node
@@ -13,7 +13,7 @@
   - disable-apt-jobs-1.0.0
   - disable-motd-1.0.0
   - app-agent-1.0.6
-  - appctl-1.1.7
+  - appctl-1.2.1
   - arping-1.0.5
   - jq-1.0.9
   - yq-1.0.6
@@ -25,7 +25,7 @@
     target_env: "{{ lookup('env', 'target') }}"
   roles:
   - qingcloud-cli-1.0.5
-  - docker-1.0.5
+  - docker-1.0.6
   - etcd-1.0.7
   - k8s-node
   - lbcli
