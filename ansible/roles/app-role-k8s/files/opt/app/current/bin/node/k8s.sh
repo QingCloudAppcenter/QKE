@@ -191,6 +191,7 @@ measure() {
 
 reloadChanges() {
   isClusterInitialized || return 0
+  if $IS_UPGRADING_FROM_V2; then return 0; fi
   local cmd; for cmd in $RELOAD_COMMANDS; do
     execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|ApiserverArgs)$ ]]; then return 0; fi
   done

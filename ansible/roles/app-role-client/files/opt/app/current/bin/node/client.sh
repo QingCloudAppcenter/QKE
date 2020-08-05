@@ -44,7 +44,6 @@ upgrade() {
   if $IS_HA_CLUSTER; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
   setUpConfigs
   if $KS_ENABLED; then
-    waitHelmReady
     waitKsUpgraded
   fi
 }
@@ -66,15 +65,6 @@ setUpConfigs() {
 
 prepareFile() {
   if test ! -s $1; then scp master1:$1 $1; fi
-}
-
-waitHelmReady() {
-  retry 1200 1 0 checkHelmReady
-}
-
-checkHelmReady() {
-  runKubectl -n kube-system get po -l app=helm,name=tiller --field-selector status.phase=Running -oname --no-headers | grep -o ^pod/tiller-deploy-
-  /usr/local/bin/helm ls --kubeconfig=$KUBE_CONFIG
 }
 
 waitKsReady() {
