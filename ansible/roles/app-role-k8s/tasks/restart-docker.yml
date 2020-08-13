@@ -1,0 +1,14 @@
+---
+- name: run docker server
+  systemd:
+    name: docker
+    masked: no
+    state: started
+    daemon_reload: yes
+
+- name: run docker server
+  systemd:
+    name: docker
+    masked: no
+    state: stopped
+    daemon_reload: yes
