@@ -12,6 +12,8 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
+NODES_STAT_FILE="/data/kubernetes/stats/nodestat"
+
 generateDockerLayerLinks(){
   if [ ! -d "/data/var/lib/docker" ]; then
     mkdir -p /data/var/lib/docker/{overlay2,image}
@@ -26,7 +28,7 @@ generateDockerLayerLinks(){
 initNode() {
   _initNode
   generateDockerLayerLinks
-  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
+  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests,stats} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
@@ -53,10 +55,16 @@ start() {
   log --debug "started node."
 }
 
+saveNodesStatToDisk(){
+  runKubectl get no -oname > $NODES_STAT_FILE
+}
+
 initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
+  annotateMyNode
+  saveNodesStatToDisk
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -165,6 +173,8 @@ upgrade() {
     launchKs
   fi
   _initCluster
+  annotateMyNode
+  saveNodesStatToDisk
 }
 
 checkSvc() {
@@ -551,6 +561,7 @@ getColumns() {
 }
 
 getMyNodeName() {
+  [[ -e "$NODES_STAT_FILE" ]] && if grep "$MY_NODE_NAME" $NODES_STAT_FILE; then echo $MY_NODE_NAME;return 0; fi
   if ! $UPGRADED_FROM_V1 && $NODE_NAME_HUMAN_READABLE; then
     echo $MY_NODE_NAME
   else
@@ -691,6 +702,10 @@ updateLogLevel() {
 updateApiserverCerts() {
   rotate -m $(ls /etc/kubernetes/pki/apiserver.{crt,key})
   runKubeadm init phase certs apiserver
+}
+
+annotateMyNode(){
+  runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID" --overwrite=true
 }
 
 markAllInOne() {
