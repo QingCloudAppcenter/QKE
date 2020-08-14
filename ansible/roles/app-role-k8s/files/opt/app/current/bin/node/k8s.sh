@@ -772,7 +772,8 @@ setUpResolvConf() {
 
 getKubeConfig() {
   local ip; ip="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp)"
-  sed "s/loadbalancer:6443/$ip:6443/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
+  if $KUBERNETES_EIP_ENABLED;then ip="$KUBERNETES_EIP";fi
+  sed "s/loadbalancer:6443/$ip:$KUBERNETES_EPORT/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
 }
 
 getKsUrl() {

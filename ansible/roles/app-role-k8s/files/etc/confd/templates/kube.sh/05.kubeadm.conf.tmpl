@@ -1,3 +1,5 @@
+
+
 flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
@@ -21,9 +23,7 @@ dns:
   imageTag: $COREDNS_VERSION
 apiServer:
   certSANs:
-  {{- with join (getvs "/env/kubernetes_eip") "" }}
-  - {{ . }}
-  {{- end }}
+  $(if $(getKubernetesInfo enabled);then echo "  - $(getKubernetesInfo eip)"; fi)
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
     {{ join (getvs "/env/apiserver.params") "" }}

@@ -1,0 +1,15 @@
+getKubernetesInfo(){
+  local kubernetesEipEport="{{ join (getvs "/env/kubernetes_eip") "" }}"
+  if [[ "$1" == "eip" ]]; then
+    echo "$kubernetesEipEport" |awk -F: '{print $1}'
+  elif [[ "$1" == "eport" ]]; then
+    local externalPort="$(echo "$kubernetesEipEport" |awk -F: '{print $2}')"
+    if [[ "x$externalPort" == "x" ]]; then
+      echo 6443
+    else
+      echo $externalPort
+    fi
+  elif [[ "$1" == "enabled" ]];then
+    if [[ "x$kubernetesEipEport" == "x" ]];then echo "false";else echo "true";fi
+  fi
+}
