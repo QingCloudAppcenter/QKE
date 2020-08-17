@@ -40,7 +40,10 @@
   when: installed_2to3.rc != 0
 
 - name: helm add repo
-  shell: helm repo add stable "{{ helm_stable_repo }}"
+  shell: |
+    helm repo ls | grep -o {{ helm_stable_repo }} || helm repo add stable "{{ helm_stable_repo }}"
+    helm repo ls | grep -o {{ helm_main_repo }} || helm repo add main "{{ helm_main_repo }}"
+    helm repo ls | grep -o {{ helm_test_repo }} || helm repo add test "{{ helm_test_repo }}"
 
 - name: helm completion for BASH
   shell: helm completion bash > /etc/profile.d/helm-completion.sh

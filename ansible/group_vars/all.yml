@@ -7,11 +7,13 @@ k8s_version: 1.17.8
 flannel_version: 0.11.0
 coredns_version: 1.6.0
 calico_version: 3.7.3
-qingcloud_csi_version: 1.1.1
+qingcloud_csi_version: 1.2.2
 qingcloud_ccm_version: 1.4.4
 ks_version: 2.1.1
 helm_version: 3.2.4
 helm_stable_repo: https://charts.kubesphere.io/mirror
+helm_main_repo: https://charts.kubesphere.io/main
+helm_test_repo: https://charts.kubesphere.io/test
 nodelocaldns_version: 1.15.5
 nvidia_tesla_version: 418.116.00
 nvidia_plugin_version: 1.0.0-beta4

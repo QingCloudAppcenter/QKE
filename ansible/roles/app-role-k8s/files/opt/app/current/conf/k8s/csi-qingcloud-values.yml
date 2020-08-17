@@ -1,0 +1,3 @@
+driver:
+  name: csi-qingcloud
+  kubeletDir: /data/var/lib/kubelet
