@@ -561,7 +561,7 @@ getColumns() {
 }
 
 getMyNodeName() {
-  [[ -e "$NODES_STAT_FILE" ]] && if grep "$MY_NODE_NAME" $NODES_STAT_FILE; then echo $MY_NODE_NAME;return 0; fi
+  [[ -e "$NODES_STAT_FILE" ]] && if grep -q "$MY_NODE_NAME" $NODES_STAT_FILE; then echo $MY_NODE_NAME;return 0; fi
   if ! $UPGRADED_FROM_V1 && $NODE_NAME_HUMAN_READABLE; then
     echo $MY_NODE_NAME
   else

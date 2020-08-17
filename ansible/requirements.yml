@@ -1,11 +1,11 @@
 - src: https://qingcloudappcenter.github.io/ansible-roles/app-agent-1.0.6.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/appctl-1.2.1.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/arping-1.0.5.tar.gz
-- src: https://qingcloudappcenter.github.io/ansible-roles/confd-files-1.0.6.tar.gz
+- src: https://qingcloudappcenter.github.io/ansible-roles/confd-files-1.0.7.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/create-service-user-1.0.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/docker-1.0.6.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/golang-1.0.3.tar.gz
-- src: https://qingcloudappcenter.github.io/ansible-roles/etcd-1.0.7.tar.gz
+- src: https://qingcloudappcenter.github.io/ansible-roles/etcd-1.0.8.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/install-1.0.5.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/jq-1.0.9.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/yq-1.0.6.tar.gz
