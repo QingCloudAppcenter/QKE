@@ -12,8 +12,6 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
-NODES_STAT_FILE="/data/kubernetes/stats/nodestat"
-
 generateDockerLayerLinks(){
   if [ ! -d "/data/var/lib/docker" ]; then
     mkdir -p /data/var/lib/docker/{overlay2,image}
@@ -28,7 +26,7 @@ generateDockerLayerLinks(){
 initNode() {
   _initNode
   generateDockerLayerLinks
-  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests,stats} /data/var/lib/etcd
+  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
@@ -55,16 +53,11 @@ start() {
   log --debug "started node."
 }
 
-saveNodesStatToDisk(){
-  runKubectl get no -oname > $NODES_STAT_FILE
-}
-
 initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
   annotateMyNode
-  saveNodesStatToDisk
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -173,8 +166,6 @@ upgrade() {
     launchKs
   fi
   _initCluster
-  annotateMyNode
-  saveNodesStatToDisk
 }
 
 checkSvc() {
@@ -705,7 +696,7 @@ updateApiserverCerts() {
 }
 
 annotateMyNode(){
-  runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID" --overwrite=true
+  runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
 }
 
 markAllInOne() {
@@ -786,9 +777,13 @@ setUpResolvConf() {
 }
 
 getKubeConfig() {
-  local ip; ip="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp)"
-  if $KUBERNETES_EIP_ENABLED;then ip="$KUBERNETES_EIP";fi
-  sed "s/loadbalancer:6443/$ip:$KUBERNETES_EPORT/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
+  local urlAuthority
+  if [ -n "$K8S_API_HOST" ]; then
+    urlAuthority=$K8S_API_HOST:$K8S_API_PORT
+  else
+    urlAuthority="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp):6443"
+  fi
+  sed "s/loadbalancer:6443/$urlAuthority/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
 }
 
 getKsUrl() {

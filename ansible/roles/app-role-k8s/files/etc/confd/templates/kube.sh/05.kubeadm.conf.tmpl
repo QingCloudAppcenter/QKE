@@ -21,7 +21,9 @@ dns:
   imageTag: $COREDNS_VERSION
 apiServer:
   certSANs:
-  $(if $(getKubernetesInfo enabled);then echo "  - $(getKubernetesInfo eip)"; fi)
+  {{- with join (getvs "/env/kubernetes_eip") "" }}
+  - {{ . }}	
+  {{- end }}
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
     {{ join (getvs "/env/apiserver.params") "" }}

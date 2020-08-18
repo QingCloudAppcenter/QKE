@@ -19,7 +19,7 @@
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-6rmmtmco",
+      "snapshot": "ss-r8i0aogl",
       "zone": "pek3"
     },
     "copy":[{
@@ -46,7 +46,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-0mqbjsxu",
+      "snapshot": "ss-3vfo7sp3",
       "zone": "pek3"
     },
     "copy":[{
@@ -67,7 +67,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-uf2g6kzk",
+      "image": "img-r3zriuxd",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -153,7 +153,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-uf2g6kzk",
+      "image": "img-r3zriuxd",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -214,7 +214,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-uf2g6kzk",
+      "image": "img-r3zriuxd",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -329,7 +329,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-683krz02",
+      "image": "img-ywyb0cyo",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
@@ -435,6 +435,7 @@
     "kube_log_level": {{env.kube_log_level}},
     "kubesphere_eip": {{env.kubesphere_eip}},
     "kubernetes_eip": {{env.kubernetes_eip}},
+    "kubernetes_eip_port": {{env.kubernetes_eip_port}},
     "node.name.human.readable": true,
     "nodelocaldns.enabled": false,
     "extra.modules": {{env.extra.modules}},
