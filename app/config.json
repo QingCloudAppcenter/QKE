@@ -410,7 +410,7 @@
     }, {
       "key": "kubesphere_eip",
       "label": "KubeSphere Dashboard EIP ID",
-      "description": "IP id for exposing KubeSphere Dashboard. If not insttalled KubeSphere, Shall not set this field.",
+      "description": "IP id for exposing KubeSphere Dashboard. If not installed KubeSphere, Shall not set this field.",
       "type": "eip",
       "default": "",
       "changeable": true,
@@ -426,6 +426,16 @@
       "changeable": true,
       "required": "no",
       "pattern": "^$|^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+    }, {
+      "key": "kubernetes_eip_port",
+      "label": "Kubernetes EPORT",
+      "description": "External port for accessing remote Kubernetes cluster, default value 6443",
+      "type": "integer",
+      "default": 6443,
+      "changeable": true,
+      "required": "no",
+      "min": 1,
+      "max": 65535
     }, {
       "key": "network_plugin",
       "label": "network plugin",

@@ -12,7 +12,7 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
-generateDockerLayerLinks(){
+generateDockerLayerLinks() {
   if [ ! -d "/data/var/lib/docker" ]; then
     mkdir -p /data/var/lib/docker/{overlay2,image}
     local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
@@ -57,6 +57,7 @@ initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
+  annotateInstanceId
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -96,7 +97,7 @@ getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
 }
 
-initControlPlane(){
+initControlPlane() {
   log --debug "init phase control-plane all"
   runKubeadm init phase control-plane ${@:-all}
   log --debug "init phase control-plane all end"
@@ -693,6 +694,10 @@ updateApiserverCerts() {
   runKubeadm init phase certs apiserver
 }
 
+annotateInstanceId() {
+  runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
+}
+
 markAllInOne() {
   local hostName; hostName=${1:-$(getMyNodeName)}
   runKubectl taint node $hostName node-role.kubernetes.io/master:NoSchedule-
@@ -771,8 +776,13 @@ setUpResolvConf() {
 }
 
 getKubeConfig() {
-  local ip; ip="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp)"
-  sed "s/loadbalancer:6443/$ip:6443/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
+  local urlAuthority
+  if [ -n "$K8S_API_HOST" ]; then
+    urlAuthority=$K8S_API_HOST:$K8S_API_PORT
+  else
+    urlAuthority="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp):6443"
+  fi
+  sed "s/loadbalancer:6443/$urlAuthority/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
 }
 
 getKsUrl() {

@@ -1,7 +1,7 @@
 ---
 - name: install confd files
   include_role:
-    name: confd-files-1.0.6
+    name: confd-files-1.0.7
 
 - name: copy binaries
   copy:
@@ -181,6 +181,11 @@
 - name: load images from localhost
   include_tasks: load-images.yml
   when: target_env != 'dev'
+
+# env=dev 时，会找不到 /var/lib/docker/overlay2/l 目录
+- name: restart docker
+  include_tasks: restart-docker.yml
+  when: target_env == 'dev'
 
 - name: prepare upgrade snapshot
   vars:
