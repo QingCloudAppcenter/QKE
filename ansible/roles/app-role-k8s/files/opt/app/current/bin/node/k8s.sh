@@ -443,7 +443,7 @@ setUpNodeLocalDns() {
 
 setUpStorage() {
   # Remove previous versions
-  local csiNode; for csiNode in $(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $STABLE_WORKER_NODES); do
+  local csiNode; for csiNode in $(getNodeNames $STABLE_MASTER_NODES $STABLE_WORKER_NODES); do
     runKubectlDelete -n kube-system csinode $csiNode
   done
   runKubectlDelete -n kube-system deploy csi-qingcloud-controller
