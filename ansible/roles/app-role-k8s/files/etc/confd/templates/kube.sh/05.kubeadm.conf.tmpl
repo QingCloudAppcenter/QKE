@@ -22,7 +22,7 @@ dns:
 apiServer:
   certSANs:
   {{- with join (getvs "/env/kubernetes_eip") "" }}
-  - {{ . }}	
+  - {{ . }}
   {{- end }}
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
