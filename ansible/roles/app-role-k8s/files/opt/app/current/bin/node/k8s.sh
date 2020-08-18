@@ -12,7 +12,7 @@ EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 "
 
-generateDockerLayerLinks(){
+generateDockerLayerLinks() {
   if [ ! -d "/data/var/lib/docker" ]; then
     mkdir -p /data/var/lib/docker/{overlay2,image}
     local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
@@ -97,7 +97,7 @@ getUpgradeOrder() {
   getColumns $INDEX_NODE_ID $STABLE_MASTER_NODES | paste -sd,
 }
 
-initControlPlane(){
+initControlPlane() {
   log --debug "init phase control-plane all"
   runKubeadm init phase control-plane ${@:-all}
   log --debug "init phase control-plane all end"
@@ -694,7 +694,7 @@ updateApiserverCerts() {
   runKubeadm init phase certs apiserver
 }
 
-annotateInstanceId(){
+annotateInstanceId() {
   runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
 }
 
