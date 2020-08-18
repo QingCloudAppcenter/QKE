@@ -19,7 +19,7 @@
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-69rx0yb7",
+      "snapshot": "ss-r8i0aogl",
       "zone": "pek3"
     },
     "copy":[{
@@ -46,7 +46,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-p2x3zx2p",
+      "snapshot": "ss-3vfo7sp3",
       "zone": "pek3"
     },
     "copy":[{
@@ -329,7 +329,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-xdznft0l",
+      "image": "img-ywyb0cyo",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
@@ -435,7 +435,8 @@
     "kube_log_level": {{env.kube_log_level}},
     "kubesphere_eip": {{env.kubesphere_eip}},
     "kubernetes_eip": {{env.kubernetes_eip}},
-    "node.name.human.readable": false,
+    "kubernetes_eip_port": {{env.kubernetes_eip_port}},
+    "node.name.human.readable": true,
     "nodelocaldns.enabled": false,
     "extra.modules": {{env.extra.modules}},
     "install_kubesphere": {{env.install_kubesphere}},

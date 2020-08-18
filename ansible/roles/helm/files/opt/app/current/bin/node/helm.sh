@@ -1,4 +1,4 @@
-defineHELM2(){
+defineHELM2() {
   if ${IS_UPGRADING_FROM_V1:-false}; then
     echo "/usr/bin/helm"
   elif ${IS_UPGRADING_FROM_V2:-false}; then
@@ -15,7 +15,7 @@ HELM3="/opt/helm/$HELM_VERSION/helm"
 UPGRADE_HELM_ERR=224
 UPGRADE_COMPLETED_FILE="/root/.config/upgrade.completed"
 
-upgradeHelm(){
+upgradeHelm() {
   [[ -n "$HELM2" ]] || return $UPGRADE_HELM_ERR
   checkPluginExists $MIGRATE_PLUGIN || {
     log "plugin $MIGRATE_PLUGIN not exists"
@@ -35,23 +35,23 @@ upgradeHelm(){
   fi
 }
 
-checkPluginExists(){
+checkPluginExists() {
   $HELM3 plugin list |grep $1
 }
 
-waitFirstMasterHelmUpgradeCompleted(){
+waitFirstMasterHelmUpgradeCompleted() {
   retry 3600 2 0 checkTillerExists
 }
 
-checkTillerExists(){
+checkTillerExists() {
   [[ -e "$UPGRADE_COMPLETED_FILE" ]] && $HELM2 list |grep "could not find tiller"
 }
 
-getAllReleases(){
+getAllReleases() {
   $HELM2 list -q
 }
 
-migrateRelease(){
+migrateRelease() {
   local releaseName=${1?releaseName}
   local action="convert"
   log "migrate release: [$releaseName]"
@@ -63,7 +63,7 @@ migrateRelease(){
   log "migrate release: [$releaseName]"
 }
 
-migrateConfigures(){
+migrateConfigures() {
   log "migrate helm configures"
   local migrateConfiguresResult; migrateConfiguresResult="$(echo "y" |$HELM3 $MIGRATE_PLUGIN move)" || {
     log "migrate helm configures fail, result [$migrateConfiguresResult], return code: $?"
@@ -71,7 +71,7 @@ migrateConfigures(){
   log "migrate helm configures success, result [$migrateConfiguresResult]"
 }
 
-migrateReleases(){
+migrateReleases() {
   local allReleases="$(getAllReleases)"
   log "will migreted releases: [$allReleases]"
   local release; for release in $allReleases; do
@@ -80,7 +80,7 @@ migrateReleases(){
   log "all releases migrate success"
 }
 
-cleanupOldHelmData(){
+cleanupOldHelmData() {
   log "clean up"
   local action="cleanup"
   local dryRunResult; dryRunResult=$(echo "y" |$HELM3 $MIGRATE_PLUGIN $action --dry-run) &&
