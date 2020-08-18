@@ -57,7 +57,7 @@ initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
-  annotateMyNode
+  annotateInstanceId
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -552,7 +552,6 @@ getColumns() {
 }
 
 getMyNodeName() {
-  [[ -e "$NODES_STAT_FILE" ]] && if grep -q "$MY_NODE_NAME" $NODES_STAT_FILE; then echo $MY_NODE_NAME;return 0; fi
   if ! $UPGRADED_FROM_V1 && $NODE_NAME_HUMAN_READABLE; then
     echo $MY_NODE_NAME
   else
@@ -695,7 +694,7 @@ updateApiserverCerts() {
   runKubeadm init phase certs apiserver
 }
 
-annotateMyNode(){
+annotateInstanceId(){
   runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
 }
 
