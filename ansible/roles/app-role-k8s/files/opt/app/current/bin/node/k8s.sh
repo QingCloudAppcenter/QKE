@@ -502,12 +502,14 @@ launchKs() {
 }
 
 applyKsConf() {
-  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/ks-installer-stable.yml
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config.default.yml
-  local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
-
-  yq r -d1 $ksInstallerDefaultFile data[ks-config.yaml] > $ksCfgDefaultFile
-  yq w -d1 $ksInstallerDefaultFile data[ks-config.yaml] -- "$(yq m -a $ksCfgDynamicFile $ksCfgDefaultFile | sed '1i\---' | sed '$G; $a # END')" | runKubectl apply -f -
+  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml 
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
+  local -r ksCfgDynamicScriptFile=/opt/app/current/conf/k8s/cluster-configuration.update.script.yml
+   
+  yq w -si $ksCfgDynamicScriptFile $ksCfgDefaultFile
+  local ymlFile; for ymlFile in $ksInstallerDefaultFile $ksCfgDefaultFile; do
+    runKubectl apply -f $ymlFile
+  done
 }
 
 reloadExternalElk() {
@@ -828,4 +830,8 @@ getKsUrl() {
   else
     renderJson "Something went wrong, but you should ensure ks-console service in kubesphere-system is of type 'LoadBalancer' or 'NodePort'."
   fi
+}
+
+test() {
+  echo $RELOAD_COMMANDS
 }

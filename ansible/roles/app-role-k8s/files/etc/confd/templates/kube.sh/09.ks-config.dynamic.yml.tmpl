@@ -1,28 +1,58 @@
-flush > /opt/app/current/conf/k8s/ks-config.dynamic.yml << KS_CONFIG_EOF
-etcd:
-  monitoring: True
-  endpointIps: {{ join (or (getvs "/links/etcd_service/hosts/etcd_node/*/ip") (getvs "/hosts/master/*/ip")) "," }}
-  tlsEnable: False
-metrics_server:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "metrics-server")) 0) }}
+flush > /opt/app/current/conf/k8s/cluster-configuration.update.script.yml << KS_CONFIG_UPGRADE_EOF
 
-logging:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "logging")) 0) }}
-  logMaxAge: {{ getv "/env/keep_log_days" "3" }}
-  elkPrefix: {{ getv "/cluster/cluster_id" }}
-  {{- if exists "/links/elk_service/cluster/cluster_id" }}
-  externalElasticsearchUrl: external-elk.kube-system.svc
-  externalElasticsearchPort: {{ getv "/links/elk_service/cluster/endpoints/ElasticSearch/port" }}
-  {{- end }}
-  containersLogMountedPath: /data/var/lib/docker/containers
-openpitrix:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "openpitrix")) 0) }}
-devops:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "devops")) 0) }}
-servicemesh:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "servicemesh")) 0) }}
-notification:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "notification")) 0) }}
-alerting:
-  enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "alerting")) 0) }}
-KS_CONFIG_EOF
+- command: update 
+  path: spec.etcd
+  value:
+    monitoring: true
+    endpointIps: {{ join (or (getvs "/links/etcd_service/hosts/etcd_node/*/ip") (getvs "/hosts/master/*/ip")) "," }}
+    tlsEnable: False
+    port: 2379
+
+- command: update 
+  path: spec.metrics_server
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "metrics-server")) 0) }}
+
+- command: update 
+  path: spec.logging
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "logging")) 0) }}
+    logMaxAge: {{ getv "/env/keep_log_days" "3" }}
+    elkPrefix: {{ getv "/cluster/cluster_id" }}
+    {{- if exists "/links/elk_service/cluster/cluster_id" }}
+    externalElasticsearchUrl: external-elk.kube-system.svc
+    externalElasticsearchPort: {{ getv "/links/elk_service/cluster/endpoints/ElasticSearch/port" }}
+    {{- end }}
+    containersLogMountedPath: /data/var/lib/docker/containers
+
+- command: update 
+  path: spec.openpitrix
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "openpitrix")) 0) }}
+
+- command: update 
+  path: spec.devops
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "devops")) 0) }}
+    jenkinsMemoryLim: 2Gi # Jenkins memory limit.
+    jenkinsMemoryReq: 1500Mi # Jenkins memory request.
+    jenkinsVolumeSize: 8Gi # Jenkins volume size.
+    jenkinsJavaOpts_Xms: 512m # The following three fields are JVM parameters.
+    jenkinsJavaOpts_Xmx: 512m
+
+- command: update 
+  path: spec.servicemesh
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "servicemesh")) 0) }}
+
+- command: update 
+  path: spec.notification
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "notification")) 0) }}
+
+- command: update 
+  path: spec.alerting
+  value:
+    enabled: {{ or $upgradingFromV1 (gt (len ($extraModules | filter "alerting")) 0) }}
+
+KS_CONFIG_UPGRADE_EOF

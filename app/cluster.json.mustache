@@ -67,7 +67,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-y721fmgy",
+      "image": "img-j07zamsm",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -96,7 +96,7 @@
     "services": {
       "start": {
         "order": 1,
-        "cmd": "printf '%s\\n%s\\n' 'name: ANSIBLE_CALLBACK_WHITELIST' 'value: profile_tasks' | yq p - spec.template.spec.containers[0].env[+] | yq m -i -d5 /opt/app/current/conf/k8s/ks-installer-stable.yml -; appctl start",
+        "cmd": "printf '%s\\n%s\\n' 'name: ANSIBLE_CALLBACK_WHITELIST' 'value: profile_tasks' | yq p - spec.template.spec.containers[0].env[+] | yq m -i -d5 /opt/app/current/conf/k8s/kubesphere-installer-stable.yml -; appctl start",
         "timeout": 1200
       },
       "init": {
@@ -153,7 +153,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-y721fmgy",
+      "image": "img-j07zamsm",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -214,7 +214,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-y721fmgy",
+      "image": "img-j07zamsm",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -329,7 +329,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-ywyb0cyo",
+      "image": "img-vznc2cq5",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
