@@ -312,6 +312,10 @@ runKubectl() {
   kubectl --kubeconfig $KUBE_CONFIG "$@"
 }
 
+runHelm() {
+  /usr/local/bin/helm --kubeconfig $KUBE_CONFIG "$@"
+}
+
 bootstrap() {
   local -r initLogFile=/data/appctl/logs/init.log
   rotate $initLogFile
@@ -454,7 +458,8 @@ setUpStorage() {
   # CSI plugin
   local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
   local -r csiValuesFile=/opt/app/current/conf/k8s/csi-qingcloud-values.yml
-  yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | /usr/local/bin/helm -n kube-system upgrade --install csi-qingcloud $csiChartFile -f -
+  yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \
+      runHelm -n kube-system upgrade --install csi-qingcloud $csiChartFile -f -
 
   # Storage class
   runKubectl apply -f /opt/app/current/conf/k8s/csi-sc.yml
