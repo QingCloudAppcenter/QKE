@@ -8,7 +8,7 @@
 flush /opt/app/current/conf/k8s/csi-sc.yml << CSI_SC_EOF
 {{- $masterVolumeClass := getv "/host/volume_class" }}
 {{- range $volumeClass := split (getv "/cluster/resource_limits/valid_volume_classes") "," }}
-{{- $volumeClassMap := index $volumeClassMaps $volumeClass }}
+{{- with $volumeClassMap := index $volumeClassMaps $volumeClass }}
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
