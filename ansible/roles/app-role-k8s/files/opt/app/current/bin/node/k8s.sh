@@ -18,8 +18,10 @@ generateDockerLayerLinks() {
     local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
       ln -snf $layerName /data$layerName
     done
-    rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
-    rsync -aAX /var/lib/docker/image /data/var/lib/docker/
+    if ! isDev; then
+      rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
+      rsync -aAX /var/lib/docker/image /data/var/lib/docker/
+    fi
   fi
 }
 
@@ -310,6 +312,10 @@ runKubectl() {
   kubectl --kubeconfig $KUBE_CONFIG "$@"
 }
 
+runHelm() {
+  /usr/local/bin/helm --kubeconfig $KUBE_CONFIG "$@"
+}
+
 bootstrap() {
   local -r initLogFile=/data/appctl/logs/init.log
   rotate $initLogFile
@@ -440,16 +446,22 @@ setUpNodeLocalDns() {
 }
 
 setUpStorage() {
-  local csiNode; for csiNode in $(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $STABLE_WORKER_NODES); do
+  # Remove previous versions
+  local csiNode; for csiNode in $(getNodeNames $STABLE_MASTER_NODES $STABLE_WORKER_NODES); do
     runKubectlDelete -n kube-system csinode $csiNode
   done
+  runKubectlDelete -n kube-system deploy csi-qingcloud-controller
   runKubectlDelete -n kube-system sts csi-qingcloud-controller
   runKubectlDelete -n kube-system csidriver csi-qingcloud
   runKubectlDelete -n kube-system ds csi-qingcloud-node
-  local -r csiDefaultFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.yml
-  local -r qingcloudCfgDefaultFile=/opt/app/current/conf/qingcloud/config.default.yaml
-  yq r -d18 $csiDefaultFile data[config.yaml] > $qingcloudCfgDefaultFile
-  yq w -d18 $csiDefaultFile data[config.yaml] -- "$(yq m -a $QINGCLOUD_CONFIG $qingcloudCfgDefaultFile)" | runKubectl apply -f -
+
+  # CSI plugin
+  local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
+  local -r csiValuesFile=/opt/app/current/conf/k8s/csi-qingcloud-values.yml
+  yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \
+      runHelm -n kube-system upgrade --install csi-qingcloud $csiChartFile -f -
+
+  # Storage class
   runKubectl apply -f /opt/app/current/conf/k8s/csi-sc.yml
   if $UPGRADED_FROM_V1; then
     local patch="allowVolumeExpansion: true"

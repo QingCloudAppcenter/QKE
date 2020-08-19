@@ -36,9 +36,6 @@
     url: https://docs.projectcalico.org/v{{ calico_version | splitext | first }}/manifests/calico.yaml
   - name: flannel
     url: https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-  - name: csi-qingcloud
-    version: "{{ qingcloud_csi_version }}"
-    url: https://raw.githubusercontent.com/yunify/qingcloud-csi/v{{ qingcloud_csi_version }}/deploy/disk/kubernetes/releases/qingcloud-csi-disk-v{{ qingcloud_csi_version }}.yaml
   - name: cloud-controller-manager
     version: "{{ qingcloud_ccm_version }}"
     url: https://raw.githubusercontent.com/yunify/qingcloud-cloud-controller-manager/v{{ qingcloud_ccm_version }}/deploy/kube-cloud-controller-manager.yaml
@@ -50,6 +47,23 @@
   - name: nvidia-plugin
     version: "{{ nvidia_plugin_version }}"
     url: https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/{{ nvidia_plugin_version }}/nvidia-device-plugin.yml
+  loop_control:
+    loop_var: pkg
+
+- name: download csi plugin
+  include_role:
+    name: install-1.0.5
+  vars:
+    opts:
+      dest_path: /opt/app/current/conf/k8s/
+      pkg_name: "{{ pkg.name }}"
+      pkg_version: "{{ pkg.version | d('stable') }}"
+      pkg_url: "{{ pkg.url }}"
+      pkg_type: tgz
+  loop:
+  - name: csi-qingcloud
+    version: "{{ qingcloud_csi_version }}"
+    url: https://charts.kubesphere.io/test/csi-qingcloud-{{ qingcloud_csi_version }}.tgz
   loop_control:
     loop_var: pkg
 
@@ -93,44 +107,6 @@
     replace: '\1 {{ gcr_mirror }}/'
   loop:
   - nodelocaldns-{{ k8s_version }}.yml
-  loop_control:
-    loop_var: yml_file
-
-- name: align csi with offline image version
-  replace:
-    path: /opt/app/current/conf/k8s/csi-qingcloud-{{ qingcloud_csi_version }}.yml
-    regexp: '(image:\s)quay.io/k8scsi/'
-    replace: '\1csiplugin/'
-
-- name: backward compatible
-  replace:
-    path: /opt/app/current/conf/k8s/{{ yml_file }}
-    regexp: 'disk.csi.qingcloud.com'
-    replace: 'csi-qingcloud'
-  loop:
-  - csi-qingcloud-{{ qingcloud_csi_version }}.yml
-  loop_control:
-    loop_var: yml_file
-
-- name: backward compatible
-  replace:
-    path: /opt/app/current/conf/k8s/{{ yml_file }}
-    regexp: '(mountPath:) (/var/lib/kubelet)'
-    replace: '\1 /data\2'
-  loop:
-  - csi-qingcloud-{{ qingcloud_csi_version }}.yml
-  loop_control:
-    loop_var: yml_file
-
-- name: backward compatible
-  replace:
-    path: /opt/app/current/conf/k8s/{{ yml_file }}
-    after: 'hostPath:'
-    regexp: '(path:) (/var/lib/kubelet)'
-    before: 'name: kubelet-dir'
-    replace: '\1 /data\2'
-  loop:
-  - csi-qingcloud-{{ qingcloud_csi_version }}.yml
   loop_control:
     loop_var: yml_file
 
