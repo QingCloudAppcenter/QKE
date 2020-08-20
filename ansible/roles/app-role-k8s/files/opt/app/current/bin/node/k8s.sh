@@ -502,10 +502,10 @@ launchKs() {
 }
 
 applyKsConf() {
-  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml 
+  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml
   local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
-  local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml 
-   
+  local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
+
   runKubectl apply -f $ksInstallerDefaultFile
   yq p $ksCfgDynamicFile spec | yq m - $ksCfgDefaultFile | runKubectl apply -f -
 }
