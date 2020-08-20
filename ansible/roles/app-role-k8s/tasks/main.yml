@@ -39,8 +39,10 @@
   - name: cloud-controller-manager
     version: "{{ qingcloud_ccm_version }}"
     url: https://raw.githubusercontent.com/yunify/qingcloud-cloud-controller-manager/v{{ qingcloud_ccm_version }}/deploy/kube-cloud-controller-manager.yaml
-  - name: ks-installer
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/ac65d71693641aab35ec993fef3e85162442c255/kubesphere-complete-setup.yaml
+  - name: kubesphere-installer
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/master/deploy/kubesphere-installer.yaml
+  - name: cluster-configuration
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/master/deploy/cluster-configuration.yaml
   - name: nodelocaldns
     version: "{{ k8s_version }}"
     url: https://raw.githubusercontent.com/kubernetes/kubernetes/v{{ k8s_version }}/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml
@@ -126,7 +128,8 @@
     regexp: '(imagePullPolicy:).*$'
     replace: '\1 IfNotPresent'
   loop:
-  - ks-installer-stable.yml
+  - cluster-configuration-stable.yml
+  - kubesphere-installer-stable.yml
   loop_control:
     loop_var: yml_file
 
