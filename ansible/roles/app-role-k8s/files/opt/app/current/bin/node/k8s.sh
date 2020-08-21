@@ -463,6 +463,10 @@ deleteUpgradedVersionStorage() {
   if $IS_UPGRADING_FROM_V1; then
     runKubectlDelete -n kube-system sts csi-qingcloud-controller
     runKubectlDelete -n kube-system ds csi-qingcloud-node
+    runKubectlDelete -n kube-system cm csi-qingcloud
+    runKubectlDelete -n kube-system clusterrole csi-qingcloud-attacher csi-qingcloud-controller csi-qingcloud-node csi-qingcloud-provisioner
+    runKubectlDelete -n kube-system clusterrolebinding csi-qingcloud-controller csi-qingcloud-node
+    runKubectlDelete -n kube-system sa csi-qingcloud-controller csi-qingcloud-node
   # Remove 2.0.x version
   elif $IS_UPGRADING_FROM_V2; then
     # 经测试，中间即使存在报错，也会将可以删除的删除干净
