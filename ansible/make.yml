@@ -13,7 +13,7 @@
   - disable-apt-jobs-1.0.0
   - disable-motd-1.0.0
   - app-agent-1.0.6
-  - appctl-1.2.1
+  - appctl-1.2.2
   - arping-1.0.5
   - jq-1.0.9
   - yq-1.0.6
