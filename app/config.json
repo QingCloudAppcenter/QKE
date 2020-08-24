@@ -395,6 +395,9 @@
       "type": "string",
       "range": [
         "metrics-server",
+        "networkpolicy",
+        "ks-auditing",
+        "ks-events",
         "ks-logging",
         "ks-openpitrix",
         "ks-devops",
