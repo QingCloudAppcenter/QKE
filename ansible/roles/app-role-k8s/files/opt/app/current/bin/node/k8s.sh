@@ -517,8 +517,15 @@ launchKs() {
 }
 
 applyKsConf() {
+  local ksInstallerDefaultFile
+  if $(local ksInstallerPodName; ksInstallerPodName="$(getKsInstallerPodName)"); then
+    ksCfgDefaultFile=/data/appctl/conf/ks/cluster-configuration-transient.yml
+    runKubectl get $ksInstallerPodName -n kubesphere-system -oyaml > $ksCfgDefaultFile
+    rotate $ksCfgDefaultFile
+  else
+    ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
+  fi
   local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
   local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
 
   runKubectl apply -f $ksInstallerDefaultFile
