@@ -39,7 +39,7 @@ upgrade() {
   fi
   execute start
   _initCluster
-  if $IS_HA_CLUSTER; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
+  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
   setUpConfigs
   if $KS_ENABLED; then
     waitKsUpgraded
