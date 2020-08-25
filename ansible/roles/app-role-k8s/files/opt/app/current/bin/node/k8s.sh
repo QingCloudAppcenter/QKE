@@ -445,31 +445,12 @@ setUpNodeLocalDns() {
   sed "$replaceRules" /opt/app/current/conf/k8s/nodelocaldns-$K8S_VERSION.yml | runKubectl apply -f -
 }
 
-getUpgradedVersionStorageObject() {
-  if $IS_UPGRADING_FROM_V2; then
-    local lastAppVersion=2.0.0
-    local lastQingcloudCsiVersion=1.1.1
-    local -r lastCsiDefaultFile=/opt/app/$lastAppVersion/conf/k8s/csi-qingcloud-$lastQingcloudCsiVersion.yml
-    local -r lastQingcloudCfgDefaultFile=/opt/app/$lastAppVersion/conf/qingcloud/config.default.yaml
-    yq r -d18 $lastCsiDefaultFile data[config.yaml] > $lastQingcloudCfgDefaultFile
-    yq w -d18 $lastCsiDefaultFile data[config.yaml] -- "$(yq m -a $lastQingCloudCsiVersio $lastQingcloudCfgDefaultFile)"
-  fi
-}
-
-# Remove previous versions
-deleteUpgradedVersionStorage() {
-  # Remove 2.0.x version
-  if $IS_UPGRADING_FROM_V2; then
-    # 经测试，中间即使存在报错，也会将可以删除的删除干净
-    local deleteResult; deleteResult="$(getUpgradedVersionStorageObject |runKubectl delete -f -)" || {
-      log "remove csi resources occur err, delete result: [$deleteResult]"
-    }
-  fi
-  log "remove csi resources end"
-}
-
 setUpStorage() {
-  deleteUpgradedVersionStorage
+  # remove previous version
+  if $IS_UPGRADING_FROM_V2; then
+    kubectl delete -f /opt/app/2.0.0/conf/k8s/csi-qingcloud-1.1.1.yml
+  fi
+
   # CSI plugin
   local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
   local -r csiValuesFile=/opt/app/current/conf/k8s/csi-qingcloud-values.yml
