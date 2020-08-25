@@ -306,10 +306,14 @@ runKubectlDelete() {
 
 runKubectlPatch() {
   if [ "$1" == "-n" ]; then
-    local -r ns="$1 $2"
+    local -r patchNs="$1 $2"
     shift 2
   fi
-  if runKubectl $ns get $1 $2 --no-headers -oname; then runKubectl $ns patch $1 $2 $3 "$4"; fi
+  if [ "$1" == "--type" ]; then
+    local -r patchType="$1 $2"
+    shift 2
+  fi
+  if runKubectl $patchNs get $1 $2 --no-headers -oname; then runKubectl $patchNs patch $patchType $1 $2 $3 "$4"; fi
 }
 
 runKubectl() {
@@ -507,10 +511,14 @@ launchKs() {
   reloadExternalElk
 }
 
+buildKsDynamicConf() {
+  local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
+  yq p $ksCfgDynamicFile spec
+}
+
 buildKsConf() {
   local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
-  local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
-  yq p $ksCfgDynamicFile spec | yq m - $ksCfgDefaultFile
+  buildKsDynamicConf | yq m - $ksCfgDefaultFile
 }
 
 reloadExternalElk() {
@@ -664,7 +672,7 @@ reloadKsEip() {
 
 reloadKsConf() {
   if $KS_ENABLED && isMaster; then
-    runKubectlPatch -n kubesphere-system cc ks-installer -p "$(buildKsConf)"
+    runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p "$(buildKsDynamicConf)"
   fi
 }
 

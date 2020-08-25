@@ -44,7 +44,7 @@
     url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_version }}/deploy/kubesphere-installer.yaml
   - name: ks-config
     version: "{{ ks_version }}"
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_config }}/deploy/cluster-configuration.yaml
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_version }}/deploy/cluster-configuration.yaml
   - name: nodelocaldns
     version: "{{ k8s_version }}"
     url: https://raw.githubusercontent.com/kubernetes/kubernetes/v{{ k8s_version }}/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml
