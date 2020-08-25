@@ -456,7 +456,7 @@ setUpNodeLocalDns() {
 setUpStorage() {
   # remove previous version
   if $IS_UPGRADING_FROM_V2; then
-    kubectl delete -f /opt/app/2.0.0/conf/k8s/csi-qingcloud-1.1.1.yml
+    runKubectl delete -f /opt/app/2.0.0/conf/k8s/csi-qingcloud-1.1.1.yml
   fi
 
   # CSI plugin
