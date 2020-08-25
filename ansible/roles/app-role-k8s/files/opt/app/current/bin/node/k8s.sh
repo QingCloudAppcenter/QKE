@@ -305,7 +305,11 @@ runKubectlDelete() {
 }
 
 runKubectlPatch() {
-  if runKubectl get $1 $2 --no-headers -oname; then runKubectl patch $1 $2 $3 "$4"; fi
+  if [ "$1" == "-n" ]; then
+    local -r ns="$1 $2"
+    shift 2
+  fi
+  if runKubectl $ns get $1 $2 --no-headers -oname; then runKubectl $ns patch $1 $2 $3 "$4"; fi
 }
 
 runKubectl() {
@@ -492,25 +496,21 @@ launchKs() {
     runKubectlCreate -n kubesphere-monitoring-system secret generic kube-etcd-client-certs
   }
 
+  ksRunInstaller() {
+    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    runKubectl apply -f $ksInstallerFile
+    buildKsConf | runKubectl apply -f -
+  }
+
   ksPrepareCerts
-  applyKsConf
+  ksRunInstaller
   reloadExternalElk
 }
 
-applyKsConf() {
-  local ksInstallerDefaultFile
-  if $(local ksInstallerPodName; ksInstallerPodName="$(getKsInstallerPodName)"); then
-    ksCfgDefaultFile=/data/appctl/conf/ks/cluster-configuration-transient.yml
-    runKubectl get $ksInstallerPodName -n kubesphere-system -oyaml > $ksCfgDefaultFile
-    rotate $ksCfgDefaultFile
-  else
-    ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
-  fi
-  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml
+buildKsConf() {
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
   local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
-
-  runKubectl apply -f $ksInstallerDefaultFile
-  yq p $ksCfgDynamicFile spec | yq m - $ksCfgDefaultFile | runKubectl apply -f -
+  yq p $ksCfgDynamicFile spec | yq m - $ksCfgDefaultFile
 }
 
 reloadExternalElk() {
@@ -659,11 +659,13 @@ distributeFile() {
 }
 
 reloadKsEip() {
-  if $KS_ENABLED && isMaster; then runKubectl -n kubesphere-system patch svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
+  if $KS_ENABLED && isMaster; then runKubectlPatch -n kubesphere-system svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
 }
 
 reloadKsConf() {
-  if $KS_ENABLED && isMaster; then applyKsConf; fi
+  if $KS_ENABLED && isMaster; then
+    runKubectlPatch -n kubesphere-system cc ks-installer -p "$(buildKsConf)"
+  fi
 }
 
 reloadKubeApiserverCerts() {
@@ -696,7 +698,7 @@ reloadKubeLogLevel() {
 
 applyKubeProxyLogLevel() {
   local -r type=daemonsets.app name=kube-proxy
-  runKubectl -n kube-system patch $type $name -p "$(runKubectl -n kube-system get $type $name -oyaml | updateLogLevel $name)"
+  runKubectlPatch -n kube-system $type $name -p "$(runKubectl -n kube-system get $type $name -oyaml | updateLogLevel $name)"
 }
 
 updateLogLevel() {

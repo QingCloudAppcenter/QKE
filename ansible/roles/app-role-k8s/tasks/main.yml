@@ -39,10 +39,12 @@
   - name: cloud-controller-manager
     version: "{{ qingcloud_ccm_version }}"
     url: https://raw.githubusercontent.com/yunify/qingcloud-cloud-controller-manager/v{{ qingcloud_ccm_version }}/deploy/kube-cloud-controller-manager.yaml
-  - name: kubesphere-installer
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/master/deploy/kubesphere-installer.yaml
-  - name: cluster-configuration
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/master/deploy/cluster-configuration.yaml
+  - name: ks-installer
+    version: "{{ ks_version }}"
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_version }}/deploy/kubesphere-installer.yaml
+  - name: ks-config
+    version: "{{ ks_version }}"
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_config }}/deploy/cluster-configuration.yaml
   - name: nodelocaldns
     version: "{{ k8s_version }}"
     url: https://raw.githubusercontent.com/kubernetes/kubernetes/v{{ k8s_version }}/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml
@@ -128,8 +130,8 @@
     regexp: '(imagePullPolicy:).*$'
     replace: '\1 IfNotPresent'
   loop:
-  - cluster-configuration-stable.yml
-  - kubesphere-installer-stable.yml
+  - ks-installer-{{ ks_version }}.yml
+  - ks-config-{{ ks_version }}.yml
   loop_control:
     loop_var: yml_file
 
@@ -139,6 +141,7 @@
     content: |
       GCR_MIRROR={{ gcr_mirror }}
       K8S_VERSION={{ k8s_version }}
+      KS_VERSION={{ ks_version }}
       COREDNS_VERSION={{ coredns_version }}
       HELM_VERSION={{ helm_version }}
       NVIDIA_PLUGIN_VERSION={{ nvidia_plugin_version }}
