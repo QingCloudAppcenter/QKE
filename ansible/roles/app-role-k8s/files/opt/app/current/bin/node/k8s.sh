@@ -501,7 +501,7 @@ launchKs() {
   }
 
   ksRunInstaller() {
-    runKubectlDelete -n kubesphere-system deploy ks-installer
+    if $IS_UPGRADING_FROM_V2; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
     local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
