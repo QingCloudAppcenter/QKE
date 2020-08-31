@@ -9,7 +9,7 @@ coredns_version: 1.6.0
 calico_version: 3.7.3
 qingcloud_csi_version: 1.2.2
 qingcloud_ccm_version: 1.4.4
-ks_version: 2.1.1
+ks_version: 3.0.0
 helm_version: 3.2.4
 helm_stable_repo: https://charts.kubesphere.io/mirror
 helm_main_repo: https://charts.kubesphere.io/main

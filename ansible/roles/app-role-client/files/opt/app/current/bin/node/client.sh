@@ -39,7 +39,7 @@ upgrade() {
   fi
   execute start
   _initCluster
-  if $IS_HA_CLUSTER; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
+  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
   setUpConfigs
   if $KS_ENABLED; then
     waitKsUpgraded
@@ -86,7 +86,7 @@ keepKsInstallerRunningTillDone() {
 
 checkKsInstallerDone() {
   local podName; podName="$(getKsInstallerPodName)" || return $EC_KS_INSTALL_POD_ERR
-  local output; output="$(runKubectl -n kubesphere-system logs --tail 22 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
+  local output; output="$(runKubectl -n kubesphere-system logs --tail 90 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
   echo "$output" | grep -oF "total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT" || return $EC_KS_INSTALL_DONE_WITH_ERR

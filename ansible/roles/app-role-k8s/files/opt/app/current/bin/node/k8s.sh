@@ -305,7 +305,15 @@ runKubectlDelete() {
 }
 
 runKubectlPatch() {
-  if runKubectl get $1 $2 --no-headers -oname; then runKubectl patch $1 $2 $3 "$4"; fi
+  if [ "$1" == "-n" ]; then
+    local -r patchNs="$1 $2"
+    shift 2
+  fi
+  if [ "$1" == "--type" ]; then
+    local -r patchType="$1 $2"
+    shift 2
+  fi
+  if runKubectl $patchNs get $1 $2 --no-headers -oname; then runKubectl $patchNs patch $patchType $1 $2 $3 "$4"; fi
 }
 
 runKubectl() {
@@ -446,14 +454,10 @@ setUpNodeLocalDns() {
 }
 
 setUpStorage() {
-  # Remove previous versions
-  local csiNode; for csiNode in $(getNodeNames $STABLE_MASTER_NODES $STABLE_WORKER_NODES); do
-    runKubectlDelete -n kube-system csinode $csiNode
-  done
-  runKubectlDelete -n kube-system deploy csi-qingcloud-controller
-  runKubectlDelete -n kube-system sts csi-qingcloud-controller
-  runKubectlDelete -n kube-system csidriver csi-qingcloud
-  runKubectlDelete -n kube-system ds csi-qingcloud-node
+  # remove previous version
+  if $IS_UPGRADING_FROM_V2; then
+    runKubectl delete -f /opt/app/2.0.0/conf/k8s/csi-qingcloud-1.1.1.yml
+  fi
 
   # CSI plugin
   local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
@@ -496,18 +500,26 @@ launchKs() {
     runKubectlCreate -n kubesphere-monitoring-system secret generic kube-etcd-client-certs
   }
 
+  ksRunInstaller() {
+    if $IS_UPGRADING_FROM_V2; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
+    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    runKubectl apply -f $ksInstallerFile
+    buildKsConf | runKubectl apply -f -
+  }
+
   ksPrepareCerts
-  applyKsConf
+  ksRunInstaller
   reloadExternalElk
 }
 
-applyKsConf() {
-  local -r ksInstallerDefaultFile=/opt/app/current/conf/k8s/kubesphere-installer-stable.yml
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/cluster-configuration-stable.yml
+buildKsDynamicConf() {
   local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
+  yq p $ksCfgDynamicFile spec
+}
 
-  runKubectl apply -f $ksInstallerDefaultFile
-  yq p $ksCfgDynamicFile spec | yq m - $ksCfgDefaultFile | runKubectl apply -f -
+buildKsConf() {
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
+  buildKsDynamicConf | yq m - $ksCfgDefaultFile
 }
 
 reloadExternalElk() {
@@ -531,7 +543,7 @@ keepKsInstallerRunningTillDone() {
 
 checkKsInstallerDone() {
   local podName; podName="$(getKsInstallerPodName)" || return $EC_KS_INSTALL_POD_ERR
-  local output; output="$(runKubectl -n kubesphere-system logs --tail 22 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
+  local output; output="$(runKubectl -n kubesphere-system logs --tail 90 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
   echo "$output" | grep -oF "total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT" || return $EC_KS_INSTALL_DONE_WITH_ERR
@@ -656,11 +668,13 @@ distributeFile() {
 }
 
 reloadKsEip() {
-  if $KS_ENABLED && isMaster; then runKubectl -n kubesphere-system patch svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
+  if $KS_ENABLED && isMaster; then runKubectlPatch -n kubesphere-system svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
 }
 
 reloadKsConf() {
-  if $KS_ENABLED && isMaster; then applyKsConf; fi
+  if $KS_ENABLED && isMaster; then
+    runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p "$(buildKsDynamicConf)"
+  fi
 }
 
 reloadKubeApiserverCerts() {
@@ -693,7 +707,7 @@ reloadKubeLogLevel() {
 
 applyKubeProxyLogLevel() {
   local -r type=daemonsets.app name=kube-proxy
-  runKubectl -n kube-system patch $type $name -p "$(runKubectl -n kube-system get $type $name -oyaml | updateLogLevel $name)"
+  runKubectlPatch -n kube-system $type $name -p "$(runKubectl -n kube-system get $type $name -oyaml | updateLogLevel $name)"
 }
 
 updateLogLevel() {
