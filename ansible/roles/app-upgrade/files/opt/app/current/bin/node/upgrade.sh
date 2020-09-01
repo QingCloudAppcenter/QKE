@@ -59,10 +59,6 @@ setUpFiles() {
   systemctl restart confd
 }
 
-cleanUp() {
-  rm -rf $UPGRADE_DIR
-}
-
 main() {
   . $1/../envs/upgrade.env
   prepareUsers etcd
@@ -70,7 +66,6 @@ main() {
   backUpFiles $(date +%y%m%d.%H%M%S)
   setUpFiles
   appctl upgrade
-  cleanUp
 }
 
 main $(dirname $0)
