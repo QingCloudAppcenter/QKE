@@ -619,6 +619,7 @@
       "label": "Controller Manager parameters",
       "description": "parameters for controller manager",
       "type": "string",
+      "multiline": true,
       "default": "",
       "changeable": true,
       "required": "no"
@@ -627,6 +628,7 @@
       "label": "Apiserver Parameters",
       "description": "parameters for apiserver ",
       "type": "string",
+      "multiline": true,
       "default": "",
       "changeable": true,
       "required": "no"
@@ -635,6 +637,16 @@
       "label": "Scheduler Parameters",
       "description": "parameters for scheduler",
       "type": "string",
+      "multiline": true,
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "kubelet.resources.threshold.params",
+      "label": "Kubelet Resources Threshold Parameters",
+      "description": "kubelet parameters for resources threshold",
+      "type": "string",
+      "multiline": true,
       "default": "",
       "changeable": true,
       "required": "no"
