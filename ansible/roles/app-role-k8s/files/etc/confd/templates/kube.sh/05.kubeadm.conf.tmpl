@@ -26,7 +26,6 @@ apiServer:
   {{- end }}
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
-    {{ join (getvs "/env/apiserver.params") "" }}
     service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
     advertise-address: 0.0.0.0
     {{- with getv "/env/kube_audit_file" "" }}
@@ -40,6 +39,7 @@ apiServer:
     {{- end }}
     etcd-prefix: {{ getv "/cluster/cluster_id" }}
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace (replace (join (getvs "/env/apiserver.params") "") "\r" "" -1) "\n" "\n    " -1 }}
   {{- with getv "/env/kube_audit_file" "" }}
   $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
   extraVolumes:
@@ -51,12 +51,12 @@ apiServer:
   {{- end }}
 controllerManager:
   extraArgs:
-    {{ join (getvs "/env/controller.manager.params") "" }}
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace (replace (join (getvs "/env/controller.manager.params") "") "\r" "" -1) "\n" "\n    " -1 }}
 scheduler:
   extraArgs:
-    {{ join (getvs "/env/scheduler.params") "" }}
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace（replace (join (getvs "/env/scheduler.params") "") "\r" "" -1）"\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
