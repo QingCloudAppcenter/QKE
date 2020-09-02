@@ -7,7 +7,7 @@ kind: ClusterConfiguration
 kubernetesVersion: v$K8S_VERSION
 controlPlaneEndpoint: loadbalancer
 imageRepository: $GCR_MIRROR
-useHyperKubeImage: true
+useHyperKubeImage: false
 etcd:
   external:
     endpoints:
