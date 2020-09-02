@@ -642,7 +642,7 @@
       "changeable": true,
       "required": "no"
     }, {
-      "key": "kubelet.parameters",
+      "key": "kubelet.params",
       "label": "Kubelet Parameters",
       "description": "kubelet parameters",
       "type": "string",

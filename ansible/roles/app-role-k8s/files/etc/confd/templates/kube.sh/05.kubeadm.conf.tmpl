@@ -39,7 +39,7 @@ apiServer:
     {{- end }}
     etcd-prefix: {{ getv "/cluster/cluster_id" }}
     v: "{{ getv "/env/kube_log_level" }}"
-    {{ replace (join (getvs "/env/apiserver.params") "") "\n" "\n    " -1 }}
+    {{ replace (replace (join (getvs "/env/apiserver.params") "") "\r" "" -1) "\n" "\n    " -1 }}
   {{- with getv "/env/kube_audit_file" "" }}
   $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
   extraVolumes:
@@ -52,11 +52,11 @@ apiServer:
 controllerManager:
   extraArgs:
     v: "{{ getv "/env/kube_log_level" }}"
-    {{ replace (join (getvs "/env/controller.manager.params") "") "\n" "\n    " -1 }}
+    {{ replace (replace (join (getvs "/env/controller.manager.params") "") "\r" "" -1) "\n" "\n    " -1 }}
 scheduler:
   extraArgs:
     v: "{{ getv "/env/kube_log_level" }}"
-    {{ replace (join (getvs "/env/scheduler.params") "") "\n" "\n    " -1 }}
+    {{ replace（replace (join (getvs "/env/scheduler.params") "") "\r" "" -1）"\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
