@@ -64,6 +64,8 @@
     "docker_prune": "清理 Docker",
     "Docker prune days": "Docker 清理天数",
     "only remove containers, images, and networks created before given days": "只清理指定天数之前创建的 Docker 容器、镜像、网络等闲置资源，默认为 3 表示只清理创建时间超过 3 天（72 小时）的闲置资源",
+    "Legible K8s Node Names": "重命名 k8s 节点",
+    "Using legible node names, e.g. master1, worker-p001, worker-s002, instead of the default random generated ones": "默认为 true 表示使用易读的 k8s 节点名，比如 master1（一号主节点），worker-p001（一号基础型工作节点），worker-s002（二号企业型工作节点），false 表示使用系统自动生成的随机节点名",
     "renew_certs": "更新证书",
     "Keep log on log node for x days, 0 indicates that the log is not cleared. This is a KubeSphere parameter": "KubeSphere 使用 ElasticSearch 存储日志，可通过配置此参数自动清理指定天数之前的日志，0 表示不自动清理",
     "Defined the maximum number of days to retain old audit log files": "自动清理指定天数之前产生的审计日志文件，默认为 7 表示自动清理创建时间超过 7 天的审计日志文件；注意：在开启审计日志的情况下修改此项会重启所有主节点的 kube-apiserver 从而导致 kube-apiserver 服务短暂中断，建议在业务低谷时间操作",
