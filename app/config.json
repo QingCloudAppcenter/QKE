@@ -441,7 +441,7 @@
       "max": 65535
     }, {
       "key": "node.name.human.readable",
-      "label": "Legible Node Names",
+      "label": "Legible K8s Node Names",
       "description": "Using legible node names, e.g. master1, worker-p001, worker-s002, instead of the default random generated ones",
       "type": "boolean",
       "default": true,
