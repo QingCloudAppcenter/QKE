@@ -1,7 +1,3 @@
-indent4Black(){
-  echo "${1?multi-line content defined}" |sed 's#^#    #g'
-}
-
 flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
@@ -30,7 +26,6 @@ apiServer:
   {{- end }}
   $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
   extraArgs:
-$(indent4Black "{{ getv "/env/apiserver.params" "" }}")
     service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
     advertise-address: 0.0.0.0
     {{- with getv "/env/kube_audit_file" "" }}
@@ -44,6 +39,7 @@ $(indent4Black "{{ getv "/env/apiserver.params" "" }}")
     {{- end }}
     etcd-prefix: {{ getv "/cluster/cluster_id" }}
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace (join (getvs "/env/apiserver.params") "") "\n" "\n    " -1 }}
   {{- with getv "/env/kube_audit_file" "" }}
   $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
   extraVolumes:
@@ -55,12 +51,12 @@ $(indent4Black "{{ getv "/env/apiserver.params" "" }}")
   {{- end }}
 controllerManager:
   extraArgs:
-$(indent4Black "{{ getv "/env/controller.manager.params" "" }}")
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace (join (getvs "/env/controller.manager.params") "") "\n" "\n    " -1 }}
 scheduler:
   extraArgs:
-$(indent4Black "{{ getv "/env/scheduler.params" "" }}")
     v: "{{ getv "/env/kube_log_level" }}"
+    {{ replace (join (getvs "/env/scheduler.params") "") "\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}

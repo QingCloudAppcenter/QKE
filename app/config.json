@@ -642,9 +642,9 @@
       "changeable": true,
       "required": "no"
     }, {
-      "key": "kubelet.resources.threshold.params",
-      "label": "Kubelet Resources Threshold Parameters",
-      "description": "kubelet parameters for resources threshold",
+      "key": "kubelet.parameters",
+      "label": "Kubelet Parameters",
+      "description": "kubelet parameters",
       "type": "string",
       "multiline": true,
       "default": "",
