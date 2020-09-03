@@ -125,8 +125,7 @@
         "min": 40,
         "max": 2000,
         "step": 10,
-        "required": "yes",
-        "resource_group": [80, 80, 200, 200]
+        "required": "yes"
       }]
     }, {
       "key": "node_perf",
