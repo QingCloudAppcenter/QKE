@@ -405,7 +405,7 @@
         "ks-notification",
         "ks-alerting"
       ],
-      "default": "",
+      "default": "metrics-server",
       "multichoice": true,
       "changeable": true,
       "expanded": true,
