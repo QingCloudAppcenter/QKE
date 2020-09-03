@@ -112,7 +112,7 @@
   - target_env != 'dev'
 
 - name: prepare images packages
-  shell: if ！{{ image_package.file_exists }};then docker save -o {{ src_data_path }}/{{ image_package.package_name }} {{ image_package.images_names | join(" ") }};fi
+  shell: if ! {{ image_package.file_exists | lower }}; then docker save -o {{ src_data_path }}/{{ image_package.package_name }} {{ image_package.images_names | join(" ") }};fi
   loop:
     - package_name: "{{ ks_images_package }}"
       images_names: "{{ docker_images_ks }}"
