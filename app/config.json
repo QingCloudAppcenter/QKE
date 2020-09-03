@@ -650,6 +650,15 @@
       "changeable": true,
       "required": "no"
     }, {
+      "key": "proxy.iptables.params",
+      "label": "kube-proxy iptables Parameters",
+      "description": "parameters for kube-proxy iptables",
+      "type": "string",
+      "multiline": true,
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
       "key": "kubelet.params",
       "label": "Kubelet Parameters",
       "description": "kubelet parameters",

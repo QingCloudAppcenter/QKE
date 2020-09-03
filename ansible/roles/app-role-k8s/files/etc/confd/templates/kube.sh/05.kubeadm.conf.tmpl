@@ -56,7 +56,7 @@ controllerManager:
 scheduler:
   extraArgs:
     v: "{{ getv "/env/kube_log_level" }}"
-    {{ replace（replace (join (getvs "/env/scheduler.params") "") "\r" "" -1）"\n" "\n    " -1 }}
+    {{ replace (replace (join (getvs "/env/scheduler.params") "") "\r" "" -1) "\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
@@ -78,4 +78,8 @@ systemReserved:
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 mode: {{ getv "/env/proxy_mode" "ipvs" }}
+{{- with (replace (join (getvs "/env/proxy.iptables.params") "") "\r" "" -1) }}
+iptables:
+  {{ replace . "\n" "\n  " -1 }}
+{{- end }}
 KUBEADM_CONFIG_EOF

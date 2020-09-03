@@ -74,6 +74,8 @@
     "Keep Docker for x days, 0 indicates that the log is not cleared": "每天凌晨 2 点 35 分自动清理指定天数之前创建的 Docker 容器、镜像、网络等闲置资源，默认为 3 表示只清理创建时间超过 3 天（72 小时）的闲置资源；0 表示不自动清理",
     "Kubernetes log level": "Kubernetes 日志级别",
     "The log level for Kubernetes system": "Kubernetes 的日志级别，数字越大记录越详细，也会占用更多日志空间。遇到问题可以调整日志级别进行 debug；注意：修改此项会重启所有 k8s 组件（kube-apiserver、kube-controller-manager、kube-scheduler、kube-proxy）从而导致服务短暂中断，建议在业务低谷时间操作",
+    "kube-proxy iptables Parameters": "iptables 参数",
+    "parameters for kube-proxy iptables": "kube-proxy iptables 参数，比如：**masqueradeAll: true**， 更多信息可参阅 [KubeProxyIPTablesConfiguration](https://godoc.org/k8s.io/kube-proxy/config/v1alpha1#KubeProxyIPTablesConfiguration)",
     "kubelet_running_container_count": "正在运行的容器数量",
     "kubelet_running_pod_count": "正在运行的 Pod 数量",
     "Fluent forward server": "Fluent 日志转发服务",

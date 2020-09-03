@@ -696,6 +696,12 @@ reloadMasterProcs() {
   done
 }
 
+reloadKubeProxy() {
+  isFirstMaster || return 0
+  runKubeadm init phase upload-config kubeadm
+  runKubeadm init phase addon kube-proxy
+}
+
 reloadKubeLogLevel() {
   isMaster || return 0
   runKubeadm init phase upload-config kubeadm
