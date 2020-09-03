@@ -23,7 +23,7 @@ initNode() {
 }
 
 initCluster() {
-  echo ${CLUSTER_ID:?password is required} | chpasswd
+  echo "root:${CLUSTER_ID:?password is required}" | chpasswd
   _initCluster
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG
