@@ -13,6 +13,7 @@ EC_OVERLAY_ERR
 "
 
 initNode() {
+  echo ${CLUSTER_ID:?password is required} | chpasswd
   _initNode
   mkdir -p /data/kubernetes
   ln -snf /data/kubernetes /etc/kubernetes
