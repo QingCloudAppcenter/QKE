@@ -49,6 +49,8 @@ docker_images_k8s:
 - kubesphere/provisioner-localpv:1.10.0
 - kubesphere/linux-utils:1.10.0
 docker_images_ks:
+- kubesphere/ks-upgrade:v3.0.0
+- kubesphere/ks-devops:flyway-v3.0.0
 - kubesphere/node-disk-manager:0.5.0
 - kubesphere/node-disk-operator:0.5.0
 - kubesphere/provisioner-localpv:1.10.0
