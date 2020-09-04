@@ -121,7 +121,7 @@
         "label": "volume size",
         "description": "The volume size for each instance",
         "type": "integer",
-        "default": 200,
+        "default": 80,
         "min": 40,
         "max": 2000,
         "step": 10,
