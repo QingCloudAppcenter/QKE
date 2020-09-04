@@ -19,17 +19,6 @@
       APISERVER_LB_FILE=/data/appctl/data/apiserver-lb
       KUBE_CONFIG=/data/kubernetes/admin.conf
 
-- name: set up password
-  include_role:
-    name: set-passwd-1.0.0
-  loop:
-  - username: ubuntu
-    password: '!'
-  - username: root
-    password: '!'
-  loop_control:
-    loop_var: vm_user
-
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:

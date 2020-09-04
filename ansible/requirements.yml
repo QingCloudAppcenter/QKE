@@ -13,4 +13,3 @@
 - src: https://qingcloudappcenter.github.io/ansible-roles/disable-motd-1.0.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/update-apt-sources-1.0.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/qingcloud-cli-1.0.5.tar.gz
-- src: https://qingcloudappcenter.github.io/ansible-roles/set-passwd-1.0.0.tar.gz
