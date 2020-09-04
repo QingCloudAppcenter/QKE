@@ -91,7 +91,7 @@
     "services": {
       "start": {
         "order": 1,
-        "cmd": "printf '%s\\n%s\\n' 'name: ANSIBLE_CALLBACK_WHITELIST' 'value: profile_tasks' | yq p - spec.template.spec.containers[0].env[+] | yq m -i -d5 /opt/app/current/conf/k8s/ks-installer-3.0.0.yml -; appctl start",
+        "cmd": "appctl start",
         "timeout": 1200
       },
       "init": {
