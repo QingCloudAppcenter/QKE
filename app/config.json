@@ -624,8 +624,8 @@
       "required": "no"
     }, {
       "key": "controller.manager.params",
-      "label": "Controller Manager parameters",
-      "description": "parameters for controller manager",
+      "label": "kube-controller-manager parameters",
+      "description": "parameters for kube controller manager",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -633,8 +633,8 @@
       "required": "no"
     }, {
       "key": "apiserver.params",
-      "label": "Apiserver Parameters",
-      "description": "parameters for apiserver",
+      "label": "kube-apiserver parameters",
+      "description": "parameters for kube apiserver",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -642,8 +642,8 @@
       "required": "no"
     }, {
       "key": "scheduler.params",
-      "label": "Scheduler Parameters",
-      "description": "parameters for scheduler",
+      "label": "kube-scheduler parameters",
+      "description": "parameters for kube scheduler",
       "type": "string",
       "multiline": true,
       "default": "",
