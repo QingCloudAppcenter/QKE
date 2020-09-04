@@ -35,6 +35,11 @@
       "mount_point": "/upgrade",
       "mount_options": "defaults,noatime",
       "filesystem": "ext4"
+    }, {
+      "mount_role": "node_gpu",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
     }]
   }, {
     "container":{
@@ -305,6 +310,12 @@
       },
       "restart": {
         "cmd": "appctl restart"
+      },
+      "upgrade": {
+        "order": 1,
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
+        "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 10800
       },
       "docker_prune": {
         "type": "custom",
