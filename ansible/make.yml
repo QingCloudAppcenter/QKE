@@ -2,7 +2,7 @@
 - name: pull docker images
   hosts: builder
   roles:
-  - docker-1.0.6
+  # - docker-1.0.6
   - docker-images
 
 - hosts: k8s-client,k8s-node,gpu-node
