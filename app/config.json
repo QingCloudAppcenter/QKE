@@ -634,7 +634,7 @@
     }, {
       "key": "apiserver.params",
       "label": "Apiserver Parameters",
-      "description": "parameters for apiserver ",
+      "description": "parameters for apiserver",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -661,7 +661,7 @@
     }, {
       "key": "kubelet.params",
       "label": "Kubelet Parameters",
-      "description": "kubelet parameters",
+      "description": "parameters for kubelet",
       "type": "string",
       "multiline": true,
       "default": "",
