@@ -651,7 +651,7 @@
       "required": "no"
     }, {
       "key": "proxy.iptables.params",
-      "label": "kube-proxy iptables Parameters",
+      "label": "kube-proxy iptables parameters",
       "description": "parameters for kube-proxy iptables",
       "type": "string",
       "multiline": true,
