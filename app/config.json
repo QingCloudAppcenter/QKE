@@ -615,14 +615,6 @@
       "changeable": true,
       "required": "no"
     }, {
-      "key": "user.ssh.key",
-      "label": "User SSH Key",
-      "description": "User's SSH key to connect to client node",
-      "type": "string",
-      "default": "",
-      "changeable": true,
-      "required": "no"
-    }, {
       "key": "controller.manager.params",
       "label": "kube-controller-manager parameters",
       "description": "parameters for kube controller manager",
@@ -664,6 +656,14 @@
       "description": "parameters for kubelet",
       "type": "string",
       "multiline": true,
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "user.ssh.key",
+      "label": "User SSH Key",
+      "description": "User's SSH key to connect to client node",
+      "type": "string",
       "default": "",
       "changeable": true,
       "required": "no"
