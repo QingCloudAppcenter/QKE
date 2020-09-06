@@ -57,7 +57,7 @@ docker_images_k8s:
 - kubesphere/node-disk-manager:0.5.0
 - kubesphere/node-disk-operator:0.5.0
 - kubesphere/pause:3.1
-- kubesphere/pause:3.2  (k8s版本大于v1.18)
+- kubesphere/pause:3.2
 - kubesphere/provisioner-localpv:1.10.0
 docker_images_ks:
 - alpine:3.10.4
@@ -192,7 +192,7 @@ upgrade_docker_images_k8s:
 - kubesphere/linux-utils:1.10.0
 - kubesphere/node-disk-manager:0.5.0
 - kubesphere/node-disk-operator:0.5.0
-- kubesphere/pause:3.2  (k8s版本大于v1.18)
+- kubesphere/pause:3.2
 - kubesphere/provisioner-localpv:1.10.0
 
 upgrade_docker_images_ks:
