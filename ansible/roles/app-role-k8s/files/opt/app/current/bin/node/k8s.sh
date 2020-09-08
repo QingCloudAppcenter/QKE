@@ -218,6 +218,8 @@ initFirstNode() {
   log --debug "distributing kube.config to worker and client nodes ..."
   distributeKubeConfig
   if $IS_HA_CLUSTER; then
+    log --debug "wait all master node joined"
+    waitAllMasterNodesJoined
     log --debug "waiting kube lb is created ..."
     waitKubeLbJobDone
     log --debug "applying lb ..."
@@ -263,6 +265,8 @@ initOtherNode() {
     retry 3 1 0 bash $JOIN_CMD_FILE
   fi
   if $IS_HA_CLUSTER; then
+    log --debug "wait all master node joined"
+    waitAllMasterNodesJoined
     log --debug "preparing apiserver lb file ..."
     if [ -n "$joining" ]; then scp $firstMasterIp:$APISERVER_LB_FILE $APISERVER_LB_FILE; else retry 600 1 0 test -s $APISERVER_LB_FILE; fi
     log --debug "updating lb ip ..."
@@ -344,7 +348,7 @@ generateJoinCmd() {
 waitLbIpAppliedToAllMasters() {
   local lbIp; lbIp="$(getLbIpFromFile)" || return $EC_IAAS_FAILED
   local master; for master in $(getColumns $INDEX_NODE_IP "$STABLE_MASTER_NODES"); do
-    retry 30 1 0 checkLbIpAppliedToMaster $lbIp $master
+    retry 180 1 0 checkLbIpAppliedToMaster $lbIp $master
   done
 }
 
@@ -371,6 +375,10 @@ waitAllMasterNodesUpgradedAndReady() {
 
 waitAllNodesUpgradedAndReady() {
   retry 600 1 0 checkNodeStats '$2=="Ready"&&$5=="v'$K8S_VERSION'"'
+}
+
+waitAllMasterNodesJoined(){
+  retry 600 2 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 checkNodeStats() {
@@ -599,7 +607,7 @@ setUpKubeLb() {
   local -r instanceIds="$(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $JOINING_MASTER_NODES)"
   iaasAddLbBackends $listener $instanceIds
   iaasApplyLb $lbId
-  retry 30 1 0 checkLbApplied $lbId
+  retry 180 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   saveLbFile $lbId/$lbIp
 }
