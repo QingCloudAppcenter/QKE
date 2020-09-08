@@ -13,6 +13,10 @@ EC_OVERLAY_ERR
 "
 
 initNode() {
+  if ! $IS_UPGRADING_FROM_V2; then
+    echo "root:${CLUSTER_ID:?password is required}" | chpasswd
+    chage -d 0 root
+  fi
   _initNode
   mkdir -p /data/kubernetes
   ln -snf /data/kubernetes /etc/kubernetes
@@ -23,7 +27,6 @@ initNode() {
 }
 
 initCluster() {
-  echo "root:${CLUSTER_ID:?password is required}" | chpasswd
   _initCluster
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG

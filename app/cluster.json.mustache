@@ -35,6 +35,11 @@
       "mount_point": "/upgrade",
       "mount_options": "defaults,noatime",
       "filesystem": "ext4"
+    }, {
+      "mount_role": "node_gpu",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4"
     }]
   }, {
     "container":{
@@ -86,7 +91,7 @@
     "services": {
       "start": {
         "order": 1,
-        "cmd": "printf '%s\\n%s\\n' 'name: ANSIBLE_CALLBACK_WHITELIST' 'value: profile_tasks' | yq p - spec.template.spec.containers[0].env[+] | yq m -i -d5 /opt/app/current/conf/k8s/ks-installer-3.0.0.yml -; appctl start",
+        "cmd": "appctl start",
         "timeout": 1200
       },
       "init": {
@@ -306,6 +311,12 @@
       "restart": {
         "cmd": "appctl restart"
       },
+      "upgrade": {
+        "order": 1,
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi'",
+        "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
+        "timeout": 10800
+      },
       "docker_prune": {
         "type": "custom",
         "cmd": "appctl runDockerPrune",
@@ -319,7 +330,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-12x61yio",
+      "image": "img-wkquvcpm",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},

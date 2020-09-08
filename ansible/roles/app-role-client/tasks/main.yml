@@ -19,22 +19,6 @@
       APISERVER_LB_FILE=/data/appctl/data/apiserver-lb
       KUBE_CONFIG=/data/kubernetes/admin.conf
 
-- name: set up password
-  include_role:
-    name: set-passwd-1.0.0
-  loop:
-  - username: ubuntu
-    password: k8s
-    requires_change_pwd: "{{ target_env != 'dev' }}"
-  - username: root
-    password: k8s
-    requires_change_pwd: "{{ target_env != 'dev' }}"
-  loop_control:
-    loop_var: vm_user
-
-- name: allow ssh by password
-  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PasswordAuthentication' line='PasswordAuthentication yes'
-
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:

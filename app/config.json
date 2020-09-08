@@ -121,7 +121,7 @@
         "label": "volume size",
         "description": "The volume size for each instance",
         "type": "integer",
-        "default": 200,
+        "default": 80,
         "min": 40,
         "max": 2000,
         "step": 10,
@@ -615,17 +615,9 @@
       "changeable": true,
       "required": "no"
     }, {
-      "key": "user.ssh.key",
-      "label": "User SSH Key",
-      "description": "User's SSH key to connect to client node",
-      "type": "string",
-      "default": "",
-      "changeable": true,
-      "required": "no"
-    }, {
       "key": "controller.manager.params",
-      "label": "Controller Manager parameters",
-      "description": "parameters for controller manager",
+      "label": "kube-controller-manager parameters",
+      "description": "parameters for kube controller manager",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -633,8 +625,8 @@
       "required": "no"
     }, {
       "key": "apiserver.params",
-      "label": "Apiserver Parameters",
-      "description": "parameters for apiserver ",
+      "label": "kube-apiserver parameters",
+      "description": "parameters for kube apiserver",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -642,8 +634,8 @@
       "required": "no"
     }, {
       "key": "scheduler.params",
-      "label": "Scheduler Parameters",
-      "description": "parameters for scheduler",
+      "label": "kube-scheduler parameters",
+      "description": "parameters for kube scheduler",
       "type": "string",
       "multiline": true,
       "default": "",
@@ -651,7 +643,7 @@
       "required": "no"
     }, {
       "key": "proxy.iptables.params",
-      "label": "kube-proxy iptables Parameters",
+      "label": "kube-proxy iptables parameters",
       "description": "parameters for kube-proxy iptables",
       "type": "string",
       "multiline": true,
@@ -661,9 +653,17 @@
     }, {
       "key": "kubelet.params",
       "label": "Kubelet Parameters",
-      "description": "kubelet parameters",
+      "description": "parameters for kubelet",
       "type": "string",
       "multiline": true,
+      "default": "",
+      "changeable": true,
+      "required": "no"
+    }, {
+      "key": "user.ssh.key",
+      "label": "User SSH Key",
+      "description": "User's SSH key to connect to client node",
+      "type": "string",
       "default": "",
       "changeable": true,
       "required": "no"

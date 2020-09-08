@@ -1,16 +1,16 @@
 app_version: 3.0.0
 gcr_mirror: kubesphere
-etcd_version: 3.2.24
-cni_version: 0.7.5
+etcd_version: 3.3.12
+cni_version: 0.8.6
 cri_version: 1.13.0
 k8s_version: 1.17.9
-flannel_version: 0.11.0
-coredns_version: 1.6.0
-calico_version: 3.7.3
+flannel_version: 0.12.0
+coredns_version: 1.6.9
+calico_version: 3.15.1
 qingcloud_csi_version: 1.2.2
 qingcloud_ccm_version: 1.4.4
 ks_version: 3.0.0
-helm_version: 3.2.4
+helm_version: 3.2.1
 helm_stable_repo: https://charts.kubesphere.io/mirror
 helm_main_repo: https://charts.kubesphere.io/main
 helm_test_repo: https://charts.kubesphere.io/test
@@ -31,25 +31,19 @@ binaries:
 - /opt/helm
 - /opt/k8s
 docker_images_k8s:
-# calico 版本导致的
 - calico/cni:v3.15.1
-- calico/cni:v3.7.3
 - calico/kube-controllers:v3.15.1
-- calico/kube-controllers:v3.7.3
 - calico/node:v3.15.1
-- calico/node:v3.7.3
 - calico/pod2daemon-flexvol:v3.15.1
-# coredns 版本导致的
-- coredns/coredns:1.6.0
 - coredns/coredns:1.6.9
-- kubesphere/flannel:v0.11.0
+- kubesphere/flannel:v0.12.0
 - csiplugin/csi-attacher:v2.1.1
 - csiplugin/csi-node-driver-registrar:v1.2.0
 - csiplugin/csi-provisioner:v1.5.0
 - csiplugin/csi-qingcloud:v1.2.0-rc.3
 - csiplugin/csi-resizer:v0.4.0
 - csiplugin/csi-snapshotter:v2.0.1
-- kubesphere/cloud-controller-manager:v1.4.4
+- kubesphere/cloud-controller-manager:v1.4.5
 - kubesphere/etcd:v3.3.12
 - kubesphere/k8s-dns-node-cache:1.15.12
 - kubesphere/kube-apiserver:v1.17.9
@@ -97,7 +91,7 @@ docker_images_ks:
 - kubespheredev/ks-apiserver:latest
 - kubespheredev/ks-console:latest
 - kubespheredev/ks-controller-manager:latest
-- kubespheredev/ks-installer:latest
+- kubespheredev/ks-installer:v3.0.1-alpha.1
 - kubespheredev/kube-auditing-operator:v0.1.0
 - kubespheredev/kube-auditing-webhook:v0.1.0
 - kubespheredev/kube-events-exporter:v0.1.0
@@ -107,7 +101,7 @@ docker_images_ks:
 - kubespheredev/notification:flyway_v2.1.2
 - kubespheredev/notification:v2.1.2
 - kubesphere/elasticsearch-oss:6.7.0-1
-- kubesphere/etcd:v3.2.18
+- kubesphere/etcd:v3.3.12
 - kubesphere/fluentbit-operator:migrator
 - kubesphere/fluentbit-operator:v0.2.0
 - kubesphere/fluent-bit:v1.4.6    
@@ -120,7 +114,7 @@ docker_images_ks:
 - kubesphere/ks-console:v3.0.0
 - kubesphere/ks-controller-manager:v3.0.0
 - kubesphere/ks-devops:flyway-v3.0.0
-- kubesphere/ks-installer:v3.0.0
+- kubesphere/ks-installer:v3.0.1-alpha.1
 - kubesphere/ks-upgrade:v3.0.0
 - kubesphere/kube-auditing-operator:v0.1.0
 - kubesphere/kube-auditing-webhook:v0.1.0
@@ -188,7 +182,7 @@ upgrade_docker_images_k8s:
 - csiplugin/csi-attacher:v2.1.1
 - csiplugin/csi-node-driver-registrar:v1.2.0
 - csiplugin/csi-provisioner:v1.5.0
-- csiplugin/csi-qingcloud:v1.2.0-rc.3
+- csiplugin/csi-qingcloud:v1.2.6
 - csiplugin/csi-resizer:v0.4.0
 - csiplugin/csi-snapshotter:v2.0.1
 - kubesphere/etcd:v3.3.12
@@ -229,7 +223,7 @@ upgrade_docker_images_ks:
 - kubespheredev/ks-apiserver:latest
 - kubespheredev/ks-console:latest
 - kubespheredev/ks-controller-manager:latest
-- kubespheredev/ks-installer:latest
+- kubespheredev/ks-installer:v3.0.1-alpha.1
 - kubespheredev/kube-auditing-operator:v0.1.0
 - kubespheredev/kube-auditing-webhook:v0.1.0
 - kubespheredev/kube-events-exporter:v0.1.0
@@ -246,7 +240,7 @@ upgrade_docker_images_ks:
 - kubesphere/ks-console:v3.0.0
 - kubesphere/ks-controller-manager:v3.0.0
 - kubesphere/ks-devops:flyway-v3.0.0
-- kubesphere/ks-installer:v3.0.0
+- kubesphere/ks-installer:v3.0.1-alpha.1
 - kubesphere/ks-upgrade:v3.0.0
 - kubesphere/kube-auditing-operator:v0.1.0
 - kubesphere/kube-auditing-webhook:v0.1.0
