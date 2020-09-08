@@ -348,7 +348,7 @@ generateJoinCmd() {
 waitLbIpAppliedToAllMasters() {
   local lbIp; lbIp="$(getLbIpFromFile)" || return $EC_IAAS_FAILED
   local master; for master in $(getColumns $INDEX_NODE_IP "$STABLE_MASTER_NODES"); do
-    retry 180 1 0 checkLbIpAppliedToMaster $lbIp $master
+    retry 30 1 0 checkLbIpAppliedToMaster $lbIp $master
   done
 }
 
@@ -378,7 +378,7 @@ waitAllNodesUpgradedAndReady() {
 }
 
 waitAllMasterNodesJoined(){
-  retry 600 2 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 90 2 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 checkNodeStats() {
@@ -607,7 +607,7 @@ setUpKubeLb() {
   local -r instanceIds="$(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $JOINING_MASTER_NODES)"
   iaasAddLbBackends $listener $instanceIds
   iaasApplyLb $lbId
-  retry 180 1 0 checkLbApplied $lbId
+  retry 120 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   saveLbFile $lbId/$lbIp
 }
