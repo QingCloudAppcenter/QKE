@@ -2,7 +2,6 @@ app_version: 3.0.0
 gcr_mirror: kubesphere
 etcd_version: 3.3.12
 cni_version: 0.8.6
-cri_version: 1.13.0
 k8s_version: 1.17.9
 flannel_version: 0.12.0
 coredns_version: 1.6.9
@@ -26,7 +25,6 @@ upgrade_k8s_images_package: k8s.tgz
 dokcerfs_package: dockerfs.tgz
 archive: /archive
 binaries:
-- /opt/crictl
 - /opt/etcd
 - /opt/helm
 - /opt/k8s

@@ -12,7 +12,7 @@
     opts:
       pkg_name: cni
       pkg_version: "{{ cni_version }}"
-      pkg_url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-amd64-v{{ cni_version }}.tgz
+      pkg_url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-amd64-v{{ cni_version }}.tgz
       pkg_type: tgz
       extracts: yes
       extra_opts: []

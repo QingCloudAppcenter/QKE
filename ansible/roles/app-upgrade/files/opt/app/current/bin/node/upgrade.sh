@@ -31,7 +31,6 @@ backUpFiles() {
   backUpToDir /opt/app/$version/conf/confd/conf.d/ $(find /etc/confd/conf.d -mindepth 1 -maxdepth 1 ! -name cmd.info.toml)
   backUpToDir /opt/app/$version/conf/confd/templates/ $(find /etc/confd/templates -mindepth 1 -maxdepth 1 ! -name cmd.info.tmpl)
   backUpToDir /opt/app/$version/conf/systemd/ /lib/systemd/system/kubelet.service /etc/systemd/system/{etcd.service,kubelet.service.d}
-  backUpToDir /opt/crictl/$version/ /usr/bin/crictl
   backUpToDir /opt/etcd/$version/ /usr/bin/{etcd,etcdctl}
   backUpToDir /opt/k8s-node/$version/node/bin/ /usr/bin/{kubeadm,kubectl,kubelet}
   backUpToDir /opt/helm/$version/ /usr/bin/helm
@@ -50,7 +49,7 @@ setUpFiles() {
   ln -snf /opt/app/current/bin/ctl.sh /usr/bin/appctl
   find /opt/app/current/conf/confd/conf.d/ -name '*.toml' -exec ln -snf {} /etc/confd/conf.d/ \;
   find /opt/app/current/conf/confd/templates/ -name '*.tmpl' -exec ln -snf {} /etc/confd/templates/ \;
-  linkToDir /usr/bin/ /opt/etcd/current/{etcd,etcdctl} /opt/crictl/current/crictl /opt/k8s-client/current/client/bin/kubectl /opt/k8s-node/current/node/bin/{kubeadm,kubectl,kubelet}
+  linkToDir /usr/bin/ /opt/etcd/current/{etcd,etcdctl} /opt/k8s-client/current/client/bin/kubectl /opt/k8s-node/current/node/bin/{kubeadm,kubectl,kubelet}
   linkToDir /usr/local/bin/ /opt/helm/current/helm
   find /opt/yq/current/ -name 'yq*' -exec ln -snf {} /usr/bin/yq \;
   find /opt/jq/current/ -name 'jq*' -exec ln -snf {} /usr/bin/jq \;

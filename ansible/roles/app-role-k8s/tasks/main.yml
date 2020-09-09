@@ -164,7 +164,6 @@
   vars:
     snapshot_sources:
     - /opt/app
-    - /opt/crictl
     - /opt/etcd
     - /opt/k8s-node
     - /opt/helm
