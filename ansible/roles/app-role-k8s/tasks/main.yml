@@ -33,18 +33,20 @@
       pkg_type: yml
   loop:
   - name: calico
+    version: "{{ calico_version }}"
     url: https://docs.projectcalico.org/v{{ calico_version | splitext | first }}/manifests/calico.yaml
   - name: flannel
-    url: https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+    version: "{{ flannel_version }}"
+    url: https://raw.githubusercontent.com/coreos/flannel/v{{ flannel_version }}/Documentation/kube-flannel.yml
   - name: cloud-controller-manager
     version: "{{ qingcloud_ccm_version }}"
     url: https://raw.githubusercontent.com/yunify/qingcloud-cloud-controller-manager/v{{ qingcloud_ccm_version }}/deploy/kube-cloud-controller-manager.yaml
   - name: ks-installer
-    version: "{{ ks_version }}"
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_version }}/deploy/kubesphere-installer.yaml
+    version: "{{ ks_installer_version }}"
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_installer_version }}/deploy/kubesphere-installer.yaml
   - name: ks-config
-    version: "{{ ks_version }}"
-    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_version }}/deploy/cluster-configuration.yaml
+    version: "{{ ks_installer_version }}"
+    url: https://raw.githubusercontent.com/kubesphere/ks-installer/v{{ ks_installer_version }}/deploy/cluster-configuration.yaml
   - name: nodelocaldns
     version: "{{ k8s_version }}"
     url: https://raw.githubusercontent.com/kubernetes/kubernetes/v{{ k8s_version }}/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml
@@ -73,23 +75,19 @@
 
 - name: align calico with offline image version
   replace:
-    path: /opt/app/current/conf/k8s/calico-stable.yml
+    path: /opt/app/current/conf/k8s/calico-{{ calico_version }}.yml
     regexp: '(image:\scalico/[^:]+).+$'
     replace: '\1:v{{ calico_version }}'
 
 - name: align calico with k8s 1.16 api
   replace:
-    path: /opt/app/current/conf/k8s/calico-stable.yml
+    path: /opt/app/current/conf/k8s/calico-{{ calico_version }}.yml
     regexp: 'extensions/v1beta1'
     replace: apps/v1
 
-- name: align calico with k8s 1.16 selector
-  shell: |
-    yq w -i -d21 /opt/app/current/conf/k8s/calico-stable.yml spec.selector.matchLabels.k8s-app calico-kube-controllers
-
 - name: align flannel with offline image version
   replace:
-    path: /opt/app/current/conf/k8s/flannel-stable.yml
+    path: /opt/app/current/conf/k8s/flannel-{{ flannel_version }}.yml
     regexp: '(image:\squay.io/coreos/flannel:v{{ flannel_version }}-amd64)'
     replace: 'image: kubesphere/flannel:v{{ flannel_version }}'
 
@@ -114,24 +112,14 @@
   loop_control:
     loop_var: yml_file
 
-- name: TODO - remove this after ccm released
-  replace:
-    path: /opt/app/current/conf/k8s/{{ yml_file }}
-    regexp: 'kubespheredev/cloud-controller-manager:v.*$'
-    replace: 'kubesphere/cloud-controller-manager:v{{ qingcloud_ccm_version }}'
-  loop:
-  - cloud-controller-manager-{{ qingcloud_ccm_version }}.yml
-  loop_control:
-    loop_var: yml_file
-
 - name: change image pull policy
   replace:
     path: /opt/app/current/conf/k8s/{{ yml_file }}
     regexp: '(imagePullPolicy:).*$'
     replace: '\1 IfNotPresent'
   loop:
-  - ks-installer-{{ ks_version }}.yml
-  - ks-config-{{ ks_version }}.yml
+  - ks-installer-{{ ks_installer_version }}.yml
+  - ks-config-{{ ks_installer_version }}.yml
   loop_control:
     loop_var: yml_file
 
@@ -141,7 +129,10 @@
     content: |
       GCR_MIRROR={{ gcr_mirror }}
       K8S_VERSION={{ k8s_version }}
+      CALICO_VERSION={{ calico_version }}
+      FLANNEL_VERSION={{ flannel_version }}
       KS_VERSION={{ ks_version }}
+      KS_INSTALLER_VERSION={{ ks_installer_version }}
       COREDNS_VERSION={{ coredns_version }}
       HELM_VERSION={{ helm_version }}
       NVIDIA_PLUGIN_VERSION={{ nvidia_plugin_version }}

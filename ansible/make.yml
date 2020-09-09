@@ -2,7 +2,7 @@
 - name: pull docker images
   hosts: builder
   roles:
-  - docker-1.0.6
+  - docker-1.0.7
   - docker-images
 
 - hosts: k8s-client,k8s-node,gpu-node
@@ -25,7 +25,7 @@
     target_env: "{{ lookup('env', 'target') }}"
   roles:
   - qingcloud-cli-1.0.5
-  - docker-1.0.6
+  - docker-1.0.7
   - etcd-1.0.9
   - k8s-node
   - lbcli

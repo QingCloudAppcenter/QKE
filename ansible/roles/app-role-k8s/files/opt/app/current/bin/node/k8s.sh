@@ -421,8 +421,9 @@ upgradeCniConf() {
 }
 
 setUpNetwork() {
-  sed "s@192\.168\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/calico-stable.yml > /opt/app/current/conf/k8s/calico.yml
-  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/flannel-stable.yml > /opt/app/current/conf/k8s/flannel.yml
+  sed -r "s@192\.168\.0\.0/16@$POD_SUBNET@; s@# (- name: CALICO_IPV4POOL_CIDR)@\1@; s@# (  value: \"$POD_SUBNET\")@\1@" \
+      /opt/app/current/conf/k8s/calico-$CALICO_VERSION.yml > /opt/app/current/conf/k8s/calico.yml
+  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/flannel-$FLANNEL_VERSION.yml > /opt/app/current/conf/k8s/flannel.yml
   runKubectl apply -f /opt/app/current/conf/k8s/$NET_PLUGIN.yml
 }
 
@@ -502,7 +503,7 @@ launchKs() {
 
   ksRunInstaller() {
     if $IS_UPGRADING_FROM_V2; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
-    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_INSTALLER_VERSION.yml
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
   }
@@ -518,7 +519,7 @@ buildKsDynamicConf() {
 }
 
 buildKsConf() {
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_INSTALLER_VERSION.yml
   buildKsDynamicConf | yq m - $ksCfgDefaultFile
 }
 
