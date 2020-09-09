@@ -531,7 +531,7 @@
     }, {
       "key": "cluster_port_range",
       "label": "Port range of each node",
-      "description": "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range.",
+      "description": "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range, it is important to include 30880 port when `Port range of each node` is `true`.",
       "type": "string",
       "default": "30000-32767",
       "pattern": "^\\d+-\\d+$",
