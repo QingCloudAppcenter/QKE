@@ -3,6 +3,8 @@
   set_fact:
     src_data_path: "/root/data"
     local_path: "{{ local_images_path }}"
+    all_k8s_images: "{{ docker_images_k8s + docker_images_k8s_new}}"
+    all_ks_images: "{{ docker_images_ks + docker_images_ks_new }}"
 
 - name: create data directory if they don't exist
   file:
@@ -97,7 +99,7 @@
     source: pull
     name: "{{ image_name }}"
   loop:
-    "{{ docker_images_k8s }}"
+    "{{ all_k8s_images }}"
   loop_control:
     loop_var: image_name
   when:
@@ -109,7 +111,7 @@
     source: pull
     name: "{{ image_name }}"
   loop:
-    "{{ docker_images_ks }}"
+    "{{ all_ks_images }}"
   loop_control:
     loop_var: image_name
   when:
@@ -120,19 +122,19 @@
   shell: if ! {{ image_package.file_exists | lower }}; then docker save {{ image_package.images_names | join(" ") }} | pigz --stdout --best > {{ src_data_path }}/{{ image_package.package_name }}; fi
   loop:
     - package_name: "{{ ks_images_package }}"
-      images_names: "{{ docker_images_ks }}"
+      images_names: "{{ all_ks_images }}"
       file_exists: "{{ src_ks_result.stat.exists }}"
 
     - package_name: "{{ k8s_images_package }}"
-      images_names: "{{ docker_images_k8s }}"
+      images_names: "{{ all_k8s_images }}"
       file_exists: "{{ src_k8s_result.stat.exists }}"
 
     - package_name: "{{ upgrade_k8s_images_package }}"
-      images_names: "{{ upgrade_docker_images_k8s }}"
+      images_names: "{{ docker_images_k8s_new }}"
       file_exists: "{{ upgrade_src_k8s_result.stat.exists }}"
 
     - package_name: "{{ upgrade_ks_images_package }}"
-      images_names: "{{ upgrade_docker_images_ks }}"
+      images_names: "{{ docker_images_ks_new }}"
       file_exists: "{{ upgrade_src_ks_result.stat.exists }}"
   loop_control:
     loop_var: image_package
