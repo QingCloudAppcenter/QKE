@@ -112,7 +112,7 @@
     "SSD node label": "企业型节点标记",
     "HDD node label": "基础型节点标记",
     "Port range of each node": "NodePort 范围",
-    "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range." : "每个节点可分配的 NodePort 范围，例如 ‘30000-32767’。",
+    "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range, it is important to include 30880 port when `Install KubeSphere` is `true`." : "每个节点可分配的 NodePort 范围，例如 ‘30000-32767’，由于 kubesphere 的对外端口号是 30880，在 `安装 KubeSphere` 为 `true` 的情况下，请保证 30880 在该范围内。",
     "Resource Configuration": "快速配置",
     "standard test": "基础型开发测试环境",
     "high-performance test": "企业型开发测试环境",

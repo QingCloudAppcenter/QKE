@@ -100,9 +100,10 @@ getUpgradeOrder() {
 }
 
 initControlPlane() {
-  log --debug "init phase control-plane all"
+  local component; for component in ${@:-apiserver controller-manager scheduler}; do
+    rotate -m /etc/kubernetes/manifests/kube-$component.yaml
+  done
   runKubeadm init phase control-plane ${@:-all}
-  log --debug "init phase control-plane all end"
 }
 
 upgrade() {
@@ -195,7 +196,7 @@ reloadChanges() {
   isClusterInitialized || return 0
   if $IS_UPGRADING_FROM_V2; then return 0; fi
   local cmd; for cmd in $RELOAD_COMMANDS; do
-    execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|ApiserverArgs)$ ]]; then return 0; fi
+    execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|MasterArgs:apiserver)$ ]]; then return 0; fi
   done
 }
 
@@ -218,6 +219,8 @@ initFirstNode() {
   log --debug "distributing kube.config to worker and client nodes ..."
   distributeKubeConfig
   if $IS_HA_CLUSTER; then
+    log --debug "wait all master node joined"
+    waitAllMasterNodesJoined
     log --debug "waiting kube lb is created ..."
     waitKubeLbJobDone
     log --debug "applying lb ..."
@@ -263,6 +266,8 @@ initOtherNode() {
     retry 3 1 0 bash $JOIN_CMD_FILE
   fi
   if $IS_HA_CLUSTER; then
+    log --debug "wait all master node joined"
+    waitAllMasterNodesJoined
     log --debug "preparing apiserver lb file ..."
     if [ -n "$joining" ]; then scp $firstMasterIp:$APISERVER_LB_FILE $APISERVER_LB_FILE; else retry 600 1 0 test -s $APISERVER_LB_FILE; fi
     log --debug "updating lb ip ..."
@@ -373,6 +378,10 @@ waitAllNodesUpgradedAndReady() {
   retry 600 1 0 checkNodeStats '$2=="Ready"&&$5=="v'$K8S_VERSION'"'
 }
 
+waitAllMasterNodesJoined(){
+  retry 90 2 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+}
+
 checkNodeStats() {
   local nodes="${@:2}"
   local expected; expected="$(getNodeNames ${nodes:-$STABLE_MASTER_NODES $JOINING_MASTER_NODES $STABLE_WORKER_NODES $JOINING_WORKER_NODES} | sort)"
@@ -421,8 +430,9 @@ upgradeCniConf() {
 }
 
 setUpNetwork() {
-  sed "s@192\.168\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/calico-stable.yml > /opt/app/current/conf/k8s/calico.yml
-  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/flannel-stable.yml > /opt/app/current/conf/k8s/flannel.yml
+  sed -r "s@192\.168\.0\.0/16@$POD_SUBNET@; s@# (- name: CALICO_IPV4POOL_CIDR)@\1@; s@# (  value: \"$POD_SUBNET\")@\1@" \
+      /opt/app/current/conf/k8s/calico-$CALICO_VERSION.yml > /opt/app/current/conf/k8s/calico.yml
+  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/flannel-$FLANNEL_VERSION.yml > /opt/app/current/conf/k8s/flannel.yml
   runKubectl apply -f /opt/app/current/conf/k8s/$NET_PLUGIN.yml
 }
 
@@ -502,7 +512,7 @@ launchKs() {
 
   ksRunInstaller() {
     if $IS_UPGRADING_FROM_V2; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
-    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_INSTALLER_VERSION.yml
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
   }
@@ -518,7 +528,7 @@ buildKsDynamicConf() {
 }
 
 buildKsConf() {
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_INSTALLER_VERSION.yml
   buildKsDynamicConf | yq m - $ksCfgDefaultFile
 }
 
@@ -599,7 +609,7 @@ setUpKubeLb() {
   local -r instanceIds="$(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $JOINING_MASTER_NODES)"
   iaasAddLbBackends $listener $instanceIds
   iaasApplyLb $lbId
-  retry 30 1 0 checkLbApplied $lbId
+  retry 120 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   saveLbFile $lbId/$lbIp
 }
@@ -652,7 +662,7 @@ updateLbIp() {
       yq r -d1 $KUBEADM_CONFIG $objPath | (sed "/$marker/d"; echo "- $lbIp $marker") | yq p - $objPath > $certSansFile
       yq m -x -i -d1 $KUBEADM_CONFIG $certSansFile
       updateApiserverCerts
-      reloadMasterProcs
+      reloadKubeMasterProcs
     fi
   fi
 }
@@ -677,21 +687,23 @@ reloadKsConf() {
   fi
 }
 
+reloadKubeMasterArgs() {
+  if isMaster; then
+    initControlPlane $@
+    if isFirstMaster; then
+      runKubeadm init phase upload-config kubeadm
+    fi
+  fi
+}
+
 reloadKubeApiserverCerts() {
   if isMaster; then updateApiserverCerts; fi
 }
 
-reloadKubeApiserverArgs() {
+reloadKubeMasterProcs() {
   isMaster || return 0
-  rotate /etc/kubernetes/manifests/kube-apiserver.yaml
-  initControlPlane apiserver
-  if isFirstMaster; then runKubeadm init phase upload-config kubeadm; fi
-}
-
-reloadMasterProcs() {
-  isMaster || return 0
-  local allProcs="kube-apiserver kube-controller-manager kube-scheduler"
-  local proc; for proc in ${@:-$allProcs}; do
+  local component; for component in ${@:-apiserver controller-manager scheduler}; do
+    local proc=kube-$component
     kill -s SIGHUP $(pidof $proc) && retry 5 1 0 pidof $proc || log "WARN: failed to SIGHUP to '$proc'."
   done
 }
@@ -707,7 +719,6 @@ reloadKubeLogLevel() {
   runKubeadm init phase upload-config kubeadm
   retry 60 1 0 applyKubeProxyLogLevel
   sleep $(( $RANDOM % 5 + 1 ))
-  rotate $(find /etc/kubernetes/manifests -mindepth 1 -maxdepth 1 -name '*.yaml')
   initControlPlane
 }
 
@@ -772,7 +783,7 @@ getCertValidDays() {
 
 renewCerts() {
   local crt; for crt in ${@:-admin.conf apiserver apiserver-kubelet-client controller-manager.conf front-proxy-client scheduler.conf}; do kubeadm alpha certs renew $crt; done
-  reloadMasterProcs
+  reloadKubeMasterProcs
   if isFirstMaster; then distributeKubeConfig; fi
 }
 

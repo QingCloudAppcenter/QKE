@@ -12,7 +12,7 @@
     opts:
       pkg_name: cni
       pkg_version: "{{ cni_version }}"
-      pkg_url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-amd64-v{{ cni_version }}.tgz
+      pkg_url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-amd64-v{{ cni_version }}.tgz
       pkg_type: tgz
       extracts: yes
       extra_opts: []
@@ -20,21 +20,6 @@
       bin_links:
       - src: ''
         dest: /opt/cni/bin
-
-- name: install crictl
-  include_role:
-    name: install-1.0.5
-  vars:
-    opts:
-      pkg_name: crictl
-      pkg_version: "{{ cri_version }}"
-      pkg_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_version }}/crictl-v{{ cri_version }}-linux-amd64.tar.gz
-      pkg_type: tgz
-      extracts: yes
-      extra_opts: []
-      creates: crictl
-      bin_links:
-      - src: crictl
 
 - name: install k8s
   include_role:
