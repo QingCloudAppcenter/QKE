@@ -100,9 +100,10 @@ getUpgradeOrder() {
 }
 
 initControlPlane() {
-  log --debug "init phase control-plane all"
+  local component; for component in ${@:-apiserver controller-manager scheduler}; do
+    rotate -m /etc/kubernetes/manifests/kube-$component.yaml
+  done
   runKubeadm init phase control-plane ${@:-all}
-  log --debug "init phase control-plane all end"
 }
 
 upgrade() {
@@ -195,7 +196,7 @@ reloadChanges() {
   isClusterInitialized || return 0
   if $IS_UPGRADING_FROM_V2; then return 0; fi
   local cmd; for cmd in $RELOAD_COMMANDS; do
-    execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|ApiserverArgs)$ ]]; then return 0; fi
+    execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|MasterArgs:apiserver)$ ]]; then return 0; fi
   done
 }
 
@@ -661,7 +662,7 @@ updateLbIp() {
       yq r -d1 $KUBEADM_CONFIG $objPath | (sed "/$marker/d"; echo "- $lbIp $marker") | yq p - $objPath > $certSansFile
       yq m -x -i -d1 $KUBEADM_CONFIG $certSansFile
       updateApiserverCerts
-      reloadMasterProcs
+      reloadKubeMasterProcs
     fi
   fi
 }
@@ -686,21 +687,23 @@ reloadKsConf() {
   fi
 }
 
+reloadKubeMasterArgs() {
+  if isMaster; then
+    initControlPlane $@
+    if isFirstMaster; then
+      runKubeadm init phase upload-config kubeadm
+    fi
+  fi
+}
+
 reloadKubeApiserverCerts() {
   if isMaster; then updateApiserverCerts; fi
 }
 
-reloadKubeApiserverArgs() {
+reloadKubeMasterProcs() {
   isMaster || return 0
-  rotate /etc/kubernetes/manifests/kube-apiserver.yaml
-  initControlPlane apiserver
-  if isFirstMaster; then runKubeadm init phase upload-config kubeadm; fi
-}
-
-reloadMasterProcs() {
-  isMaster || return 0
-  local allProcs="kube-apiserver kube-controller-manager kube-scheduler"
-  local proc; for proc in ${@:-$allProcs}; do
+  local component; for component in ${@:-apiserver controller-manager scheduler}; do
+    local proc=kube-$component
     kill -s SIGHUP $(pidof $proc) && retry 5 1 0 pidof $proc || log "WARN: failed to SIGHUP to '$proc'."
   done
 }
@@ -716,7 +719,6 @@ reloadKubeLogLevel() {
   runKubeadm init phase upload-config kubeadm
   retry 60 1 0 applyKubeProxyLogLevel
   sleep $(( $RANDOM % 5 + 1 ))
-  rotate $(find /etc/kubernetes/manifests -mindepth 1 -maxdepth 1 -name '*.yaml')
   initControlPlane
 }
 
@@ -781,7 +783,7 @@ getCertValidDays() {
 
 renewCerts() {
   local crt; for crt in ${@:-admin.conf apiserver apiserver-kubelet-client controller-manager.conf front-proxy-client scheduler.conf}; do kubeadm alpha certs renew $crt; done
-  reloadMasterProcs
+  reloadKubeMasterProcs
   if isFirstMaster; then distributeKubeConfig; fi
 }
 
