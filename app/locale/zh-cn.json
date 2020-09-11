@@ -123,7 +123,7 @@
     "Set host aliases": "自定义添加到 /etc/hosts 文件的记录，比如 '192.168.2.2 host1,192.168.2.3 host2'，多条记录用逗号分割",
     "The insecure Docker registry, use a blank to split multi registry": "需要通过非安全的 HTTP 或不受信任的 HTTPS 访问的 Docker 仓库，比如 mirror.harbor.local，多个地址通过空格切分",
     "KubeSphere Dashboard EIP ID": "KubeSphere 控制台 EIP",
-    "IP id for exposing KubeSphere Dashboard. If not installed KubeSphere, Shall not set this field.": "如果希望通过公网 LoadBalancer 方式访问 KubeSphere 控制台，可在此选择可用的 EIP，将为此 EIP 自动创建一个负载均衡器并绑定；请保证至少有一个工作节点，否则无法通过此方法访问 KubeSphere 控制台；如果没安装 KubeSphere，无需设置此参数",
+    "IP id for exposing KubeSphere Dashboard. If not installed KubeSphere, Shall not set this field.": "如果希望通过公网 LoadBalancer 方式访问 KubeSphere 控制台，可在此选择可用的 EIP，将为此 EIP 自动创建一个负载均衡器并绑定；请保证集群至少有一个工作节点，否则无法通过此方法访问 KubeSphere 控制台；如果没安装 KubeSphere，无需设置此参数",
     "Enable Web Console": "开启文件查看器",
     "logging files can be viewed from the web console": "用户可通过文件查看器查看、上传或下载审计规则文件和日志文件，在浏览器里通过 http://[主节点 IP] 访问",
     "Web Console Username": "文件查看器用户名",
