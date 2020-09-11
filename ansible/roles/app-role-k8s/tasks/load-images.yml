@@ -11,9 +11,7 @@
     dest: "{{ config_path }}"
     content: |
         {
-            "registry-mirrors": ["{{ private_registry_url }}"],
-            "exec-opts": ["native.cgroupdriver=systemd"],
-            "storage-driver": "overlay2"
+            "registry-mirrors": ["{{ private_registry_url }}"]
         }
 
 - name: run docker server
