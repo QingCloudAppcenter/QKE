@@ -28,7 +28,7 @@ generateDockerLayerLinks() {
 initNode() {
   _initNode
   generateDockerLayerLinks
-  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests} /data/var/lib/etcd
+  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests/backup} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
@@ -100,8 +100,10 @@ getUpgradeOrder() {
 }
 
 initControlPlane() {
+  local -r baseDir=/etc/kubernetes/manifests
   local component; for component in ${@:-apiserver controller-manager scheduler}; do
-    rotate -m /etc/kubernetes/manifests/kube-$component.yaml
+    cp $baseDir/kube-$component.yaml $baseDir/backup/
+    rotate -m $baseDir/backup/kube-$component.yaml
   done
   runKubeadm init phase control-plane ${@:-all}
 }
