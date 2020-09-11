@@ -5,6 +5,7 @@
     local_path: "{{ local_images_path }}"
     all_k8s_images: "{{ docker_images_k8s + docker_images_k8s_new}}"
     all_ks_images: "{{ docker_images_ks + docker_images_ks_new }}"
+    docker_config_path: /etc/docker/daemon.json
 
 - name: create data directory if they don't exist
   file:
@@ -72,6 +73,16 @@
   set_fact:
     src_exists: "{% if src_k8s_result.stat.exists and src_ks_result.stat.exists and upgrade_src_k8s_result.stat.exists and upgrade_src_ks_result.stat.exists %}True{% else %}False{% endif %}"
     local_exists: "{% if local_k8s_result.stat.exists and local_ks_result.stat.exists and upgrade_local_k8s_result.stat.exists and upgrade_local_ks_result.stat.exists %}True{% else %}False{% endif %}"
+
+- name: update docker daemon.json
+  copy:
+    dest: "{{ docker_config_path }}"
+    content: |
+        {
+            "registry-mirrors": ["{{ private_registry_url }}"],
+            "exec-opts": ["native.cgroupdriver=systemd"],
+            "storage-driver": "overlay2"
+        }
 
 - name: start docker service
   systemd:

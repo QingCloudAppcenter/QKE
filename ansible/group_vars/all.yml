@@ -136,7 +136,6 @@ docker_images_ks_new:
 - kubesphere/prometheus-operator:v0.38.3
 - kubesphere/tower:v0.1.0
 - mirrorgooglecontainers/defaultbackend-amd64:1.4
-- ns/jnlp-slave:3.27-1
 - openpitrix/generate-kubeconfig:v0.5.0
 - openpitrix/openpitrix:flyway-v0.5.0
 - openpitrix/openpitrix:v0.5.0
