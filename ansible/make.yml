@@ -1,6 +1,8 @@
 ---
 - name: pull docker images
   hosts: builder
+  vars:
+    target_env: "{{ lookup('env', 'target') }}"
   roles:
   - docker-1.0.7
   - docker-images
