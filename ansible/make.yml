@@ -13,7 +13,7 @@
   - disable-apt-jobs-1.0.0
   - disable-motd-1.0.0
   - app-agent-1.0.6
-  - appctl-1.2.2
+  - appctl-1.2.3
   - arping-1.0.5
   - jq-1.0.9
   - yq-1.0.6
@@ -26,7 +26,7 @@
   roles:
   - qingcloud-cli-1.0.5
   - docker-1.0.7
-  - etcd-1.0.9
+  - etcd-1.1.0
   - k8s-node
   - lbcli
   - app-role-k8s

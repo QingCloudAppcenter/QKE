@@ -1,7 +1,7 @@
 ---
 - name: install confd files
   include_role:
-    name: confd-files-1.0.8
+    name: confd-files-1.0.9
 
 - name: copy binaries
   copy:
