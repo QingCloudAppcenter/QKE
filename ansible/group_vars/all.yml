@@ -103,6 +103,7 @@ docker_images_ks_new:
 - jaegertracing/jaeger-collector:1.17
 - jaegertracing/jaeger-operator:1.17.1
 - jaegertracing/jaeger-query:1.17
+- jenkins/jnlp-slave:3.27-1
 - jimmidyson/configmap-reload:v0.3.0
 - kubesphere/alert-adapter:v3.0.0
 - kubesphere/alerting-dbinit:v3.0.0
