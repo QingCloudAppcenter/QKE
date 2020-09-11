@@ -622,7 +622,8 @@
       "multiline": true,
       "default": "",
       "changeable": true,
-      "required": "no"
+      "required": "no",
+      "pattern": "^$|^[a-z][a-z0-9-]*: .+$"
     }, {
       "key": "apiserver.params",
       "label": "kube-apiserver parameters",
@@ -631,7 +632,8 @@
       "multiline": true,
       "default": "",
       "changeable": true,
-      "required": "no"
+      "required": "no",
+      "pattern": "^$|^[a-z][a-z0-9-]*: .+$"
     }, {
       "key": "scheduler.params",
       "label": "kube-scheduler parameters",
@@ -640,7 +642,8 @@
       "multiline": true,
       "default": "",
       "changeable": true,
-      "required": "no"
+      "required": "no",
+      "pattern": "^$|^[a-z][a-z0-9-]*: .+$"
     }, {
       "key": "proxy.iptables.params",
       "label": "kube-proxy iptables parameters",
@@ -649,7 +652,8 @@
       "multiline": true,
       "default": "",
       "changeable": true,
-      "required": "no"
+      "required": "no",
+      "pattern": "^$|^[a-z][a-zA-Z0-9-]*: .+$"
     }, {
       "key": "kubelet.params",
       "label": "Kubelet Parameters",
@@ -658,7 +662,8 @@
       "multiline": true,
       "default": "",
       "changeable": true,
-      "required": "no"
+      "required": "no",
+      "pattern": "^$|^--[a-z][a-z0-9-]*: .+$"
     }, {
       "key": "user.ssh.key",
       "label": "User SSH Key",
