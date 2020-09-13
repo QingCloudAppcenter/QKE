@@ -108,6 +108,7 @@ docker_images_ks_new:
 - kubesphere/alert-adapter:v3.0.0
 - kubesphere/alerting-dbinit:v3.0.0
 - kubesphere/alerting:v2.1.2
+- kubesphere/fluentbit-operator:migrator
 - kubesphere/fluentbit-operator:v0.2.0
 - kubesphere/fluent-bit:v1.4.6
 - kubesphere/jenkins-uc:v3.0.0
