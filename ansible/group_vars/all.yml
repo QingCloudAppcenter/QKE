@@ -85,6 +85,7 @@ docker_images_k8s_new:
 - csiplugin/csi-resizer:v0.4.0
 - csiplugin/csi-snapshotter:v2.0.1
 - csiplugin/snapshot-controller:v2.0.1
+- nvidia/k8s-device-plugin:1.0.0-beta4
 - kubesphere/flannel:v0.12.0
 - kubesphere/kube-apiserver:v1.17.9
 - kubesphere/kube-controller-manager:v1.17.9
