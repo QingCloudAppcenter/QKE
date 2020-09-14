@@ -101,6 +101,7 @@ docker_images_ks_new:
 - istio/sidecar_injector:1.4.8
 - jaegertracing/jaeger-agent:1.17
 - jaegertracing/jaeger-collector:1.17
+- jaegertracing/jaeger-es-index-cleaner:1.17.1
 - jaegertracing/jaeger-operator:1.17.1
 - jaegertracing/jaeger-query:1.17
 - jenkins/jnlp-slave:3.27-1
