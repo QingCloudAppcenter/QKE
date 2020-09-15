@@ -9,7 +9,7 @@ calico_version: 3.15.1
 qingcloud_csi_version: 1.2.6
 qingcloud_ccm_version: 1.4.5
 ks_version: 3.0.0
-ks_installer_version: 3.0.1-alpha.1
+ks_installer_version: 3.0.1-alpha.2
 helm_version: 3.2.1
 helm_stable_repo: https://charts.kubesphere.io/mirror
 helm_main_repo: https://charts.kubesphere.io/main
@@ -118,7 +118,7 @@ docker_images_ks_new:
 - kubesphere/ks-console:v3.0.0
 - kubesphere/ks-controller-manager:v3.0.0
 - kubesphere/ks-devops:flyway-v3.0.0
-- kubesphere/ks-installer:v3.0.0
+- kubesphere/ks-installer:v3.0.1-alpha.2
 - kubesphere/ks-upgrade:v3.0.0
 - kubesphere/kube-auditing-operator:v0.1.0
 - kubesphere/kube-auditing-webhook:v0.1.0
