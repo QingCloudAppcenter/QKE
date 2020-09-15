@@ -112,6 +112,16 @@
   loop_control:
     loop_var: yml_file
 
+- name: align image repo and tag
+  replace:
+    path: /opt/app/current/conf/k8s/{{ yml_file }}
+    regexp: '(image:\s[^:]*)'
+    replace: '\1:v{{ ks_installer_version }}'
+  loop:
+  - ks-installer-{{ ks_installer_version }}.yml
+  loop_control:
+    loop_var: yml_file
+
 - name: change image pull policy
   replace:
     path: /opt/app/current/conf/k8s/{{ yml_file }}
