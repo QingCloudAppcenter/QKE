@@ -115,7 +115,7 @@
 - name: align image repo and tag
   replace:
     path: /opt/app/current/conf/k8s/{{ yml_file }}
-    regexp: '(image:\s[^:]*)'
+    regexp: '(image:\s[^:]*):[^:]*$'
     replace: '\1:v{{ ks_installer_version }}'
   loop:
   - ks-installer-{{ ks_installer_version }}.yml
@@ -161,9 +161,9 @@
     path: /etc/kubernetes
     state: absent
 
-- name: load images from localhost
-  include_tasks: load-images.yml
-  when: target_env != 'dev'
+# - name: load images from localhost
+#   include_tasks: load-images.yml
+#   when: target_env != 'dev'
 
 # env=dev 时，会找不到 /var/lib/docker/overlay2/l 目录
 - name: restart docker
