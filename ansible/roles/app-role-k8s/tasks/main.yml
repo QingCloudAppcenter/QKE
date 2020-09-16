@@ -161,9 +161,9 @@
     path: /etc/kubernetes
     state: absent
 
-# - name: load images from localhost
-#   include_tasks: load-images.yml
-#   when: target_env != 'dev'
+- name: load images from localhost
+  include_tasks: load-images.yml
+  when: target_env != 'dev'
 
 # env=dev 时，会找不到 /var/lib/docker/overlay2/l 目录
 - name: restart docker

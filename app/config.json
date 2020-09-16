@@ -653,7 +653,7 @@
       "default": "",
       "changeable": true,
       "required": "no",
-      "pattern": "^$|^[a-z][a-z0-9-]*: .+(\\n[a-z][a-z0-9-]*: .+)*$"
+      "pattern": "^$|^[a-z][a-zA-Z0-9-]*: .+(\\n[a-z][a-zA-Z0-9-]*: .+)*$"
     }, {
       "key": "kubelet.params",
       "label": "Kubelet Parameters",
