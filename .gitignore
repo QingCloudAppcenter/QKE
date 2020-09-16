@@ -5,3 +5,5 @@ appcenter-cli
 __generated
 .idea
 *.zip
+*autoUpdateImage
+.vscode/settings.json

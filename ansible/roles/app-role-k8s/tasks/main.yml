@@ -115,7 +115,7 @@
 - name: align image repo and tag
   replace:
     path: /opt/app/current/conf/k8s/{{ yml_file }}
-    regexp: '(image:\s[^:]*)'
+    regexp: '(image:\s[^:]*):[^:]*$'
     replace: '\1:v{{ ks_installer_version }}'
   loop:
   - ks-installer-{{ ks_installer_version }}.yml
