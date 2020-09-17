@@ -74,7 +74,7 @@ waitKsReady() {
 }
 
 waitKsUpgraded() {
-  retry 18000 2 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
+  retry 18000 2 $EC_KS_INSTALL_FAILED checkKsInstallerDone
 }
 
 keepKsInstallerRunningTillDone() {
@@ -90,10 +90,14 @@ keepKsInstallerRunningTillDone() {
 
 checkKsInstallerDone() {
   local podName; podName="$(getKsInstallerPodName)" || return $EC_KS_INSTALL_POD_ERR
-  local output; output="$(runKubectl -n kubesphere-system logs --tail 90 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
+  local output; output="$(runKubectl -n kubesphere-system logs --tail 30 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
-  echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
-  echo "$output" | grep -oF "total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT" || return $EC_KS_INSTALL_DONE_WITH_ERR
+  if $IS_UPGRADING_FROM_V2; then
+    echo "$output" |grep "^PLAY RECAP **" -A5 |grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
+  else
+    echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
+    echo "$output" | grep -oF "total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT" || return $EC_KS_INSTALL_DONE_WITH_ERR
+  fi
 }
 
 getKsInstallerPodName() {
