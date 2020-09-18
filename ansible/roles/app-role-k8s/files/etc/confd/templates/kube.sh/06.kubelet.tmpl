@@ -7,4 +7,5 @@ KUBELET_EXTRA_ARGS="$(xargs <<< "
 {{- end }}
 --v={{ getv "/env/kube_log_level" }}
 {{ replace (join (getvs "/env/kubelet.params") "") "\r" "" -1 }}
+")"
 KUBELET_EOF
