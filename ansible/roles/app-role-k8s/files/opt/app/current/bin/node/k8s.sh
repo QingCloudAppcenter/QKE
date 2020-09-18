@@ -683,11 +683,11 @@ distributeFile() {
 }
 
 reloadKsEip() {
-  if $KS_ENABLED && isMaster; then runKubectlPatch -n kubesphere-system svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
+  if $KS_ENABLED && isFirstMaster; then runKubectlPatch -n kubesphere-system svc ks-console -p "$(cat /opt/app/current/conf/k8s/ks-console-svc.yml)"; fi
 }
 
 reloadKsConf() {
-  if $KS_ENABLED && isMaster; then
+  if $KS_ENABLED && isFirstMaster; then
     runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p "$(buildKsDynamicConf)"
   fi
 }
