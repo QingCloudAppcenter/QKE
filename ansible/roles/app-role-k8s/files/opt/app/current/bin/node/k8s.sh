@@ -560,7 +560,7 @@ checkKsInstallerDone() {
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
   local endStrings="total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT"
-  $IS_UPGRADING_FROM_V2 && endStrings=" failed=0 "
+  if $IS_UPGRADING_FROM_V2; then endStrings=" failed=0 "; fi
   echo "$output" | grep "Welcome to KubeSphere!" -B4 | grep -oF "$endStrings" || return $EC_KS_INSTALL_DONE_WITH_ERR
 }
 
