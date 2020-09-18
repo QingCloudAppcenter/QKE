@@ -74,7 +74,7 @@ waitKsReady() {
 }
 
 waitKsUpgraded() {
-  retry 18000 2 $EC_KS_INSTALL_FAILED checkKsInstallerDone
+  retry 18000 2 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
 }
 
 keepKsInstallerRunningTillDone() {
