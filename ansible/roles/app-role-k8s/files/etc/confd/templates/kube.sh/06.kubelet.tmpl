@@ -6,6 +6,5 @@ KUBELET_EXTRA_ARGS="$(xargs <<< "
 --register-with-taints=nvidia.com/gpu=true:NoSchedule
 {{- end }}
 --v={{ getv "/env/kube_log_level" }}
-{{ replace (replace (join (getvs "/env/kubelet.params") "") "\r" "" -1) "\n" "\n    " -1 }}
-")"
+{{ replace (join (getvs "/env/kubelet.params") "") "\r" "" -1 }}
 KUBELET_EOF
