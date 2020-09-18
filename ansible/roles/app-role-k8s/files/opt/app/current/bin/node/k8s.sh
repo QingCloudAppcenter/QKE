@@ -269,8 +269,10 @@ initOtherNode() {
     retry 3 1 0 bash $JOIN_CMD_FILE
   fi
   if $IS_HA_CLUSTER; then
-    log --debug "wait all master node joined"
-    waitAllMasterNodesJoined
+    if [ -z "$joining" ]; then
+      log --debug "wait all master node joined"
+      waitAllMasterNodesJoined
+    fi
     log --debug "preparing apiserver lb file ..."
     if [ -n "$joining" ]; then scp $firstMasterIp:$APISERVER_LB_FILE $APISERVER_LB_FILE; else retry 600 1 0 test -s $APISERVER_LB_FILE; fi
     log --debug "updating lb ip ..."
