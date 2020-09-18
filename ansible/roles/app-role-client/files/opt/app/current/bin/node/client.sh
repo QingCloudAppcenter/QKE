@@ -90,10 +90,12 @@ keepKsInstallerRunningTillDone() {
 
 checkKsInstallerDone() {
   local podName; podName="$(getKsInstallerPodName)" || return $EC_KS_INSTALL_POD_ERR
-  local output; output="$(runKubectl -n kubesphere-system logs --tail 90 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
+  local output; output="$(runKubectl -n kubesphere-system logs --tail 30 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
-  echo "$output" | grep -oF "total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT" || return $EC_KS_INSTALL_DONE_WITH_ERR
+  local endStrings="total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT"
+  $IS_UPGRADING_FROM_V2 && endStrings=" failed=0 "
+  echo "$output" | grep "Welcome to KubeSphere!" -B4 | grep -oF "$endStrings" || return $EC_KS_INSTALL_DONE_WITH_ERR
 }
 
 getKsInstallerPodName() {
