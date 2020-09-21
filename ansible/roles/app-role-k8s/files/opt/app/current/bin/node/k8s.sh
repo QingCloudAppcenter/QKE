@@ -10,6 +10,8 @@ EC_BELOW_MIN_WORKERS_COUNT
 EC_UNCORDON_FAILED
 EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
+EC_DATA_DISK_SPACE_BEFORE_UPGRADE_ERR
+EC_CLUSTER_STATUS_BEFORE_UPGRADE_ERR
 "
 
 generateDockerLayerLinks() {
@@ -107,6 +109,11 @@ initControlPlane() {
     rotate -m $backupDir/kube-$component.yaml
   done
   runKubeadm init phase control-plane ${@:-all}
+}
+
+preCheckForUpgrade(){
+  if test $(df -m --output=avail /data | sed 1d) -lt 51200; then return $EC_DATA_DISK_SPACE_BEFORE_UPGRADE_ERR; fi
+  checkNodeStats '$2=="Ready"' || return $EC_CLUSTER_STATUS_BEFORE_UPGRADE_ERR
 }
 
 upgrade() {
