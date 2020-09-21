@@ -107,7 +107,7 @@
     "err_code136": "迁移待删除节点上的工作负载时出错，已尝试回退此节点的状态但执行 kubectl uncordon 时出错，请检查主节点的 kube-apiserver 服务是否正常，可以在服务稳定后重新尝试删除节点，如需协助请工单联系",
     "err_code137": "请勿删除主节点",
     "err_code150": "检测到某些节点没有足够的可用磁盘空间，请确保所有 k8s 节点至少有 50G 空闲磁盘空间再尝试升级",
-    "err_code151": "检测到集群节点状态异常，请保证节点状态都为 ready，再次尝试升级",
+    "err_code151": "请确保所有节点状态均为 Ready 再升级",
     "network plugin": "网卡插件",
     "Choose a network plugin": "选择网卡插件",
     "SSD node label": "企业型节点标记",
