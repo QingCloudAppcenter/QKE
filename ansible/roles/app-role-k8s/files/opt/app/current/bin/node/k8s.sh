@@ -376,11 +376,11 @@ waitAllNodesUpgraded() {
 }
 
 waitAllMasterNodesUpgradedAndReady() {
-  retry 3600 2 0 checkNodeStats '$2=="Ready"&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 3600 2 0 checkNodeStats '$2~/^Ready/&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 waitAllNodesUpgradedAndReady() {
-  retry 600 1 0 checkNodeStats '$2=="Ready"&&$5=="v'$K8S_VERSION'"'
+  retry 600 1 0 checkNodeStats '$2~/^Ready/&&$5=="v'$K8S_VERSION'"'
 }
 
 waitAllMasterNodesJoined(){
