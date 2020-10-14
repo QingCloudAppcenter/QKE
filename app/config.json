@@ -74,7 +74,7 @@
       "properties": [{
         "key": "instance_class",
         "label": "resource type",
-        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "description": "",
         "type": "integer",
         "range": [101, 202],
         "default": 202,
@@ -135,7 +135,7 @@
       "properties": [{
         "key": "instance_class",
         "label": "resource type",
-        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "description": "",
         "type": "integer",
         "range": [101],
         "default": 101,
@@ -195,7 +195,7 @@
       "properties": [{
         "key": "instance_class",
         "label": "resource type",
-        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "description": "",
         "type": "integer",
         "range": [202],
         "default": 202,
@@ -255,7 +255,7 @@
       "properties": [{
         "key": "instance_class",
         "label": "resource type",
-        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "description": "",
         "type": "integer",
         "range": [201],
         "default": 201,
@@ -333,7 +333,7 @@
       "properties": [{
         "key": "instance_class",
         "label": "resource type",
-        "description": "The instance type for the cluster to run, such as standard, enterprise",
+        "description": "",
         "type": "integer",
         "range": [101, 202],
         "default": 202,
