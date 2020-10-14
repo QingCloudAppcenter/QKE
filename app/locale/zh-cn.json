@@ -12,7 +12,6 @@
     "count": "数量",
     "Number of master for the cluster to create": "主节点数量",
     "resource type": "资源类型",
-    "The instance type for the cluster to run, such as standard, enterprise": "集群运行所需资源类型，例如基础型，企业型",
     "volume size": "硬盘大小",
     "The volume size for each instance": "每个机器的硬盘大小",
     "load balancer": "负载均衡器",
