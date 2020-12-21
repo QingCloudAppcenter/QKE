@@ -4,7 +4,7 @@
   vars:
     target_env: "{{ lookup('env', 'target') }}"
   roles:
-  - docker-1.0.7
+  - docker-1.0.8
   - docker-images
 
 - hosts: k8s-client,k8s-node,gpu-node
@@ -27,7 +27,8 @@
     target_env: "{{ lookup('env', 'target') }}"
   roles:
   - qingcloud-cli-1.0.5
-  - docker-1.0.7
+  - runc-1.0.0
+  - docker-1.0.8
   - etcd-1.1.0
   - k8s-node
   - lbcli
