@@ -148,10 +148,11 @@
     "Service Subnet": "Service 网段",
     "Choose a proxy mode": "选择一种 Proxy Mode",
     "Kubernetes EIP Address": "Kubernetes EIP 地址",
+    "Kubernetes EIP Port": "Kubernetes EIP 端口",
     "Get Kubeconfig": "如果用户希望本地使用 kubectl 通过 EIP 访问 Kubernetes Apiserver ，请在 QKE 配置参数中填写 Kubernetes EIP 地址，需要用户自己确保 EIP 和 Kubernetes Apiserver 的连通性，并将 kubeconfig 中 server 的 IP 地址修改为 EIP 地址，端口修改为适当的端口；注意：此处的 kubeconfig 拥有集群管理的最高权限，请谨慎使用，请勿执行类似 kubectl delete nodes 等高危操作！",
     "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23": "Kubernetes 的外网访问地址，请按照 IPv4 格式填写。例如：139.198.123.23；注意：修改此项会重启所有主节点的 kube-apiserver 从而导致 kube-apiserver 服务短暂中断，建议在业务低谷时间操作",
     "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
     "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/policies/default.yaml; audit file path: /etc/kubernetes/audit/policies/": "设置审计规则文件路径，路径为空或文件不存在则不记录审计日志；可通过客户端节点登录到所有主节点并把规则文件放到 /etc/kubernetes/audit/policies/ 目录下；系统已内置默认审计规则文件 /etc/kubernetes/audit/policies/default.yaml；注意：修改此项会重启所有主节点的 kube-apiserver 从而导致 kube-apiserver 服务短暂中断，建议在业务低谷时间操作",
-    "External port for accessing remote Kubernetes cluster, default value 6443": "暴露在外网的端口号，默认是 6443"
+    "External port for accessing remote Kubernetes cluster, default value 6443": "Kubernetes 的外网访问端口，默认是 6443"
 }
