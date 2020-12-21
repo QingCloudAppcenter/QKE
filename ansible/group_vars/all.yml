@@ -128,6 +128,7 @@ docker_images_ks_new:
 - kubesphere/kubefed:v0.3.0
 - kubesphere/kube-state-metrics:v1.9.6
 - kubesphere/log-sidecar-injector:1.1
+- kubesphere/elasticsearch-curator:v5.7.6
 - kubesphere/metrics-server:v0.3.7
 - kubesphere/nginx-ingress-controller:0.24.1
 - kubesphere/node-exporter:ks-v0.18.1
