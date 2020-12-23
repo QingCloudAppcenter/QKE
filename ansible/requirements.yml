@@ -8,7 +8,6 @@
 - src: https://qingcloudappcenter.github.io/ansible-roles/etcd-1.1.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/install-1.0.5.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/jq-1.0.9.tar.gz
-- src: https://qingcloudappcenter.github.io/ansible-roles/runc-1.0.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/yq-1.0.6.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/disable-apt-jobs-1.0.0.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/disable-motd-1.0.0.tar.gz
