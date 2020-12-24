@@ -110,11 +110,7 @@ initControlPlane() {
 }
 
 upgrade() {
-  log "IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
-  if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
-    log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
-    return $UPGRADE_VERSION_DETECTED_ERR
-  fi
+  $IS_UPGRADING || return $UPGRADE_VERSION_DETECTED_ERR
   upgradeCniConf
   if ! isDev; then
     docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
@@ -125,10 +121,13 @@ upgrade() {
   if isMaster; then
     log --debug "I am master node"
     waitPreviousMastersUpgraded
-    if ! $ETCD_PROVIDED && $IS_UPGRADING_FROM_V1; then restartSvc etcd; fi
     updateApiserverCerts
     log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
     initControlPlane
+    if isFirstMaster && $IS_UPGRADING; then
+      log --debug "fix kubelet.conf issue: https://github.com/QingCloudAppcenter/QKE/issues/294"
+      runKubeadm init phase kubelet-finalize experimental-cert-rotation
+    fi
     log --debug "init phase kubelet-start"
     runKubeadm init phase kubelet-start
     log --debug "restart kubelet"
@@ -142,15 +141,20 @@ upgrade() {
       done
       distributeKubeConfig
 
-      if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
-        local result lbId; result="$(fixLbListener)" && lbId=$result || log "WARN: failed to fix LB listener ($?): '$result'."
-      fi
       waitAllNodesUpgradedAndReady
       runKubeadm init phase upload-config all
       # runKubectl annotate node $(getMyNodeName) kubeadm.alpha.kubernetes.io/cri-socket=/var/run/dockershim.sock
       # kubeadm upgrade node: unable to fetch the kubeadm-config ConfigMap: failed to getAPIEndpoint
       # runKubectlPatch cm kubeadm-config -p "$(yq n data.ClusterStatus -- "$(yq w /tmp/cm.yml data.ClusterStatus -- "$(for m in $STABLE_MASTER_NODES; do printf "%s:\n  advertiseAddress: %s\n  bindPort: 6443\n" $(echo $m | awk -F/ '{print $4, $7}'); done | yq p - apiEndpoints)")")"
-      kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=CoreDNSUnsupportedPlugins -f
+      local ignoredErrors=CoreDNSUnsupportedPlugins
+      if $IS_UPGRADING_FROM_V3; then
+        ignoredErrors="$ignoredErrors,CoreDNSMigration"
+      fi
+      kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=$ignoredErrors -f
+      if $IS_UPGRADING_FROM_V3; then
+        # TODO: remove this after K8s 1.19.0: https://github.com/kubernetes/kubernetes/issues/88725
+        fixDns
+      fi
       applyKubeProxyLogLevel
       setUpNetwork
       setUpCloudControllerMgr
@@ -160,13 +164,8 @@ upgrade() {
   else
     log --debug "I am worker node"
     waitAllMasterNodesUpgradedAndReady
-    if $IS_UPGRADING_FROM_V1; then retry 3600 1 0 test -s $KUBE_CONFIG; fi
     restartSvc kubelet
     log --debug "worker node end"
-  fi
-  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then
-    saveLbFile $lbId/$LB_IP_FROM_V1
-    updateLbIp
   fi
   if isFirstMaster && $KS_ENABLED; then
     launchKs
@@ -197,7 +196,7 @@ measure() {
 
 reloadChanges() {
   isClusterInitialized || return 0
-  if $IS_UPGRADING_FROM_V2; then return 0; fi
+  if $IS_UPGRADING; then return 0; fi
   local cmd; for cmd in $RELOAD_COMMANDS; do
     execute ${cmd//:/ }; if [[ "$cmd" =~ ^reloadKube(LogLevel|MasterArgs:apiserver)$ ]]; then return 0; fi
   done
@@ -441,6 +440,11 @@ setUpNetwork() {
   runKubectl apply -f /opt/app/current/conf/k8s/$NET_PLUGIN.yml
 }
 
+fixDns() {
+  local readonly jsonPath="spec.template.spec.volumes[0]"
+  runKubectlPatch -n kube-system deploy coredns -p "$(runKubectl -n kube-system get deploy coredns -oyaml | yq r - $jsonPath | sed 's/Corefile-backup/Corefile/g' | yq p - $jsonPath)"
+}
+
 setUpDns() {
   local fwdRule="forward . /etc/resolv.conf"
   runKubectl -n kube-system get cm coredns -oyaml |
@@ -516,7 +520,7 @@ launchKs() {
   }
 
   ksRunInstaller() {
-    if $IS_UPGRADING_FROM_V2; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
+    if $IS_UPGRADING; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
     local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_INSTALLER_VERSION.yml
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
@@ -619,15 +623,6 @@ setUpKubeLb() {
   retry 120 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   saveLbFile $lbId/$lbIp
-}
-
-fixLbListener() {
-  local lbId; lbId="$(iaasRunCli describe-loadbalancers -W $CLUSTER_ID | jq -r '.loadbalancer_set[] | select(.vxnet.vxnet_id == "'$CLUSTER_VXNET'" and .vxnet.private_ip == "'$LB_IP_FROM_V1'") | .loadbalancer_id')"
-  local lbListenerId; lbListenerId="$(iaasRunCli describe-loadbalancer-listeners -l $lbId | jq -r '.loadbalancer_listener_set[] | select(.listener_port == 6443) | .loadbalancer_listener_id')"
-  log "fixing scene value of previously created LB listener [$lbId $lbListenerId] ..."
-  iaasFixLbListener $lbListenerId $CLUSTER_ZONE || return $?
-  iaasApplyLb $lbId || return $?
-  echo -n $lbId
 }
 
 checkLbActive() {
@@ -795,12 +790,8 @@ renewCerts() {
 }
 
 fixOverlays() {
-  local transientRoot persistentRoot; persistentRoot=/data/var/lib/docker/overlay2 
-  if $IS_UPGRADING_FROM_V1; then
-    transientRoot=/opt/overlay2
-  elif $IS_UPGRADING_FROM_V2; then
-    transientRoot=/var/lib/docker/overlay2
-  fi
+  local transientRoot=/var/lib/docker/overlay2
+  local persistentRoot=/data/var/lib/docker/overlay2
   local layer; for layer in $(find $persistentRoot -mindepth 1 -maxdepth 1 -type l -exec basename {} \;); do
     local transientLayer="$transientRoot/$layer/"
     if [[ -d "$transientLayer" ]]; then 

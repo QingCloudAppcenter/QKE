@@ -48,10 +48,6 @@ iaasCreateListener() {
   ')" | jq -er '.loadbalancer_listeners[0]'
 }
 
-iaasFixLbListener() {
-  /opt/lbcli/current/lbcli -s=$1 -z=$2 -e=$IAAS_LBL_SCENE -f=$QINGCLOUD_CONFIG
-}
-
 iaasAddLbBackends() {
   iaasRunCli -q add-loadbalancer-backends -s $1 -b "$(echo -n ${@:2} | jq -Rsc 'split(" ") | map({
     resource_id: .,

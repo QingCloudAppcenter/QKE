@@ -5,10 +5,10 @@ etcd:
   tlsEnable: False
 
 metrics_server:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "metrics-server")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "metrics-server")) 0) }}
 
 networkpolicy:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "networkpolicy")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "networkpolicy")) 0) }}
 
 common:
   es:
@@ -16,24 +16,24 @@ common:
     elkPrefix: {{ getv "/cluster/cluster_id" }}
 
 logging:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "logging")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logging")) 0) }}
   {{- if exists "/links/elk_service/cluster/cluster_id" }}
   externalElasticsearchUrl: external-elk.kube-system.svc
   externalElasticsearchPort: {{ getv "/links/elk_service/cluster/endpoints/ElasticSearch/port" }}
   {{- end }}
   containersLogMountedPath: /data/var/lib/docker/containers
 openpitrix:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "openpitrix")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
 devops:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "devops")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "devops")) 0) }}
 servicemesh:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "servicemesh")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "servicemesh")) 0) }}
 notification:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "notification")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "notification")) 0) }}
 alerting:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "alerting")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "alerting")) 0) }}
 auditing:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "auditing")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "auditing")) 0) }}
 events:
-  enabled: {{ or (and $upgradedFromV1 $upgradingFromV2) (gt (len ($extraModules | filter "events")) 0) }}
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "events")) 0) }}
 KS_CONFIG_EOF
