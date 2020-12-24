@@ -13,7 +13,7 @@ EC_OVERLAY_ERR
 "
 
 initNode() {
-  if ! $IS_UPGRADING_FROM_V2; then
+  if ! $IS_UPGRADING; then
     echo "root:${CLUSTER_ID:?password is required}" | chpasswd
     chage -d 0 root
   fi
@@ -31,20 +31,15 @@ initCluster() {
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG
     retry 1200 1 0 test -s $filePath
-    if $KS_ENABLED && ! $IS_UPGRADING_FROM_V1; then waitKsReady; fi
+    if $KS_ENABLED && ! $IS_UPGRADING; then waitKsReady; fi
   fi
   setUpConfigs
 }
 
 upgrade() {
-  if ! ${IS_UPGRADING_FROM_V1:-false} && ! ${IS_UPGRADING_FROM_V2:-false}; then
-    log "No upgrading version detected,IS_UPGRADING_FROM_V1: $IS_UPGRADING_FROM_V1, IS_UPGRADING_FROM_V2: $IS_UPGRADING_FROM_V2"
-    return $UPGRADE_VERSION_DETECTED_ERR
-  fi
+  $IS_UPGRADING || return $UPGRADE_VERSION_DETECTED_ERR
   execute start
   _initCluster
-  if $IS_HA_CLUSTER && $IS_UPGRADING_FROM_V1; then echo -n "/$LB_IP_FROM_V1" > $APISERVER_LB_FILE; fi
-  setUpConfigs
   if $KS_ENABLED; then
     waitKsUpgraded
   fi
@@ -94,7 +89,7 @@ checkKsInstallerDone() {
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
   local endStrings="total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT"
-  if $IS_UPGRADING_FROM_V2; then endStrings=" failed=0 "; fi
+  if $IS_UPGRADING; then endStrings=" failed=0 "; fi
   echo "$output" | grep "Welcome to KubeSphere!" -B4 | grep -oF "$endStrings" || return $EC_KS_INSTALL_DONE_WITH_ERR
 }
 

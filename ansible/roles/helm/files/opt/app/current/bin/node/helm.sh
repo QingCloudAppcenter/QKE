@@ -1,7 +1,7 @@
 defineHELM2() {
   if ${IS_UPGRADING_FROM_V1:-false}; then
     echo "/usr/bin/helm"
-  elif ${IS_UPGRADING_FROM_V2:-false}; then
+  elif ${IS_UPGRADING:-false}; then
     echo "/opt/helm/2.14.3/helm"
   else
     echo "/opt/helm/2.14.3/helm"
