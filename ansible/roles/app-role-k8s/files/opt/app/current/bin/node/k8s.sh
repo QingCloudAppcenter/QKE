@@ -124,7 +124,7 @@ upgrade() {
     updateApiserverCerts
     log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
     initControlPlane
-    if isFirstMaster && $IS_UPGRADING_FROM_V2; then
+    if isFirstMaster && $IS_UPGRADING; then
       log --debug "fix kubelet.conf issue: https://github.com/QingCloudAppcenter/QKE/issues/294"
       runKubeadm init phase kubelet-finalize experimental-cert-rotation
     fi
