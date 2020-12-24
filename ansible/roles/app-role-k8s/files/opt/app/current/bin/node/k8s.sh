@@ -113,6 +113,10 @@ upgrade() {
   $IS_UPGRADING || return $UPGRADE_VERSION_DETECTED_ERR
   upgradeCniConf
   if ! isDev; then
+    if $IS_UPGRADING_FROM_V2; then
+      docker load -qi $UPGRADE_DIR/docker-images/k8s-v2.tgz
+      if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks-v2.tgz; fi
+    fi
     docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
     if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
     fixOverlays
@@ -168,6 +172,9 @@ upgrade() {
     log --debug "worker node end"
   fi
   if isFirstMaster && $KS_ENABLED; then
+    if $IS_UPGRADING_FROM_V3; then
+      resetAuditingModule
+    fi
     launchKs
   fi
   _initCluster
@@ -306,7 +313,7 @@ runKubeadm() {
 }
 
 runKubectlCreate() {
-  runKubectl create $@ --dry-run -oyaml | runKubectl apply -f -
+  runKubectl create $@ --dry-run=client -oyaml | runKubectl apply -f -
 }
 
 runKubectlDelete() {
@@ -687,6 +694,10 @@ reloadKsConf() {
   if $KS_ENABLED && isFirstMaster; then
     runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p "$(buildKsDynamicConf)"
   fi
+}
+
+resetAuditingModule() {
+  runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p '{"status": {"auditing": null}}'
 }
 
 reloadKubeMasterArgs() {
