@@ -121,6 +121,7 @@ upgrade() {
     if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
     fixOverlays
   fi
+  initNode
   start
   if isMaster; then
     log --debug "I am master node"
