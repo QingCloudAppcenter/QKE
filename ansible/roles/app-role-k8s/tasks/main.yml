@@ -190,6 +190,7 @@
     - /opt/etcd
     - /opt/k8s-node
     - /opt/helm
+    - /opt/calicoctl
     - /opt/jq
     - /opt/yq
     - /root/.config
