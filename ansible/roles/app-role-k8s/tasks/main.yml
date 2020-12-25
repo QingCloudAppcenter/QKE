@@ -133,6 +133,20 @@
   loop_control:
     loop_var: yml_file
 
+- name: install calicoctl
+  include_role:
+    name: install-1.0.5
+  vars:
+    opts:
+      file_mode: '755'
+      pkg_name: calicoctl
+      pkg_version: "{{ calico_version }}"
+      pkg_type: ''
+      pkg_url: https://github.com/projectcalico/calicoctl/releases/download/v{{ calico_version }}/calicoctl-linux-amd64
+      bin_links:
+      - src: calicoctl-{{ calico_version }}
+        dest: /usr/bin/calicoctl
+
 - name: set up k8s env
   copy:
     dest: /opt/app/current/bin/envs/confd.env
