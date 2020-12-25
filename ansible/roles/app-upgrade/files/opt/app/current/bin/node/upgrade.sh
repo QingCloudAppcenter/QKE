@@ -45,14 +45,19 @@ linkToDir() {
   done
 }
 
+linkBins() {
+  local b; for b in $@; do
+    find /opt/$b/current/ -name "$b*" -exec ln -snf {} /usr/bin/$b \;
+  done
+}
+
 setUpFiles() {
   ln -snf /opt/app/current/bin/ctl.sh /usr/bin/appctl
   find /opt/app/current/conf/confd/conf.d/ -name '*.toml' -exec ln -snf {} /etc/confd/conf.d/ \;
   find /opt/app/current/conf/confd/templates/ -name '*.tmpl' -exec ln -snf {} /etc/confd/templates/ \;
   linkToDir /usr/bin/ /opt/etcd/current/{etcd,etcdctl} /opt/k8s-client/current/client/bin/kubectl /opt/k8s-node/current/node/bin/{kubeadm,kubectl,kubelet}
   linkToDir /usr/local/bin/ /opt/helm/current/helm
-  find /opt/yq/current/ -name 'yq*' -exec ln -snf {} /usr/bin/yq \;
-  find /opt/jq/current/ -name 'jq*' -exec ln -snf {} /usr/bin/jq \;
+  linkBins calicoctl jq yq
   systemctl daemon-reload
   /opt/qingcloud/app-agent/bin/confd -onetime || true
   systemctl restart confd
