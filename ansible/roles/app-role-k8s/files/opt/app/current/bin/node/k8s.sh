@@ -28,7 +28,7 @@ generateDockerLayerLinks() {
 initNode() {
   _initNode
   generateDockerLayerLinks
-  mkdir -p /data/kubernetes/{audit/{logs,policies},manifests,backup/manifests} /data/var/lib/etcd
+  mkdir -p /data/{backup/csi,kubernetes/{audit/{logs,policies},manifests,backup/manifests}} /data/var/lib/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/kubelet; do
     if test -d /data/$migratingPath; then
@@ -495,10 +495,19 @@ setUpStorage() {
   # Storage class
   runKubectl apply -f /opt/app/current/conf/k8s/csi-sc.yml
   if $UPGRADED_FROM_V1; then
-    local patch="allowVolumeExpansion: true"
-    runKubectlPatch sc csi-qingcloud -p "$patch"
-    runKubectlPatch sc neonsan -p "$patch"
+    local scName; for scName in csi-qingcloud neonsan; do
+      if runKubectl get sc $scName -oname; then
+        upgradeStorageClass $scName
+      fi
+    done
   fi
+}
+
+upgradeStorageClass() {
+  local readonly scFile=/data/backup/csi/$1.yml
+  runKubectl get sc $1 -oyaml | yq w - allowVolumeExpansion true | yq w - parameters.tags $CLUSTER_TAG > $scFile
+  runKubectlDelete sc $1
+  runKubectl apply -f $scFile
 }
 
 checkStorageReady() {
