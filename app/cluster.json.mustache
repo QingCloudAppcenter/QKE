@@ -12,6 +12,7 @@
   "advanced_actions": ["scale_horizontal"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
+    "appv-egh21tjg",
     "appv-39iiioy3"
   ],
   "upgrading_policy": "in-place-parallel",
@@ -352,7 +353,7 @@
         "order": 2,
         "post_start_service": true,
         "cmd": "appctl init",
-        "timeout": 1200
+        "timeout": 3600
       },
       "upgrade": {
         "order": 2,
@@ -424,6 +425,8 @@
     "cluster_port_range": {{env.cluster_port_range}},
     "max_pods": {{env.max_pods}},
     "network_plugin": {{env.network_plugin}},
+    "hostnic-max-nics": {{env.hostnic-max-nics}},
+    "hostnic-vxnets": {{env.hostnic-vxnets}},
     "proxy_mode": {{env.proxy_mode}},
     "host_aliases": {{env.host_aliases}},
     "registry_mirrors": {{env.registry_mirrors}},

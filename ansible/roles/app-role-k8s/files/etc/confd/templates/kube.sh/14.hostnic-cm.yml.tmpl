@@ -1,0 +1,25 @@
+flush > /opt/app/current/conf/k8s/hostnic-cm.yml << HOSTNIC_CM_EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hostnic-cfg-cm
+  namespace: kube-system
+data:
+  hostnic: |
+    {
+      "pool": {
+        "poolHigh": 5,
+        "poolLow": 3,
+        "tag": "{{ getv "/cluster/cluster_tag" "" }}",
+        "maxNic": {{ getv "/env/hostnic-max-nics" "60" }},
+        "vxNets": {{ with join (getvs "/env/hostnic-vxnets") "" }}{{ split (replace . "\r" "" -1) "\n" | toJson }}{{ else }}[]{{ end }}
+      }
+    }
+  hostnic-cni: |
+    {
+      "cniVersion": "0.3.0",
+      "name": "hostnic",
+      "type": "hostnic",
+      "serviceCIDR" : "{{ getv "/env/service_subnet" "10.96.0.0/16" }}"
+    }
+HOSTNIC_CM_EOF

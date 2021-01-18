@@ -55,6 +55,14 @@ start() {
   log --debug "started node."
 }
 
+startSvc() {
+  local svcName=${1%%/*}
+  if [ "$svcName" = "kubelet" ]; then
+    setUpHostnicRules
+  fi
+  _startSvc $@
+}
+
 initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
@@ -158,7 +166,7 @@ upgrade() {
       kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=$ignoredErrors -f
       if $IS_UPGRADING_FROM_V3; then
         # TODO: remove this after K8s 1.19.0: https://github.com/kubernetes/kubernetes/issues/88725
-        fixDns
+        retry 10 1 0 fixDns
       fi
       applyKubeProxyLogLevel
       setUpNetwork
@@ -240,6 +248,8 @@ initFirstNode() {
   fi
   log --debug "applying kube-proxy log level ..."
   applyKubeProxyLogLevel
+  log --debug "setting up cloud secret ..."
+  setUpCloudSecret
   log --debug "setting up network ..."
   setUpNetwork
   if test -z "$STABLE_WORKER_NODES"; then
@@ -258,6 +268,7 @@ initFirstNode() {
   fi
   log --debug "setting up cloud controller manager ..."
   setUpCloudControllerMgr
+
   log --debug "setting up storage ..."
   setUpStorage
   removeTokens
@@ -442,10 +453,21 @@ upgradeCniConf() {
 }
 
 setUpNetwork() {
+  local readonly baseDir=/opt/app/current/conf/k8s
   sed -r "s@192\.168\.0\.0/16@$POD_SUBNET@; s@# (- name: CALICO_IPV4POOL_CIDR)@\1@; s@# (  value: \"$POD_SUBNET\")@\1@" \
-      /opt/app/current/conf/k8s/calico-$CALICO_VERSION.yml > /opt/app/current/conf/k8s/calico.yml
-  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" /opt/app/current/conf/k8s/flannel-$FLANNEL_VERSION.yml > /opt/app/current/conf/k8s/flannel.yml
-  runKubectl apply -f /opt/app/current/conf/k8s/$NET_PLUGIN.yml
+      $baseDir/calico-$CALICO_VERSION.yml > $baseDir/calico.yml
+  sed "s@10\.244\.0\.0/16@$POD_SUBNET@" $baseDir/flannel-$FLANNEL_VERSION.yml > $baseDir/flannel.yml
+  yq m -x -d3 $baseDir/hostnic-$HOSTNIC_VERSION.yml $baseDir/hostnic-cm.yml > $baseDir/hostnic.yml
+  runKubectl apply -f $baseDir/$NET_PLUGIN.yml
+  if [ "$NET_PLUGIN" = "hostnic" ]; then
+    runKubectl apply -f $baseDir/hostnic-policy-$HOSTNIC_VERSION.yml
+  fi
+}
+
+setUpHostnicRules() {
+  if [ "$NET_PLUGIN" = "hostnic" ]; then
+    iptables -t filter -P FORWARD ACCEPT
+  fi
 }
 
 fixDns() {
@@ -514,9 +536,12 @@ checkStorageReady() {
   runKubectl get sc csi-qingcloud -o jsonpath={.metadata.annotations.'storageclass\.kubernetes\.io/is-default-class'}
 }
 
+setUpCloudSecret() {
+  runKubectlCreate -n kube-system secret generic qcsecret --from-file=$QINGCLOUD_CONFIG
+}
+
 setUpCloudControllerMgr() {
   runKubectlCreate -n kube-system configmap lbconfig --from-file=/opt/app/current/conf/qingcloud/qingcloud.yaml
-  runKubectlCreate -n kube-system secret generic qcsecret --from-file=$QINGCLOUD_CONFIG
   runKubectl -n kube-system apply -f /opt/app/current/conf/k8s/cloud-controller-manager-$QINGCLOUD_CCM_VERSION.yml
 }
 
@@ -538,7 +563,7 @@ launchKs() {
 
   ksRunInstaller() {
     if $IS_UPGRADING; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
-    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_INSTALLER_VERSION.yml
+    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
   }
@@ -554,7 +579,7 @@ buildKsDynamicConf() {
 }
 
 buildKsConf() {
-  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_INSTALLER_VERSION.yml
+  local -r ksCfgDefaultFile=/opt/app/current/conf/k8s/ks-config-$KS_VERSION.yml
   buildKsDynamicConf | yq m - $ksCfgDefaultFile
 }
 
@@ -708,6 +733,11 @@ reloadKsConf() {
 
 resetAuditingModule() {
   runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p '{"status": {"auditing": null}}'
+}
+
+reloadHostnic() {
+  runKubectl apply -f /opt/app/current/conf/k8s/hostnic-cm.yml
+  runKubectl -n kube-system rollout restart ds hostnic-node
 }
 
 reloadKubeMasterArgs() {

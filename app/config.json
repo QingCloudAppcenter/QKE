@@ -24,7 +24,7 @@
       "description": "The resource configuration of the service. Single master cluster cannot upgrade to HA mster cluster.",
       "disable_when_scale": true,
       "type": "string",
-      "default": "standard test",
+      "default": "high-performance test",
       "range": [
         "standard dev",
         "high-performance test",
@@ -453,7 +453,36 @@
       "type": "string",
       "changeable": false,
       "default": "calico",
-      "range": ["calico", "flannel"],
+      "range": ["calico", "flannel", "hostnic"],
+      "required": "no"
+    }, {
+      "key": "hostnic-max-nics",
+      "label": "hostnic maxNic",
+      "description": "hostnic max nics per host",
+      "type": "integer",
+      "dependencies": [{
+        "refkey": "network_plugin",
+        "values": ["hostnic"],
+        "operator": "in"
+      }],
+      "changeable": false,
+      "default": 60,
+      "min": 1,
+      "max": 60,
+      "required": "no"
+    }, {
+      "key": "hostnic-vxnets",
+      "label": "hostnic vxnets",
+      "description": "hostnic vxnets, one vxnet per line",
+      "type": "string",
+      "multiline": true,
+      "dependencies": [{
+        "refkey": "network_plugin",
+        "values": ["hostnic"],
+        "operator": "in"
+      }],
+      "changeable": false,
+      "default": "",
       "required": "no"
     }, {
       "key": "host_aliases",
