@@ -23,21 +23,19 @@
     mode: preserve
     directory_mode: u=rwx,g=rx,o=
 
-- name: check plugins
-  shell: helm plugin list | grep -o ^2to3
-  ignore_errors: yes
-  register: installed_2to3
-
-- name: install plugins
+- name: install helm-2to3
+  include_role:
+    name: install-1.0.5
   vars:
-    plugin_2to3_version: 0.6.0
-  shell: helm plugin install {{ plugin_url }}
-  loop:
-    - https://github.com/helm/helm-2to3/tree/v{{ plugin_2to3_version }}/
-  loop_control:
-    loop_var:
-      plugin_url
-  when: installed_2to3.rc != 0
+    opts:
+      pkg_name: helm-2to3
+      pkg_version: "{{ helm_2to3_version }}"
+      dest_path: /root/.local/share/helm/plugins/helm-2to3/
+      pkg_url: https://github.com/helm/helm-2to3/releases/download/v{{ helm_2to3_version }}/helm-2to3_{{ helm_2to3_version }}_linux_amd64.tar.gz
+      pkg_type: tgz
+      extracts: true
+      extra_opts: ['--strip-components=0']
+      creates: 2to3
 
 - name: helm add repo
   shell: |
