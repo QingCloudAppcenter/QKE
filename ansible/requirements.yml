@@ -1,5 +1,5 @@
 - src: https://qingcloudappcenter.github.io/ansible-roles/app-agent-1.0.6.tar.gz
-- src: https://qingcloudappcenter.github.io/ansible-roles/appctl-1.2.3.tar.gz
+- src: https://qingcloudappcenter.github.io/ansible-roles/appctl-1.2.5.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/arping-1.0.5.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/confd-files-1.0.9.tar.gz
 - src: https://qingcloudappcenter.github.io/ansible-roles/create-service-user-1.0.0.tar.gz
