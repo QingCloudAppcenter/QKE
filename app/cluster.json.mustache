@@ -120,7 +120,7 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi' && appctl checkNodeStats '$2~/^Ready/' || bash -c 'exit 151'",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi; appctl checkNodeStats '$2~/^Ready/' || exit 151'",
         "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
@@ -191,7 +191,7 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi' && appctl checkNodeStats '$2~/^Ready/' || bash -c 'exit 151'",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi; appctl checkNodeStats '$2~/^Ready/' || exit 151'",
         "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
@@ -253,7 +253,7 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi' && appctl checkNodeStats '$2~/^Ready/' || bash -c 'exit 151'",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi; appctl checkNodeStats '$2~/^Ready/' || exit 151'",
         "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
@@ -317,7 +317,7 @@
       },
       "upgrade": {
         "order": 1,
-        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi' && appctl checkNodeStats '$2~/^Ready/' || bash -c 'exit 151'",
+        "pre_check": "bash -c 'if test $(df -m --output=avail /data | sed 1d) -lt 51200; then exit 150; fi; appctl checkNodeStats '$2~/^Ready/' || exit 151'",
         "cmd": "/upgrade/vm-files/opt/app/current/bin/node/upgrade.sh",
         "timeout": 10800
       },
