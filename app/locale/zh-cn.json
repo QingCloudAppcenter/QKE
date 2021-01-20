@@ -82,7 +82,7 @@
     "kube-scheduler parameters": "kube-scheduler 参数",
     "parameters for kube scheduler": "kube-scheduler 参数，自定义配置，支持多项配置，需严格遵循每行配置一项且保持 `key: value` 的格式，配置示例：`add-dir-header: \"true\"`，其他配置项请参考官网文档 [kube-scheduler configurations](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/)，使用时请去掉 `--` 符号",
     "Kubelet Parameters": "kubelet 参数",
-    "parameters for kubelet": "kubelet 参数，自定义配置，支持多项配置，需严格遵循每行配置一项且保持 `key=value` 的格式，配置示例：`--add-dir-header=true`，其他配置项请参考官方文档 [kubelet configurations](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)，使用时请保留 `--` 符号",
+    "parameters for kubelet": "kubelet 参数，自定义配置，支持多项配置，需严格遵循每行配置一项且保持 `key=value` 的格式，配置示例：`--add-dir-header=true`，默认值 `--eviction-hard=memory.available<5%` 表示当节点剩余内存不足 5% 时 kubelet 会立即关掉选中的容器组来释放内存，`--eviction-soft=memory.available<10%` 与 `--eviction-soft-grace-period=memory.available=2m` 表示当可用内存连续 2 分钟不足 10% 时，会平滑关闭（graceful shutdown）选中的容器组；注意 `--eviction-soft` 与 `--eviction-soft-grace-period` 必须同时指定，否则 kubelet 将无法启动；其他配置项请参考官方文档 [kubelet configurations](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)，使用时请保留 `--` 符号",
     "kubelet_running_container_count": "正在运行的容器数量",
     "kubelet_running_pod_count": "正在运行的 Pod 数量",
     "Fluent forward server": "Fluent 日志转发服务",
