@@ -533,6 +533,11 @@
       "key": "pod_subnet",
       "label": "Pod Subnet",
       "description": "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16",
+      "dependencies": [{
+        "refkey": "network_plugin",
+        "values": ["calico", "flannel"],
+        "operator": "in"
+      }],
       "type": "string",
       "default": "10.10.0.0/16",
       "changeable": false,
