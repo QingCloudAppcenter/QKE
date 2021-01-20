@@ -20,6 +20,6 @@ data:
       "cniVersion": "0.3.0",
       "name": "hostnic",
       "type": "hostnic",
-      "serviceCIDR" : "{{ $hostnicCidr }}"
+      "serviceCIDR" : "{{ getv "/env/service_subnet" "10.96.0.0/12" }}"
     }
 HOSTNIC_CM_EOF
