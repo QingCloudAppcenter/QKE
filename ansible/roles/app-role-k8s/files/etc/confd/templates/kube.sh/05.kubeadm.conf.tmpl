@@ -1,3 +1,6 @@
+{{- $ipDigits := split (getv "/host/ip") "." }}
+{{- $hostnicCidr := printf "%s.%s.0.0/16" (index $ipDigits 0) (index $ipDigits 1) }}
+
 flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
@@ -59,8 +62,12 @@ scheduler:
     {{ replace (replace (join (getvs "/env/scheduler.params") "") "\r" "" -1) "\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
+  {{- if eq (getv "/env/network_plugin" "calico") "hostnic" }}
+  serviceSubnet: {{ $hostnicCidr }}
+  {{- else }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
   serviceSubnet: {{ getv "/env/service_subnet" "10.96.0.0/12" }}
+  {{- end }}
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
