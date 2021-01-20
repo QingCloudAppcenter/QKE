@@ -486,12 +486,19 @@ setUpDns() {
 }
 
 warmUpDns() {
+  retry 5 2 0 restartLocalDnsIfNotReady
   local inClusterDns; inClusterDns="$(runKubectl -n kube-system get svc kube-dns --template '{{.spec.clusterIP}}')"
-  retry 30 1 0 queryKubeDns $CLUSTER_API_SERVER $inClusterDns || log 'WARN: seems kube-dns is not ready.'
+  retry 30 1 0 queryDns $CLUSTER_API_SERVER $inClusterDns || log 'WARN: seems kube-dns is not ready.'
 }
 
-queryKubeDns() {
-  dig +timeout=2 +short $1 @$2 | grep -o "^[0-9.]\+"
+restartLocalDnsIfNotReady() {
+  queryDns $CLUSTER_API_SERVER || restartSvc systemd-networkd
+}
+
+queryDns() {
+  local dns
+  if [ -n "$2" ]; then dns=@$2; fi
+  dig +timeout=2 +short $1 $dns | grep -o "^[0-9.]\+"
 }
 
 setUpNodeLocalDns() {
