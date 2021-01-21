@@ -278,7 +278,7 @@ initFirstNode() {
     startSvc ks-installer
   fi
   if isUsingHostnic; then
-    ensureHostnicVxnets || return $EC_HOSTNIC_VXNETS_ERR
+    checkHostnicVxnets || return $EC_HOSTNIC_VXNETS_ERR
   fi
 }
 
@@ -478,7 +478,7 @@ setUpHostnicRules() {
   fi
 }
 
-ensureHostnicVxnets() {
+checkHostnicVxnets() {
   local readonly vxnetsCount=$(echo -n $HOSTNIC_VXNETS | wc -w)
   local readonly k8sNodesCount=$(echo -n $STABLE_MASTER_NODES $STABLE_WORKER_NODES | wc -w)
   test $(( $vxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS ))
