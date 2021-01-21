@@ -62,7 +62,7 @@ scheduler:
     {{ replace (replace (join (getvs "/env/scheduler.params") "") "\r" "" -1) "\n" "\n    " -1 }}
 networking:
   dnsDomain: {{ getv "/env/api_external_domain" "cluster.local" }}
-  {{- if eq (getv "/env/network_plugin" "calico") "hostnic" }}
+  {{- if $usingHostnic }}
   podSubnet: {{ $hostnicCidr }}
   {{- else }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
