@@ -11,7 +11,7 @@ data:
         "poolHigh": 5,
         "poolLow": 3,
         "tag": "{{ getv "/cluster/cluster_tag" "" }}",
-        "maxNic": {{ getv "/env/hostnic-max-nics" "60" }},
+        "maxNic": {{ $hostnicMaxNics }},
         "vxNets": {{ with join (getvs "/env/hostnic-vxnets") "" }}{{ split (replace . "\r" "" -1) "\n" | toJson }}{{ else }}[]{{ end }}
       }
     }

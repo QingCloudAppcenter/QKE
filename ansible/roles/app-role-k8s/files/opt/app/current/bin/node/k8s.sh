@@ -10,6 +10,7 @@ EC_BELOW_MIN_WORKERS_COUNT
 EC_UNCORDON_FAILED
 EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
+EC_HOSTNIC_VXNETS_ERR
 "
 
 generateDockerLayerLinks() {
@@ -276,6 +277,9 @@ initFirstNode() {
     log --debug "launch ks-installer ..."
     startSvc ks-installer
   fi
+  if isUsingHostnic; then
+    checkHostnicVxnets || return $EC_HOSTNIC_VXNETS_ERR
+  fi
 }
 
 initOtherNode() {
@@ -452,6 +456,10 @@ upgradeCniConf() {
   yq w -ijP /etc/cni/net.d/10-flannel.conflist cniVersion 0.2.0
 }
 
+isUsingHostnic() {
+  [ "$NET_PLUGIN" = "hostnic" ]
+}
+
 setUpNetwork() {
   local readonly baseDir=/opt/app/current/conf/k8s
   sed -r "s@192\.168\.0\.0/16@$POD_SUBNET@; s@# (- name: CALICO_IPV4POOL_CIDR)@\1@; s@# (  value: \"$POD_SUBNET\")@\1@" \
@@ -468,6 +476,12 @@ setUpHostnicRules() {
   if [ "$NET_PLUGIN" = "hostnic" ]; then
     iptables -t filter -P FORWARD ACCEPT
   fi
+}
+
+checkHostnicVxnets() {
+  local readonly vxnetsCount=$(echo -n $HOSTNIC_VXNETS | wc -w)
+  local readonly k8sNodesCount=$(echo -n $STABLE_MASTER_NODES $STABLE_WORKER_NODES | wc -w)
+  test $(( $vxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS ))
 }
 
 fixDns() {

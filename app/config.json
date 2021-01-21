@@ -476,12 +476,13 @@
       "description": "hostnic vxnets, one vxnet per line",
       "type": "string",
       "multiline": true,
+      "pattern": "^$|^vxnet-[a-z0-9]+(\nvxnet-[a-z0-9]+){0,}\n?$",
       "dependencies": [{
         "refkey": "network_plugin",
         "values": ["hostnic"],
         "operator": "in"
       }],
-      "changeable": false,
+      "changeable": true,
       "default": "",
       "required": "no"
     }, {
@@ -574,6 +575,11 @@
       "key": "max_pods",
       "label": "max-pods",
       "description": "Number of Pods that can run on each working node/kubelet",
+      "dependencies": [{
+        "refkey": "network_plugin",
+        "values": ["calico", "flannel"],
+        "operator": "in"
+      }],
       "type": "integer",
       "changeable": true,
       "default": 120,
