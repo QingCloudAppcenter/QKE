@@ -11,6 +11,7 @@ EC_UNCORDON_FAILED
 EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
 EC_HOSTNIC_VXNETS_ERR
+EC_HOSTNIC_VPCS_ERR
 "
 
 generateDockerLayerLinks() {
@@ -278,7 +279,7 @@ initFirstNode() {
     startSvc ks-installer
   fi
   if isUsingHostnic; then
-    checkHostnicVxnets || return $EC_HOSTNIC_VXNETS_ERR
+    checkHostnicVxnets
   fi
 }
 
@@ -481,7 +482,9 @@ setUpHostnicRules() {
 checkHostnicVxnets() {
   local readonly vxnetsCount=$(echo -n $HOSTNIC_VXNETS | wc -w)
   local readonly k8sNodesCount=$(echo -n $STABLE_MASTER_NODES $STABLE_WORKER_NODES | wc -w)
-  test $(( $vxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS ))
+  test $(( $vxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS )) || return $EC_HOSTNIC_VXNETS_ERR
+
+  iaasRunCli describe-vxnets -v $CLUSTER_VXNET,${HOSTNIC_VXNETS// /,} | jq -e '[.vxnet_set[] | .vpc_router_id] | unique | length == 1' || return $EC_HOSTNIC_VPCS_ERR
 }
 
 fixDns() {
