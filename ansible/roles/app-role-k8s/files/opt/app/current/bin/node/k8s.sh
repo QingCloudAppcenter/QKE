@@ -492,7 +492,7 @@ setUpNetwork() {
 }
 
 warmUpLocalDns() {
-  retry 5 2 0 restartLocalDnsIfNotReady
+  retry 5 2 0 restartLocalDnsIfNotReady || return $EC_DNS_ERR
 }
 
 setUpHostnicRules() {
