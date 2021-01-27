@@ -10,8 +10,10 @@ EC_BELOW_MIN_WORKERS_COUNT
 EC_UNCORDON_FAILED
 EC_DO_NOT_DELETE_MASTERS
 EC_OVERLAY_ERR
-EC_HOSTNIC_VXNETS_ERR
-EC_HOSTNIC_VPCS_ERR
+EC_HOSTNIC_VXNETS_INVALID
+EC_HOSTNIC_VXNETS_LACKING
+EC_HOSTNIC_VXNETS_UNKNOWN
+EC_HOSTNIC_VPCS_MISMATCHED
 "
 
 generateDockerLayerLinks() {
@@ -47,6 +49,7 @@ initNode() {
   test -f $DEFAULT_AUDIT_POLICY_FILE || cp /opt/app/current/conf/k8s/default-audit-policy-file.yaml $DEFAULT_AUDIT_POLICY_FILE
   ln -snf $KUBE_CONFIG /root/.kube/config
   chown -R etcd /data/var/lib/etcd
+  if isUsingHostnic; then updateHostnicStatus 0; fi
 }
 
 start() {
@@ -191,6 +194,12 @@ upgrade() {
   _initCluster
 }
 
+check() {
+  _check
+  checkNodeStats '$2~/^Ready/' $MY_NODE_NAME
+  checkHostnicHealthy
+}
+
 checkSvc() {
   _checkSvc $@ || return $?
   local svcName=${1%%/*}
@@ -258,6 +267,9 @@ initFirstNode() {
     log --debug "marking master-only cluster nodes ..."
     markAllInOne
   fi
+  log --debug "checking if hostnic vxnets valid ..."
+  updateHostnicStatus
+  checkHostnicHealthy
   log --debug "setting up DNS ..."
   setUpDns
   log --debug "waiting for kube-dns resolving qingcloud api server ..."
@@ -277,9 +289,6 @@ initFirstNode() {
   if $KS_ENABLED; then
     log --debug "launch ks-installer ..."
     startSvc ks-installer
-  fi
-  if isUsingHostnic; then
-    checkHostnicVxnets
   fi
 }
 
@@ -480,11 +489,19 @@ setUpHostnicRules() {
 }
 
 checkHostnicVxnets() {
-  local readonly vxnetsCount=$(echo -n $HOSTNIC_VXNETS | wc -w)
-  local readonly k8sNodesCount=$(echo -n $STABLE_MASTER_NODES $STABLE_WORKER_NODES | wc -w)
-  test $(( $vxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS )) || return $EC_HOSTNIC_VXNETS_ERR
+  isUsingHostnic || return 0
 
-  iaasRunCli describe-vxnets -v $CLUSTER_VXNET,${HOSTNIC_VXNETS// /,} | jq -e '[.vxnet_set[] | .vpc_router_id] | unique | length == 1' || return $EC_HOSTNIC_VPCS_ERR
+  local readonly hostnicVxnetsCount=$(echo -n $HOSTNIC_VXNETS | wc -w)
+  local hostnicResult; hostnicResult=$(iaasRunCli describe-vxnets -v ${HOSTNIC_VXNETS// /,} | jq -ec '.vxnet_set | length == '$hostnicVxnetsCount) || return $EC_HOSTNIC_VXNETS_INVALID
+
+  local readonly k8sNodesCount=$(echo -n $STABLE_MASTER_NODES $STABLE_WORKER_NODES | wc -w)
+  test $(( $hostnicVxnetsCount * 252 )) -ge $(( $k8sNodesCount * $HOSTNIC_MAX_NICS )) || return $EC_HOSTNIC_VXNETS_LACKING
+
+  local readonly vxnetIds="$CLUSTER_VXNET $HOSTNIC_VXNETS"
+  local readonly vxnetsCount=$(echo $vxnetIds | wc -w)
+  local routers; routers=$(iaasRunCli describe-vxnets -v ${vxnetIds// /,} | jq -ec '[.vxnet_set[] | .vpc_router_id]') || return $EC_HOSTNIC_VXNETS_UNKNOWN
+
+  local result; result=$(echo "$routers" | jq -e 'unique | length == 1') || return $EC_HOSTNIC_VPCS_MISMATCHED
 }
 
 fixDns() {
@@ -759,9 +776,20 @@ resetAuditingModule() {
   runKubectlPatch -n kubesphere-system --type merge cc ks-installer -p '{"status": {"auditing": null}}'
 }
 
+updateHostnicStatus() {
+  local status=0
+  checkHostnicVxnets || status=$?
+  echo $status > $HOSTNIC_STATUS_FILE
+}
+
+checkHostnicHealthy() {
+  return $(cat $HOSTNIC_STATUS_FILE)
+}
+
 reloadHostnic() {
   runKubectl apply -f /opt/app/current/conf/k8s/hostnic-cm.yml
   runKubectl -n kube-system rollout restart ds hostnic-node
+  updateHostnicStatus
 }
 
 reloadKubeMasterArgs() {
