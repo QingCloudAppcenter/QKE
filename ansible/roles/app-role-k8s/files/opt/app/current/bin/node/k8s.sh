@@ -267,15 +267,17 @@ initFirstNode() {
     log --debug "marking master-only cluster nodes ..."
     markAllInOne
   fi
-  log --debug "checking if hostnic vxnets valid ..."
-  updateHostnicStatus
-  checkHostnicHealthy
   log --debug "setting up DNS ..."
   setUpDns
-  log --debug "waiting for kube-dns resolving qingcloud api server ..."
-  warmUpDns
-  log --debug "waiting for all nodes to be ready ..."
-  waitAllNodesReady
+  log --debug "checking if hostnic vxnets healthy ..."
+  updateHostnicStatus
+  local hostnicStatus=0 && checkHostnicHealthy || hostnicStatus=$?
+  if [ "$hostnicStatus" -eq 0 ]; then
+    log --debug "waiting for kube-dns resolving qingcloud api server ..."
+    warmUpDns
+    log --debug "waiting for all nodes to be ready ..."
+    waitAllNodesReady
+  fi
   if $NODELOCALDNS_ENABLED; then
     log --debug "setting up nodelocaldns ..."
     setUpNodeLocalDns
@@ -290,6 +292,7 @@ initFirstNode() {
     log --debug "launch ks-installer ..."
     startSvc ks-installer
   fi
+  return $hostnicStatus
 }
 
 initOtherNode() {
@@ -783,13 +786,17 @@ updateHostnicStatus() {
 }
 
 checkHostnicHealthy() {
+  if [ ! -f $HOSTNIC_STATUS_FILE ]; then
+    (&>/dev/null updateHostnicStatus &)
+    return $EC_HOSTNIC_VXNETS_UNKNOWN
+  fi
   return $(cat $HOSTNIC_STATUS_FILE)
 }
 
 reloadHostnic() {
+  updateHostnicStatus
   runKubectl apply -f /opt/app/current/conf/k8s/hostnic-cm.yml
   runKubectl -n kube-system rollout restart ds hostnic-node
-  updateHostnicStatus
 }
 
 reloadKubeMasterArgs() {
