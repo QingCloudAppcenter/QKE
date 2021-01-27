@@ -14,6 +14,7 @@ EC_HOSTNIC_VXNETS_INVALID
 EC_HOSTNIC_VXNETS_LACKING
 EC_HOSTNIC_VXNETS_UNKNOWN
 EC_HOSTNIC_VPCS_MISMATCHED
+EC_DNS_ERR
 "
 
 generateDockerLayerLinks() {
@@ -49,7 +50,6 @@ initNode() {
   test -f $DEFAULT_AUDIT_POLICY_FILE || cp /opt/app/current/conf/k8s/default-audit-policy-file.yaml $DEFAULT_AUDIT_POLICY_FILE
   ln -snf $KUBE_CONFIG /root/.kube/config
   chown -R etcd /data/var/lib/etcd
-  if isUsingHostnic; then updateHostnicStatus 0; fi
 }
 
 start() {
@@ -71,6 +71,10 @@ startSvc() {
 initCluster() {
   log --debug "initializing cluster ..."
   _initCluster
+  log "warm up DNS ..."
+  warmUpLocalDns
+  log "updating hostnic vxnets status DNS ..."
+  updateHostnicStatus
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
   annotateInstanceId
   rm -rf $JOIN_CMD_FILE
@@ -267,15 +271,19 @@ initFirstNode() {
     log --debug "marking master-only cluster nodes ..."
     markAllInOne
   fi
-  log --debug "checking if hostnic vxnets valid ..."
-  updateHostnicStatus
-  checkHostnicHealthy
   log --debug "setting up DNS ..."
   setUpDns
-  log --debug "waiting for kube-dns resolving qingcloud api server ..."
-  warmUpDns
+  log "checking if hostnic vxnets healthy ..."
+  local hostnicStatus=0
+  checkHostnicHealthy || hostnicStatus=$?
+  if [ "$hostnicStatus" -eq 0 ]; then
+    log --debug "waiting for kube-dns resolving qingcloud api server ..."
+    warmUpDns
+  fi
+
   log --debug "waiting for all nodes to be ready ..."
   waitAllNodesReady
+
   if $NODELOCALDNS_ENABLED; then
     log --debug "setting up nodelocaldns ..."
     setUpNodeLocalDns
@@ -290,6 +298,7 @@ initFirstNode() {
     log --debug "launch ks-installer ..."
     startSvc ks-installer
   fi
+  return $hostnicStatus
 }
 
 initOtherNode() {
@@ -477,13 +486,17 @@ setUpNetwork() {
   sed "s@10\.244\.0\.0/16@$POD_SUBNET@" $baseDir/flannel-$FLANNEL_VERSION.yml > $baseDir/flannel.yml
   yq m -x -d3 $baseDir/hostnic-$HOSTNIC_VERSION.yml $baseDir/hostnic-cm.yml > $baseDir/hostnic.yml
   runKubectl apply -f $baseDir/$NET_PLUGIN.yml
-  if [ "$NET_PLUGIN" = "hostnic" ]; then
+  if isUsingHostnic; then
     runKubectl apply -f $baseDir/hostnic-policy-$HOSTNIC_VERSION.yml
   fi
 }
 
+warmUpLocalDns() {
+  retry 5 2 0 restartLocalDnsIfNotReady || return $EC_DNS_ERR
+}
+
 setUpHostnicRules() {
-  if [ "$NET_PLUGIN" = "hostnic" ]; then
+  if isUsingHostnic; then
     iptables -t filter -P FORWARD ACCEPT
   fi
 }
@@ -520,7 +533,6 @@ setUpDns() {
 }
 
 warmUpDns() {
-  retry 5 2 0 restartLocalDnsIfNotReady
   local inClusterDns; inClusterDns="$(runKubectl -n kube-system get svc kube-dns --template '{{.spec.clusterIP}}')"
   retry 30 1 0 queryDns $CLUSTER_API_SERVER $inClusterDns || log 'WARN: seems kube-dns is not ready.'
 }
@@ -777,19 +789,26 @@ resetAuditingModule() {
 }
 
 updateHostnicStatus() {
+  isUsingHostnic || return 0
   local status=0
-  checkHostnicVxnets || status=$?
+  retry 5 1 0 checkHostnicVxnets || status=$?
   echo $status > $HOSTNIC_STATUS_FILE
 }
 
 checkHostnicHealthy() {
+  isUsingHostnic || return 0
+  if [ ! -f $HOSTNIC_STATUS_FILE ]; then
+    (&>/dev/null updateHostnicStatus &)
+    return $EC_HOSTNIC_VXNETS_UNKNOWN
+  fi
   return $(cat $HOSTNIC_STATUS_FILE)
 }
 
 reloadHostnic() {
+  isUsingHostnic || return 0
+  updateHostnicStatus
   runKubectl apply -f /opt/app/current/conf/k8s/hostnic-cm.yml
   runKubectl -n kube-system rollout restart ds hostnic-node
-  updateHostnicStatus
 }
 
 reloadKubeMasterArgs() {
