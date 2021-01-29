@@ -15,7 +15,6 @@ EC_OVERLAY_ERR
 initNode() {
   if ! $IS_UPGRADING; then
     echo "root:${CLUSTER_ID:?password is required}" | chpasswd
-    chage -d 0 root
   fi
   _initNode
   mkdir -p /data/kubernetes
