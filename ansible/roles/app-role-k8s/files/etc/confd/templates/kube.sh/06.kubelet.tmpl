@@ -1,8 +1,10 @@
+{{- $gpuOnly := and (eq (getv "/host/role") "node_gpu") (ls "/hosts" | filter "node_(perf|super_perf)") }}
+
 flush /etc/default/kubelet << KUBELET_EOF
 KUBELET_EXTRA_ARGS="$(xargs <<< "
 --max-pods={{ if $usingHostnic }}{{ $hostnicMaxNics }}{{ else }}{{ getv "/env/max_pods" "120" }}{{ end }}
 --root-dir=/data/var/lib/kubelet
-{{- if eq (getv "/host/role") "node_gpu" }}
+{{- if $gpuOnly }}
 --register-with-taints=nvidia.com/gpu=true:NoSchedule
 {{- end }}
 --v={{ getv "/env/kube_log_level" }}
