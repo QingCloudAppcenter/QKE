@@ -888,7 +888,7 @@ markGpuNode() {
 
 runDockerPrune() {
   local days="$DOCKER_PRUNE_DAYS" && test -z "$1" || days="$(echo $1 | jq -r '.max_days')"
-  docker system prune -f --filter "until=$(( $days * 24 ))h"
+  if [ "$days" -gt 0 ]; then docker system prune -f --filter "until=$(( $days * 24 ))h"; fi
 }
 
 ensureCertsValid() {
