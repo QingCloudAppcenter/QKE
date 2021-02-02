@@ -476,7 +476,7 @@
       "description": "hostnic vxnets, one vxnet per line",
       "type": "string",
       "multiline": true,
-      "pattern": "^$|^(vxnet-[a-z0-9]+)(\\s*vxnet-[a-z0-9]+)*$",
+      "pattern": "^$|^(vxnet-[a-z0-9]+)(\\r?\\nvxnet-[a-z0-9]+)*$",
       "dependencies": [{
         "refkey": "network_plugin",
         "values": ["hostnic"],
