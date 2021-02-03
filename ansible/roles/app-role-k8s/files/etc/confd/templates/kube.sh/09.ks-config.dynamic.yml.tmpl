@@ -14,14 +14,13 @@ common:
   es:
     logMaxAge: {{ getv "/env/keep_log_days" "3" }}
     elkPrefix: {{ getv "/cluster/cluster_id" }}
+    {{- if exists "/links/elk_service/cluster/cluster_id" }}
+    externalElasticsearchUrl: external-elk.kube-system.svc
+    externalElasticsearchPort: {{ getv "/links/elk_service/cluster/endpoints/ElasticSearch/port" }}
+    {{- end }}
 
 logging:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logging")) 0) }}
-  {{- if exists "/links/elk_service/cluster/cluster_id" }}
-  externalElasticsearchUrl: external-elk.kube-system.svc
-  externalElasticsearchPort: {{ getv "/links/elk_service/cluster/endpoints/ElasticSearch/port" }}
-  {{- end }}
-  containersLogMountedPath: /data/var/lib/docker/containers
 openpitrix:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
 devops:
