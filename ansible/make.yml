@@ -14,7 +14,7 @@
   - update-apt-sources-1.0.0
   - disable-apt-jobs-1.0.0
   - disable-motd-1.0.0
-  - app-agent-1.0.6
+  - app-agent-1.1.0
   - appctl-1.2.5
   - arping-1.0.5
   - jq-1.0.9
