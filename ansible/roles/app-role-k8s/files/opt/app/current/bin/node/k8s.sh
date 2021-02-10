@@ -791,17 +791,18 @@ resetAuditingModule() {
 updateHostnicStatus() {
   isUsingHostnic || return 0
   local status=0
-  retry 5 1 0 checkHostnicVxnets || status=$?
+  checkHostnicVxnets || status=$?
   echo $status > $HOSTNIC_STATUS_FILE
 }
 
 checkHostnicHealthy() {
   isUsingHostnic || return 0
-  if [ ! -f $HOSTNIC_STATUS_FILE ]; then
+  local statusCode
+  statusCode=$(cat $HOSTNIC_STATUS_FILE) || statusCode=$EC_HOSTNIC_VXNETS_UNKNOWN
+  if [ $statusCode -ne 0 ]; then
     (&>/dev/null updateHostnicStatus &)
-    return $EC_HOSTNIC_VXNETS_UNKNOWN
   fi
-  return $(cat $HOSTNIC_STATUS_FILE)
+  return $statusCode
 }
 
 reloadHostnic() {
