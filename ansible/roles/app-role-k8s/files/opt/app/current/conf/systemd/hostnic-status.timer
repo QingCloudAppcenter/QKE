@@ -1,0 +1,11 @@
+[Unit]
+Description=update hostnic status every minute
+ConditionFileNotEmpty=/data/appctl/data/hostnic.status
+
+[Timer]
+OnActiveSec=1
+OnCalendar=*-*-* *:*:00
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target

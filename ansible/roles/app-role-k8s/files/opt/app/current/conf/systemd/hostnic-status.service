@@ -1,0 +1,9 @@
+[Unit]
+Description=update hostnic status
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/appctl updateHostnicStatus
+
+[Install]
+WantedBy=multi-user.target
