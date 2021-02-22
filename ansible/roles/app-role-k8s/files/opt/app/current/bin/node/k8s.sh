@@ -34,7 +34,6 @@ initNode() {
   _initNode
   generateDockerLayerLinks
   mkdir -p /data/{backup/csi,kubernetes/{audit/{logs,policies},manifests,backup/manifests}} /data/var/lib/etcd
-  test -f $HOSTNIC_STATUS_FILE || resetHostnicStatus
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/{hostnic,kubelet}; do
     if test -d /data/$migratingPath; then
@@ -74,8 +73,6 @@ initCluster() {
   _initCluster
   log "warm up DNS ..."
   warmUpLocalDns
-  log "reset hostnic status ..."
-  resetHostnicStatus
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
   annotateInstanceId
   rm -rf $JOIN_CMD_FILE
@@ -202,13 +199,13 @@ upgrade() {
 check() {
   _check
   checkNodeStats '$2~/^Ready/' $MY_NODE_NAME
-  checkHostnicHealthy
 }
 
 checkSvc() {
   _checkSvc $@ || return $?
   local svcName=${1%%/*}
   if [ "$svcName" = "kubelet" ]; then [ "$(curl -s -m 5 localhost:10248/healthz)" = "ok" ]; fi
+  if [ "$svcName" = "hostnic-status" ]; then checkHostnicHealthy; fi
   if [ "$svcName" = "kube-certs.timer" ]; then checkCertDaysBeyond 25; fi
 }
 
@@ -791,17 +788,10 @@ resetAuditingModule() {
 
 updateHostnicStatus() {
   isUsingHostnic || return 0
-  local status
+  local status=0
   checkHostnicVxnets || status=$?
   rotate $HOSTNIC_STATUS_FILE
   echo -n $status > $HOSTNIC_STATUS_FILE
-}
-
-resetHostnicStatus() {
-  if isUsingHostnic; then
-    rotate $HOSTNIC_STATUS_FILE
-    echo -n $EC_HOSTNIC_VXNETS_UNKNOWN > $HOSTNIC_STATUS_FILE
-  fi
 }
 
 checkHostnicHealthy() {
@@ -813,7 +803,7 @@ checkHostnicHealthy() {
 
 reloadHostnic() {
   isUsingHostnic || return 0
-  resetHostnicStatus
+  restartSvc hostnic-status
   runKubectl apply -f /opt/app/current/conf/k8s/hostnic-cm.yml
   runKubectl -n kube-system rollout restart ds hostnic-node
 }
