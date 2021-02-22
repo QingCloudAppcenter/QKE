@@ -2,8 +2,9 @@
 Description=update hostnic status
 
 [Service]
-Type=oneshot
+Type=simple
 ExecStart=/usr/bin/appctl updateHostnicStatus
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
