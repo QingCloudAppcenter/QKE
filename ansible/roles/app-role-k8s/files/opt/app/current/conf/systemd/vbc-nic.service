@@ -1,0 +1,10 @@
+[Unit]
+Description=set up VBC nic
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/appctl setUpVbcNic
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

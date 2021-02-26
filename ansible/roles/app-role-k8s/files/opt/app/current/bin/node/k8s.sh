@@ -615,6 +615,9 @@ launchKs() {
   ksRunInstaller() {
     if $IS_UPGRADING; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
     local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    if [ -n "$KS_REGISTRY" ]; then
+      sed -i "s#image: #image: $KS_REGISTRY/#" $ksInstallerFile
+    fi
     runKubectl apply -f $ksInstallerFile
     buildKsConf | runKubectl apply -f -
   }
@@ -686,7 +689,7 @@ readonly INDEX_NODE_ID=6
 readonly INDEX_NODE_IP=7
 
 getColumns() {
-  echo ${@:2} | xargs -n1 | awk -F/ '{print $'$1'}'
+  echo ${@:2} | xargs -n1 | cut -d/ -f$1
 }
 
 getMyNodeName() {
@@ -705,7 +708,8 @@ setUpKubeLb() {
   iaasTagResource $CLUSTER_TAG security_group $sg
   iaasAddSecurityRules $sg $CLUSTER_ZONE
   iaasApplySecurityGroup $sg
-  local lbId; lbId="$(iaasCreateLb $CLUSTER_ID $CLUSTER_VXNET $sg)"
+  local lbVxnet=${VBC_VXNET:-$CLUSTER_VXNET}
+  local lbId; lbId="$(iaasCreateLb $CLUSTER_ID $lbVxnet $sg)"
   iaasTagResource $CLUSTER_TAG loadbalancer $lbId
   sleep 30
   retry 300 2 0 checkLbActive $lbId
@@ -976,4 +980,35 @@ getKsUrl() {
   else
     renderJson "Something went wrong, but you should ensure ks-console service in kubesphere-system is of type 'LoadBalancer' or 'NodePort'."
   fi
+}
+
+isVbcNicInitialized() {
+  [ -s $VBC_NIC_FILE ]
+}
+
+initVbcNic() {
+  local vbcGateway; vbcGateway=$(retry 5 2 0 iaasRunCli describe-vxnets -t 2 -v $VBC_VXNET | jq -er '.vxnet_set[0].router.manager_ip')
+  local vbcNic; vbcNic=$(retry 5 2 0 iaasRunCli create-nics --vxnet $VBC_VXNET | jq -ecr '.nics[0] | [.nic_id, .private_ip] | @tsv' | sed 's#\t#/#')
+  retry 5 2 0 iaasRunCli attach-nics -n ${vbcNic%%/*} -i $MY_INSTANCE_ID
+  echo $vbcNic/$vbcGateway > $VBC_NIC_FILE
+}
+
+getVbcNicIp() {
+  cut -d/ -f2 $VBC_NIC_FILE
+}
+
+getVbcNicGateway() {
+  cut -d/ -f3 $VBC_NIC_FILE
+}
+
+checkVbcNicReady() {
+  local expectedIpAddr; expectedIpAddr=$(getVbcNicIp) || return 126
+  local actualIpAddr; actualIpAddr=$(ip -br a show eth1 | awk '{print $3}') || return 125
+  [ "$expectedIpAddr" = "${actualIpAddr%%/*}" ] || return 124
+}
+
+setUpVbcNic() {
+  isVbcNicInitialized || initVbcNic
+  retry 30 3 0 checkVbcNicReady
+  ip r add $VBC_NETWORK via $(getVbcNicGateway) dev eth1
 }
