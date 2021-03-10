@@ -1,7 +1,7 @@
 ---
 - name: install kubectl
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: k8s-client

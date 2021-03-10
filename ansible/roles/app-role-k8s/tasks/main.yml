@@ -23,7 +23,7 @@
 
 - name: download plugins
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       dest_path: /opt/app/current/conf/k8s/
@@ -64,7 +64,7 @@
 
 - name: download csi plugin
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       dest_path: /opt/app/current/conf/k8s/
@@ -151,7 +151,7 @@
 
 - name: install calicoctl
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       file_mode: '755'

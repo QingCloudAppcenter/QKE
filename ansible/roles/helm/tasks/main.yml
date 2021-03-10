@@ -1,7 +1,7 @@
 ---
 - name: install packages
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: helm
@@ -25,7 +25,7 @@
 
 - name: install helm-2to3
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: helm-2to3
