@@ -67,7 +67,7 @@ networking:
   {{- else }}
   podSubnet: {{ getv "/env/pod_subnet" "10.10.0.0/16" }}
   {{- end }}
-  serviceSubnet: {{ getv "/env/service_subnet" "10.96.0.0/12" }}
+  serviceSubnet: {{ $serviceSubnet }}
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -84,7 +84,7 @@ systemReserved:
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
-mode: {{ getv "/env/proxy_mode" "ipvs" }}
+mode: {{ $proxyMode }}
 {{- with (replace (join (getvs "/env/proxy.iptables.params") "") "\r" "" -1) }}
 iptables:
   {{ replace . "\n" "\n  " -1 }}
