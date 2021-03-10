@@ -4,6 +4,10 @@ etcd:
   endpointIps: {{ join (or (getvs "/links/etcd_service/hosts/etcd_node/*/ip") (getvs "/hosts/master/*/ip")) "," }}
   tlsEnable: False
 
+{{- with (join (getvs "/env/ks.registry") "") }}
+local_registry: {{ . }}
+{{- end }}
+
 metrics_server:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "metrics-server")) 0) }}
 
