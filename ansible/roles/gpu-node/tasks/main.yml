@@ -49,7 +49,7 @@
 
 - name: download nvidia driver
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: nvidia-tesla
@@ -65,7 +65,7 @@
 
 - name: download nvidia packages
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: "{{ pkg_url | basename | regex_replace('(^[^_]+).*$', '\\1') }}"

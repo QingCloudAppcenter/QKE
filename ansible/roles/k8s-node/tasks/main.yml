@@ -7,7 +7,7 @@
 
 - name: install cni
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: cni
@@ -23,7 +23,7 @@
 
 - name: install k8s
   include_role:
-    name: install-1.0.5
+    name: install-1.0.6
   vars:
     opts:
       pkg_name: k8s-node
