@@ -614,8 +614,11 @@ launchKs() {
 
   ksRunInstaller() {
     if $IS_UPGRADING; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
-    local -r ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
-    runKubectl apply -f $ksInstallerFile
+    local readonly ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
+    if [ -n "$KS_REGISTRY" ]; then
+      local readonly imagePrefix=$KS_REGISTRY/
+    fi
+    sed "s#image: #image: $imagePrefix#" $ksInstallerFile | runKubectl apply -f -
     buildKsConf | runKubectl apply -f -
   }
 
@@ -686,7 +689,7 @@ readonly INDEX_NODE_ID=6
 readonly INDEX_NODE_IP=7
 
 getColumns() {
-  echo ${@:2} | xargs -n1 | awk -F/ '{print $'$1'}'
+  echo ${@:2} | xargs -n1 | cut -d/ -f$1
 }
 
 getMyNodeName() {
