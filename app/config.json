@@ -486,6 +486,23 @@
       "default": "",
       "required": "no"
     }, {
+      "key": "hostnic-hairpin",
+      "label": "hostnic hairpin",
+      "description": "hostnic hairpin",
+      "type": "boolean",
+      "dependencies": [{
+        "refkey": "network_plugin",
+        "values": ["hostnic"],
+        "operator": "in"
+      }, {
+        "refkey": "proxy_mode",
+        "values": ["iptables"],
+        "operator": "in"
+      }],
+      "changeable": false,
+      "default": false,
+      "required": "no"
+    }, {
       "key": "host_aliases",
       "label": "host aliases",
       "description": "Set host aliases",

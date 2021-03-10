@@ -20,6 +20,9 @@ data:
       "cniVersion": "0.3.0",
       "name": "hostnic",
       "type": "hostnic",
-      "serviceCIDR" : "{{ getv "/env/service_subnet" "10.96.0.0/12" }}"
+      {{- if eq $proxyMode "iptables" }}
+      "hairpin": {{ getv "/env/hostnic-hairpin" "false" }},
+      {{- end }}
+      "serviceCIDR" : "{{ $serviceSubnet }}"
     }
 HOSTNIC_CM_EOF
