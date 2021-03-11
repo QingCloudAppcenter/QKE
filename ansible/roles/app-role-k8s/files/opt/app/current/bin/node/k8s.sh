@@ -23,10 +23,8 @@ generateDockerLayerLinks() {
     local layerName; for layerName in $(find /var/lib/docker/overlay2 -mindepth 1 -maxdepth 1 ! -name l); do
       ln -snf $layerName /data$layerName
     done
-    if ! isDev; then
-      rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
-      rsync -aAX /var/lib/docker/image /data/var/lib/docker/
-    fi
+    rsync -aAX /var/lib/docker/overlay2/l /data/var/lib/docker/overlay2/
+    rsync -aAX /var/lib/docker/image /data/var/lib/docker/
   fi
 }
 
