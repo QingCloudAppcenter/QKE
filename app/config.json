@@ -447,6 +447,15 @@
       "changeable": false,
       "required": "no"
     }, {
+      "key": "proxy_mode",
+      "label": "Proxy Mode",
+      "description": "Choose a proxy mode",
+      "type": "string",
+      "changeable": false,
+      "default": "ipvs",
+      "range": ["ipvs", "iptables"],
+      "required": "no"
+    }, {
       "key": "network_plugin",
       "label": "network plugin",
       "description": "Choose a network plugin",
@@ -601,15 +610,6 @@
       "changeable": true,
       "default": 120,
       "range": [60, 120, 180, 240],
-      "required": "no"
-    }, {
-      "key": "proxy_mode",
-      "label": "Proxy Mode",
-      "description": "Choose a proxy mode",
-      "type": "string",
-      "changeable": false,
-      "default": "ipvs",
-      "range": ["ipvs", "iptables"],
       "required": "no"
     }, {
       "key": "kube_log_level",
