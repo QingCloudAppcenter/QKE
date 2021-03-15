@@ -698,8 +698,6 @@ getMyNodeName() {
   fi
 }
 
-. /opt/app/current/bin/node/iaas.sh
-
 setUpKubeLb() {
   saveLbFile notready
   local sg; sg="$(iaasCreateSecurityGroup $CLUSTER_ID)"
