@@ -704,7 +704,7 @@ setUpKubeLb() {
   iaasTagResource $CLUSTER_TAG security_group $sg
   iaasAddSecurityRules $sg $CLUSTER_ZONE
   iaasApplySecurityGroup $sg
-  local lbId; lbId="$(iaasCreateLb $CLUSTER_ID $CLUSTER_VXNET $sg)"
+  local lbId; lbId="$(iaasCreateLb $CLUSTER_ID $(execute getKubeLbVxnet) $sg)"
   iaasTagResource $CLUSTER_TAG loadbalancer $lbId
   sleep 30
   retry 300 2 0 checkLbActive $lbId
@@ -715,6 +715,10 @@ setUpKubeLb() {
   retry 120 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   saveLbFile $lbId/$lbIp
+}
+
+_getKubeLbVxnet() {
+  echo -n $CLUSTER_VXNET
 }
 
 checkLbActive() {
