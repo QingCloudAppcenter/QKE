@@ -176,7 +176,7 @@ upgrade() {
       applyKubeProxyLogLevel
       setUpNetwork
       setUpCloudControllerMgr
-      setUpStorage
+      execute setUpStorage
     fi
     log --debug "I am master node end"
   else
@@ -288,7 +288,7 @@ initFirstNode() {
   setUpCloudControllerMgr
 
   log --debug "setting up storage ..."
-  setUpStorage
+  execute setUpStorage
   removeTokens
   if $KS_ENABLED; then
     log --debug "launch ks-installer ..."
@@ -551,7 +551,7 @@ setUpNodeLocalDns() {
   sed "$replaceRules" /opt/app/current/conf/k8s/nodelocaldns-$K8S_VERSION.yml | runKubectl apply -f -
 }
 
-setUpStorage() {
+_setUpStorage() {
   # remove previous version
   if $IS_UPGRADING_FROM_V2; then
     runKubectl delete -f /opt/app/2.0.0/conf/k8s/csi-qingcloud-1.1.1.yml
