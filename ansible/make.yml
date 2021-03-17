@@ -31,6 +31,7 @@
   - etcd-1.1.0
   - k8s-node
   - app-role-k8s
+  # extra modules
 
 - name: k8s gpu nodes
   hosts: gpu-node
