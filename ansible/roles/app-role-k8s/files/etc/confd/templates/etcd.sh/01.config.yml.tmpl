@@ -5,9 +5,9 @@ name: {{ getv "/host/instance_id" }}
 data-dir: /data/var/lib/etcd
 auto-compaction-retention: "0"
 listen-peer-urls: http://{{ getv "/host/ip" }}:2380
-listen-client-urls: http://127.0.0.1:2379
+listen-client-urls: http://127.0.0.1:2379,http://{{ getv "/host/ip" }}:2379
 initial-advertise-peer-urls: http://{{ getv "/host/ip" }}:2380
-advertise-client-urls: http://127.0.0.1:2379
+advertise-client-urls: http://{{ getv "/host/ip" }}:2379
 {{- $joining := lsdir "/adding-hosts/master" | filter (getv "/host/instance_id") }}
 initial-cluster: $(echo "
 {{- range lsdir "/hosts/master" }}
