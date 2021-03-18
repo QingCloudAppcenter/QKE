@@ -237,7 +237,7 @@ prepareKubeletEnv() {
 }
 
 initFirstNode() {
-  if $IS_HA_CLUSTER; then
+  if hasKubeLb; then
     log --debug "creating lb ..."
     startSvc kube-lb
   fi
@@ -247,7 +247,7 @@ initFirstNode() {
   distributeJoinCmd
   log --debug "distributing kube.config to worker and client nodes ..."
   distributeKubeConfig
-  if $IS_HA_CLUSTER; then
+  if hasKubeLb; then
     log --debug "wait all master node joined"
     waitAllMasterNodesJoined
     log --debug "waiting kube lb is created ..."
@@ -305,7 +305,7 @@ initOtherNode() {
     log --debug "joining cluster as master ..."
     retry 3 1 0 bash $JOIN_CMD_FILE
   fi
-  if $IS_HA_CLUSTER; then
+  if hasKubeLb; then
     if [ -z "$joining" ]; then
       log --debug "wait all master node joined"
       waitAllMasterNodesJoined
@@ -698,6 +698,12 @@ getMyNodeName() {
   fi
 }
 
+hasKubeLb() {
+  if [ -z "$KUBE_EIP_ID" ] && ! $IS_HA_CLUSTER; then
+    return 1
+  fi
+}
+
 setUpKubeLb() {
   saveLbFile notready
   local sg; sg="$(iaasCreateSecurityGroup $CLUSTER_ID)"
@@ -714,7 +720,11 @@ setUpKubeLb() {
   iaasApplyLb $lbId
   retry 120 1 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
-  saveLbFile $lbId/$lbIp
+  if [ -n "$KUBE_EIP_ID" ]; then
+    local lbEip; lbEip="$(iaasRunCli describe-eips -e $KUBE_EIP_ID | jq -er '.eip_set[0].eip_addr')"
+    iaasRunCli associate-eips-to-loadbalancer -l $lbId -e $KUBE_EIP_ID
+  fi
+  saveLbFile $lbId/$lbIp/$lbEip
 }
 
 _getKubeLbVxnet() {
@@ -738,6 +748,10 @@ getLbIpFromFile() {
   awk -F/ '{print $2}' $APISERVER_LB_FILE | grep ^[0-9.]\\+$
 }
 
+getLbEipFromFile() {
+  awk -F/ '{print $3}' $APISERVER_LB_FILE | grep ^[0-9.]\\+$
+}
+
 distributeKubeLbFile() {
   distributeFile $APISERVER_LB_FILE ${@:-$STABLE_MASTER_NODES $STABLE_WORKER_NODES $STABLE_CLIENT_NODES}
 }
@@ -752,12 +766,19 @@ checkKubeLbJobDone() {
 
 updateLbIp() {
   local lbIp; lbIp="$(getLbIpFromFile)" || return $EC_IAAS_FAILED
+  if [ -n "$KUBE_EIP_ID" ]; then
+    local lbEip; lbEip="$(getLbEipFromFile)" || return $EC_IAAS_FAILED
+  fi
   sed -ri "s/^[0-9.]+(\s+loadbalancer)/$lbIp\1/" /etc/hosts
   if isMaster; then
     local -r objPath=apiServer.certSANs certSansFile=/opt/app/current/conf/k8s/cert-sans.yml marker='# Load Balancer IP'
     if yq r -d1 $KUBEADM_CONFIG $objPath | grep -vF "$lbIp $marker"; then
       rotate $KUBEADM_CONFIG
-      yq r -d1 $KUBEADM_CONFIG $objPath | (sed "/$marker/d"; echo "- $lbIp $marker") | yq p - $objPath > $certSansFile
+      if [ -n "$KUBE_EIP_ID" ]; then
+        local lbEipLine="- $lbEip $marker (Public)"
+      fi
+      local lbIpLine="- $lbIp $marker (Private)"
+      yq r -d1 $KUBEADM_CONFIG $objPath | (sed "/$marker/d"; echo $lbEipLine; echo $lbIpLine) | yq p - $objPath > $certSansFile
       yq m -x -i -d1 $KUBEADM_CONFIG $certSansFile
       updateApiserverCerts
       reloadKubeMasterProcs
@@ -940,10 +961,13 @@ setUpResolvConf() {
 
 getKubeConfig() {
   local urlAuthority
-  if [ -n "$K8S_API_HOST" ]; then
+  local kubeLbEip=$(getLbEipFromFile)
+  if [ -n "$kubeLbEip" ]; then
+    urlAuthority=$kubeLbEip:6443
+  elif [ -n "$K8S_API_HOST" ]; then
     urlAuthority=$K8S_API_HOST:$K8S_API_PORT
   else
-    urlAuthority="$($IS_HA_CLUSTER && isClusterInitialized && getLbIpFromFile || getFirstMasterIp):6443"
+    urlAuthority="$(hasKubeLb && isClusterInitialized && getLbIpFromFile || getFirstMasterIp):6443"
   fi
   sed "s/loadbalancer:6443/$urlAuthority/g" $KUBE_CONFIG | jq -Rsc '{labels: ["Kubeconfig"], data: [[.]]}'
 }
