@@ -419,6 +419,16 @@
       "pattern": "^(eip-)(\\w{8})$|^$",
       "required": "no"
     }, {
+      "key": "kubernetes_eip_id",
+      "label": "K8s apiserver EIP",
+      "description": "EIP ID for exposing kube-apiserver; if set, we'll create an LB and associate this EIP to it",
+      "type": "eip",
+      "default": "",
+      "changeable": false,
+      "expanded": true,
+      "pattern": "^(eip-)(\\w{8})$|^$",
+      "required": "no"
+    }, {
       "key": "kubernetes_eip",
       "label": "Kubernetes EIP Address",
       "description": "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23",

@@ -7,6 +7,10 @@ lbIp={{ . }}
 lbIp="$(awk -F/ '{print $2}' $APISERVER_LB_FILE | grep . || echo -n)"
 {{- end }}
 
+{{- if $lbEipId }}
+lbEip="$(awk -F/ '{print $3}' $APISERVER_LB_FILE | grep . || echo -n)"
+{{- end }}
+
 printHostEntry() {
   echo $1$'\t'$2
 }

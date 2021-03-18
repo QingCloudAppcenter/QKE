@@ -157,6 +157,7 @@
     "Pod Subnet": "Pod 网段",
     "Service Subnet": "Service 网段",
     "Choose a proxy mode": "选择一种 Proxy Mode",
+    "EIP ID for exposing kube-apiserver; if set, we'll create an LB and associate this EIP to it": "如果希望通过公网访问 K8s apiserver，请在此处填写可用的 Kubernetes EIP ID，系统将会自动创建一个 LB 并绑定此 EIP",
     "Kubernetes EIP Address": "Kubernetes EIP 地址",
     "Kubernetes EIP Port": "Kubernetes EIP 端口",
     "Get Kubeconfig": "如果用户希望本地使用 kubectl 通过 EIP 访问 Kubernetes Apiserver ，请在 QKE 配置参数中填写 Kubernetes EIP 地址，需要用户自己确保 EIP 和 Kubernetes Apiserver 的连通性，并将 kubeconfig 中 server 的 IP 地址修改为 EIP 地址，端口修改为适当的端口；注意：此处的 kubeconfig 拥有集群管理的最高权限，请谨慎使用，请勿执行类似 kubectl delete nodes 等高危操作！",

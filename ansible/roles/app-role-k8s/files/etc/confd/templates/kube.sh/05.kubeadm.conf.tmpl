@@ -27,7 +27,8 @@ apiServer:
   {{- with join (getvs "/env/kubernetes_eip") "" }}
   - {{ . }}
   {{- end }}
-  $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP")
+  $(test -z "$lbEip" || echo -n "- $lbEip # Load Balancer IP (Public)")
+  $(test -z "$lbIp" || echo -n "- $lbIp # Load Balancer IP (Private)")
   extraArgs:
     service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
     advertise-address: 0.0.0.0
