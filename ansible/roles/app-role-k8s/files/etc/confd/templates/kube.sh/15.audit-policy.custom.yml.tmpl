@@ -1,0 +1,5 @@
+flush $KUBE_AUDIT_POLICY_CHANGED_FILE << KUBE_AUDIT_POLICY_EOF
+{{ $kubeAuditPolicy }}
+KUBE_AUDIT_POLICY_EOF
+
+syncKubeAuditFiles

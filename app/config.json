@@ -632,13 +632,24 @@
       "changeable": false,
       "required": "no"
     }, {
-      "key": "kube_audit_file",
-      "label": "audit-policy-file",
-      "description": "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/policies/default.yaml; audit file path: /etc/kubernetes/audit/policies/",
+      "key": "kube_audit_policy",
+      "label": "audit-policy",
+      "description": "K8s audit policy in YAML format; if it is empty, no events are logged",
       "type": "string",
-      "default": "",
+      "multiline": true,
       "changeable": true,
-      "pattern": "^(\/((\\w|\\-|\\.)+\/?)+((\\w|\\-|\\.)+))$|^$",
+      "pattern": "^$|^[^\\s]",
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "kube_audit_webhook",
+      "label": "audit-webhook",
+      "description": "K8s audit webhook configurations in YAML format; if it is empty, events will be logged into files under /etc/kubernetes/audit/logs/",
+      "type": "string",
+      "multiline": true,
+      "changeable": true,
+      "pattern": "^$|^[^\\s]",
+      "default": "",
       "required": "no"
     }, {
       "key": "keep_audit_days",
