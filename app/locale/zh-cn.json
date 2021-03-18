@@ -94,7 +94,7 @@
     "User SSH Key": "用户 SSH 公钥",
     "User's SSH key to connect to client node": "在此填入 SSH 公钥来通过 SSH 连接到集群节点",
     "The Elastic Search server address, format host:port": "Elastic Search 服务器地址，格式为 host:port",
-    "notice_when_upgrade": "升级会消耗较多的磁盘 IO 和 CPU，请在业务低谷期进行升级；自行 SSH 到集群节点上做的改动会在重启后抹除，如果有此类数据或文件请先备份后再升级；请确保客户端节点处于开机运行状态；请确保所有 k8s 节点数据盘至少有 50G 可用空间；升级一般需要 1〜2 小时，请耐心等待",
+    "notice_when_upgrade": "升级会消耗较多的磁盘 IO 和 CPU，请在业务低谷期进行升级；自行 SSH 到集群节点上做的改动会在重启后抹除，如果有此类数据或文件请先备份后再升级；请确保客户端节点处于开机运行状态；请确保所有 K8s 节点数据盘至少有 50G 可用空间；原有的 K8s audit policy 配置将被重置，请在升级后通过集群参数重新配置；升级一般需要 1〜2 小时，请耐心等待",
     "err_code128": "无法获取 ks-installer 容器组信息，请重新创建集群，如需协助请工单联系",
     "err_code129": "无法获取 ks-installer 容器组日志，请重新创建集群，如需协助请工单联系",
     "err_code130": "KubeSphere 安装失败，可通过 kubectl -n kubesphere-system logs -f $(kubectl -n kubesphere-system get po -l app=ks-install -oname) 查看日志获取详细原因，如需协助请工单联系",
@@ -163,6 +163,7 @@
     "EIP address for accessing remote Kubernetes cluster, using Dotted Decimal Notation. For example: 139.198.123.23": "Kubernetes 的外网访问地址，请按照 IPv4 格式填写。例如：139.198.123.23；注意：修改此项会重启所有主节点的 kube-apiserver 从而导致 kube-apiserver 服务短暂中断，建议在业务低谷时间操作",
     "Pod Subnet, using standard CIDR notation. For example: 10.10.0.0/16": "Pod 网段，请按照标准的 CIDR 格式填写。例如：10.10.0.0/16",
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
-    "Defined the path of audit policy files. If the flag is omitted, no events are logged. User must ensure the file exists on all masters. Default policy file: /etc/kubernetes/audit/policies/default.yaml; audit file path: /etc/kubernetes/audit/policies/": "设置审计规则文件路径，路径为空或文件不存在则不记录审计日志；可通过客户端节点登录到所有主节点并把规则文件放到 /etc/kubernetes/audit/policies/ 目录下；系统已内置默认审计规则文件 /etc/kubernetes/audit/policies/default.yaml；注意：修改此项会重启所有主节点的 kube-apiserver 从而导致 kube-apiserver 服务短暂中断，建议在业务低谷时间操作",
+    "K8s audit policy in YAML format; if it is empty, no events are logged": "K8s audit policy，以 YAML 格式表示，留空此项表示禁用 K8s 审计功能，详细配置请参考文档 [Audit policy](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#audit-policy)",
+    "K8s audit webhook configurations in YAML format; if it is empty, events will be logged into files under /etc/kubernetes/audit/logs/": "K8s audit webhook，以 YAML 格式表示，留空此项表示把日志存储在主节点本地目录 /etc/kubernetes/audit/logs/ 下，详细配置请参考文档 [Webhook backend](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#webhook-backend)",
     "External port for accessing remote Kubernetes cluster, default value 6443": "Kubernetes 的外网访问端口，默认是 6443"
 }

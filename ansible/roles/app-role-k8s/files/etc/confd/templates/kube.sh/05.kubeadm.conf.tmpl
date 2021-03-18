@@ -31,26 +31,26 @@ apiServer:
   extraArgs:
     service-node-port-range: {{ getv "/env/cluster_port_range" "30000-32767" }}
     advertise-address: 0.0.0.0
-    {{- with getv "/env/kube_audit_file" "" }}
-    $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
-    audit-policy-file: {{ . }}
+    {{- if $kubeAuditPolicy }}
+    audit-policy-file: $KUBE_AUDIT_POLICY_RUNTIME_FILE
+    {{- if $kubeAuditWebhook }}
+    audit-webhook-config-file: $KUBE_AUDIT_WEBHOOK_RUNTIME_FILE
+    {{- else }}
     audit-log-maxage: "{{ getv "/env/keep_audit_days" }}"
     audit-log-path: /etc/kubernetes/audit/logs/audit.log
     audit-log-maxsize: "{{ getv "/env/kube_audit_log_maxsize" "1" }}"
     audit-log-maxbackup: "{{ getv "/env/kube_audit_log_maxbackup" "100" }}"
-    '; fi)
+    {{- end }}
     {{- end }}
     etcd-prefix: {{ getv "/cluster/cluster_id" }}
     v: "{{ getv "/env/kube_log_level" }}"
     {{ replace (replace (join (getvs "/env/apiserver.params") "") "\r" "" -1) "\n" "\n    " -1 }}
-  {{- with getv "/env/kube_audit_file" "" }}
-  $(if test -s "{{ . }}" || [ "{{ . }}" = "$DEFAULT_AUDIT_POLICY_FILE" ]; then echo '
+  {{- if $kubeAuditPolicy }}
   extraVolumes:
   - name: audit-policy
     hostPath: /etc/kubernetes/audit
     mountPath: /etc/kubernetes/audit
     pathType: DirectoryOrCreate
-  '; fi)
   {{- end }}
 controllerManager:
   extraArgs:

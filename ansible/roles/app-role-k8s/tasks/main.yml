@@ -184,7 +184,10 @@
       KUBELET_KUBE_CONFIG=/data/kubernetes/kubelet.conf
       KUBEADM_CONFIG=/opt/app/current/conf/k8s/kubeadm.conf
       QINGCLOUD_CONFIG=/opt/app/current/conf/qingcloud/config.yaml
-      DEFAULT_AUDIT_POLICY_FILE=/etc/kubernetes/audit/policies/default.yaml
+      KUBE_AUDIT_POLICY_CHANGED_FILE=/opt/app/current/conf/k8s/audit-policy.changed.yml
+      KUBE_AUDIT_POLICY_RUNTIME_FILE=/etc/kubernetes/audit/policies/custom.yaml
+      KUBE_AUDIT_WEBHOOK_CHANGED_FILE=/opt/app/current/conf/k8s/audit-webhook.changed.yml
+      KUBE_AUDIT_WEBHOOK_RUNTIME_FILE=/etc/kubernetes/audit/webhooks/custom.yaml
 
 - name: remove k8s etc dir
   file:
