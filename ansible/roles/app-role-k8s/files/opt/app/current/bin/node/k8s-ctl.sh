@@ -675,6 +675,10 @@ _setUpGpuPlugins() {
   runKubectl apply -f /opt/app/current/conf/k8s/nvidia-plugin-$NVIDIA_PLUGIN_VERSION.yml
 }
 
+addGpuTolerations() {
+  yq m -a $@ /opt/app/current/conf/k8s/gpu-tolerations.yml
+}
+
 getNodeNames() {
   if ! $UPGRADED_FROM_V1 && $NODE_NAME_HUMAN_READABLE; then
     getColumns $INDEX_NODE_NAME $@
