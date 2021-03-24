@@ -335,7 +335,10 @@ initOtherNode() {
     fi
   else
     markWorker
-    if isGpuNode; then markGpuNode; setUpGpuPlugin; fi
+    if isGpuNode; then
+      markGpuNode
+      execute setUpGpuPlugins
+    fi
   fi
 }
 
@@ -668,7 +671,7 @@ getKsInstallerPodName() {
   runKubectl -n kubesphere-system get pod -l app=ks-install --field-selector status.phase=Running -ojsonpath='{.items[0].metadata.name}' | grep ks-installer
 }
 
-setUpGpuPlugin() {
+_setUpGpuPlugins() {
   runKubectl apply -f /opt/app/current/conf/k8s/nvidia-plugin-$NVIDIA_PLUGIN_VERSION.yml
 }
 
