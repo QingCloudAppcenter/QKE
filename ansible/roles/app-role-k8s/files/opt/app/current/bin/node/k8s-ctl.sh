@@ -616,10 +616,7 @@ launchKs() {
   ksRunInstaller() {
     if $IS_UPGRADING; then runKubectlDelete -n kubesphere-system deploy ks-installer; fi
     local readonly ksInstallerFile=/opt/app/current/conf/k8s/ks-installer-$KS_VERSION.yml
-    if [ -n "$KS_REGISTRY" ]; then
-      local readonly imagePrefix=$KS_REGISTRY/
-    fi
-    sed "s#image: #image: $imagePrefix#" $ksInstallerFile | runKubectl apply -f -
+    sed "s#image: #image: $CUSTOM_REGISTRY#" $ksInstallerFile | runKubectl apply -f -
     buildKsConf | runKubectl apply -f -
   }
 
