@@ -30,8 +30,8 @@
   - docker-1.0.8
   - etcd-1.1.0
   - k8s-node
+  # put extra modules above
   - app-role-k8s
-  # extra modules
 
 - name: k8s gpu nodes
   hosts: gpu-node
