@@ -507,7 +507,7 @@
     }, {
       "key": "hostnic-hairpin",
       "label": "hostnic hairpin",
-      "description": "hostnic hairpin",
+      "description": "setting hairpin to true to forward pod traffic on the same virtual machine to physical machine; default to false, indicating pod traffic of the same virtual machine will not be forwarded to physical machines",
       "type": "boolean",
       "dependencies": [{
         "refkey": "network_plugin",
