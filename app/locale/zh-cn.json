@@ -119,6 +119,7 @@
     "hostnic max nics per host": "定义 hostnic 插件在一台主机中最多创建多少个网卡，默认为 60，更多说明可参考 [hostnic 官网](https://github.com/yunify/hostnic-cni)",
     "hostnic vxnets": "hostnic 私有网络",
     "hostnic vxnets, one vxnet per line": "一个 vxnet 最多能够容纳 252 张网卡，hostnic 根据最大网卡数将 vxnet 均分给 K8s 节点；此处可填写多个私有网络 ID（以 `vxnet-` 开头），每行一个；请在此处填写与此 QKE 集群处于同一个 VPC 下的私有网络以避免网络不通；建议准备未被使用的私有网络专门供此 QKE 集群使用，并填写至少两个私有网络以避免容器组无法分配到足够的网卡而无法启动，具体计算方法为：hostnic 最大网卡数 * K8s 节点数 <= 私有网络数 * 252（单个网络最大网卡数）；更多说明可参考 [hostnic 官网](https://github.com/yunify/hostnic-cni)",
+    "setting hairpin to true to forward pod traffic on the same virtual machine to physical machine; default to false, indicating pod traffic of the same virtual machine will not be forwarded to physical machines": "默认情况下，同节点上的 pod 流量只在虚拟机内部转发， 如果希望同节点 pod 流量经过宿主机转发，那么设置为 true",
     "SSD node label": "企业型节点标记",
     "HDD node label": "基础型节点标记",
     "Port range of each node": "NodePort 范围",
