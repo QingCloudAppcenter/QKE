@@ -21,6 +21,13 @@
   - yq-1.0.6
   - helm
 
+- name: k8s gpu nodes
+  hosts: gpu-node
+  vars:
+    target_env: "{{ lookup('env', 'target') }}"
+  roles:
+  - gpu-node
+
 - name: k8s masters and workers
   hosts: k8s-node,gpu-node
   vars:
@@ -32,13 +39,6 @@
   - k8s-node
   # put extra modules above
   - app-role-k8s
-
-- name: k8s gpu nodes
-  hosts: gpu-node
-  vars:
-    target_env: "{{ lookup('env', 'target') }}"
-  roles:
-  - gpu-node
 
 - hosts: k8s-client
   vars:

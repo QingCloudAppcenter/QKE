@@ -10,42 +10,8 @@
 
 - name: install packages required by nvidia
   apt:
-    name: ['gcc', 'make']
-
-- name: dependencies
-  lineinfile:
-    dest: /var/lib/dpkg/arch
-    line: "{{ content }}"
-    create: yes
-  register: arch_i386
-  loop:
-  - amd64
-  - i386
-  loop_control:
-    loop_var: content
-
-- name: install packages required by nvidia
-  apt:
-    name: ['libc6:i386', 'libstdc++6:i386']
-    update_cache: "{{ arch_i386.changed }}"
-
-- name: disable nouveau
-  modprobe:
-    name: nouveau
-    state: absent
-
-- name: blacklist the nouveau driver module
-  copy:
-    dest: /etc/modprobe.d/blacklist-nouveau.conf
-    content: |
-      blacklist nouveau
-      options nouveau modeset=0
-
-- name: update kernel
-  shell: update-initramfs -u
-
-- name: reboot machine to take effect
-  reboot:
+    name: ['gcc', 'g++', 'make']
+    update_cache: yes
 
 - name: download nvidia driver
   include_role:
