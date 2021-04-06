@@ -194,14 +194,6 @@
     path: /etc/kubernetes
     state: absent
 
-- name: load images from localhost
-  include_tasks: load-images.yml
-  when: target_env != 'dev'
-
-- name: restart docker
-  include_tasks: restart-docker.yml
-  when: target_env == 'dev'
-
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:
