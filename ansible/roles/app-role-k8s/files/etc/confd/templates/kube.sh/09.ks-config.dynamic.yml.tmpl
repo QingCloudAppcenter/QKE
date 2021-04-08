@@ -10,9 +10,9 @@ local_registry: {{ . }}
 
 metrics_server:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "metrics-server")) 0) }}
-
-networkpolicy:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "networkpolicy")) 0) }}
+network:
+  networkpolicy:
+    enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "networkpolicy")) 0) }}
 
 common:
   es:
@@ -26,7 +26,8 @@ common:
 logging:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logging")) 0) }}
 openpitrix:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
+  store:
+    enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
 devops:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "devops")) 0) }}
 servicemesh:
@@ -39,4 +40,8 @@ auditing:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "auditing")) 0) }}
 events:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "events")) 0) }}
+logsidecar:
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logsidecar")) 0) }}
+kubeedge:
+  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "kubeedge")) 0) }}
 KS_CONFIG_EOF

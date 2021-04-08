@@ -50,7 +50,7 @@ docker_images_ks:
 - kubesphere/java-11-runtime:v2.1.0
 - kubesphere/java-8-centos7:v2.1.0
 - kubesphere/java-8-runtime:v2.1.0
-- kubesphere/kubectl:v1.0.0
+- kubesphere/kubectl:v1.19.0
 - kubesphere/kube-rbac-proxy:v0.4.1
 - kubesphere/nodejs-4-centos7:v2.1.0
 - kubesphere/nodejs-6-centos7:v2.1.0
@@ -60,7 +60,7 @@ docker_images_ks:
 - kubesphere/python-35-centos7:v2.1.0
 - kubesphere/python-36-centos7:v2.1.0
 - kubesphere/s2i-binary:v2.1.0
-- kubesphere/s2ioperator:v2.1.1
+- kubespheredev/s2ioperator:latest
 - kubesphere/s2irun:v2.1.1
 - kubesphere/tomcat85-java11-centos7:v2.1.0
 - kubesphere/tomcat85-java11-runtime:v2.1.0
@@ -100,8 +100,8 @@ docker_images_ks_new:
 - istio/galley:1.4.8
 - istio/kubectl:1.4.8
 - istio/mixer:1.4.8
-- istio/pilot:1.4.8
-- istio/proxyv2:1.4.8
+- istio/pilot:1.6.10
+- istio/proxyv2:1.6.10
 - istio/sidecar_injector:1.4.8
 - jaegertracing/jaeger-agent:1.17
 - jaegertracing/jaeger-collector:1.17
@@ -114,14 +114,14 @@ docker_images_ks_new:
 - kubesphere/alerting-dbinit:v3.0.0
 - kubesphere/alerting:v2.1.2
 - kubesphere/fluentbit-operator:migrator
-- kubesphere/fluentbit-operator:v0.2.0
-- kubesphere/fluent-bit:v1.4.6
+- kubespheredev/fluentbit-operator:v0.4.0
+- kubespheredev/fluent-bit:v1.6.9
 - kubesphere/jenkins-uc:v3.0.0
-- kubesphere/ks-apiserver:v3.0.0
-- kubesphere/ks-console:v3.0.0
-- kubesphere/ks-controller-manager:v3.0.0
+- kubespheredev/ks-apiserver:v3.1.0-alpha.0
+- kubespheredev/ks-console:v3.1.0-alpha.0
+- kubespheredev/ks-controller-manager:v3.1.0-alpha.0
 - kubesphere/ks-devops:flyway-v3.0.0
-- kubesphere/ks-installer:qke-3.0.0
+- kubespheredev/ks-installer:v3.1.0-alpha.0
 - kubesphere/ks-upgrade:v3.0.0
 - kubesphere/kube-auditing-operator:v0.1.2
 - kubesphere/kube-auditing-webhook:v0.1.2
@@ -129,15 +129,15 @@ docker_images_ks_new:
 - kubesphere/kube-events-operator:v0.1.0
 - kubesphere/kube-events-ruler:v0.1.0
 - kubesphere/kubefed:v0.3.0
-- kubesphere/kube-state-metrics:v1.9.6
+- kubesphere/kube-state-metrics:v1.9.7
 - kubesphere/log-sidecar-injector:1.1
 - kubesphere/elasticsearch-curator:v5.7.6
-- kubesphere/metrics-server:v0.3.7
+- kubesphere/metrics-server:v0.4.2
 - kubesphere/nginx-ingress-controller:0.24.1
 - kubesphere/node-exporter:ks-v0.18.1
 - kubesphere/notification:flyway_v2.1.2
-- kubesphere/notification-manager-operator:v0.1.0
-- kubesphere/notification-manager:v0.1.0
+- kubespheredev/notification-manager-operator:v1.0.0
+- kubespheredev/notification-manager:v1.0.0
 - kubesphere/notification:v2.1.2
 - kubesphere/prometheus-config-reloader:v0.38.3
 - kubesphere/prometheus-operator:v0.38.3
@@ -148,4 +148,11 @@ docker_images_ks_new:
 - openpitrix/openpitrix:v0.5.0
 - openpitrix/release-app:sha-303629d
 - prom/alertmanager:v0.21.0
-- prom/prometheus:v2.20.1
+- prom/prometheus:v2.25.0
+
+docker_images_ks_3.1:
+- kubespheredev/kiali:v1.26.1
+- thanosio/thanos:v0.18.0
+- kubespheredev/ks-jenkins:2.249.1
+- kubespheredev/kiali-operator:v1.26.1
+- xyzli/openpitrix-jobs:latest
