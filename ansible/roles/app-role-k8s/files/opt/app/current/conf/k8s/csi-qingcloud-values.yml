@@ -1,6 +1,0 @@
-driver:
-  name: csi-qingcloud
-  kubeletDir: /data/var/lib/kubelet
-
-sc:
-  enable: false

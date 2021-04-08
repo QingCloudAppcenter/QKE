@@ -1,8 +1,0 @@
-[template]
-src = "etcd.sh.tmpl"
-dest = "/opt/app/current/bin/tmpl/etcd.sh"
-mode = "0700"
-keys = [
-  "/",
-]
-reload_cmd = "/opt/app/current/bin/tmpl/etcd.sh"

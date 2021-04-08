@@ -1,9 +1,0 @@
-flush /opt/app/current/conf/qingcloud/qingcloud.yaml << CLOUD_MGR_EOF
-zone: {{ getv "/cluster/zone" }}
-defaultVxNetForLB: {{ getv "/cluster/vxnet" }}
-clusterID: {{ getv "/cluster/cluster_id" }}
-userID: {{ getv "/cluster/user_id" }}
-isApp: true
-tagIDs:
-- {{ join (getvs "/cluster/cluster_tag") "" }}
-CLOUD_MGR_EOF

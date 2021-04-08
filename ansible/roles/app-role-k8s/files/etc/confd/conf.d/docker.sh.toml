@@ -1,8 +1,0 @@
-[template]
-src = "docker.sh.tmpl"
-dest = "/opt/app/current/bin/tmpl/docker.sh"
-mode = "0700"
-keys = [
-  "/",
-]
-reload_cmd = "/opt/app/current/bin/tmpl/docker.sh; systemctl reload docker"
