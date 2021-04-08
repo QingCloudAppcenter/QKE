@@ -32,16 +32,12 @@ devops:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "devops")) 0) }}
 servicemesh:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "servicemesh")) 0) }}
-notification:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "notification")) 0) }}
 alerting:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "alerting")) 0) }}
 auditing:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "auditing")) 0) }}
 events:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "events")) 0) }}
-logsidecar:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logsidecar")) 0) }}
 kubeedge:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "kubeedge")) 0) }}
 KS_CONFIG_EOF
