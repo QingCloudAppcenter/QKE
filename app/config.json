@@ -400,7 +400,7 @@
         "ks-openpitrix",
         "ks-devops",
         "ks-servicemesh",
-        "ks-notification",
+        "ks-kubeedge",
         "ks-alerting"
       ],
       "default": "metrics-server",
