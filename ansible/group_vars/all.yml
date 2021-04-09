@@ -156,3 +156,6 @@ docker_images_ks_3.1:
 - kubespheredev/ks-jenkins:2.249.1
 - kubespheredev/kiali-operator:v1.26.1
 - xyzli/openpitrix-jobs:latest
+- prom/node-exporter:v0.18.1
+- kubeedge/cloudcore:v1.6.1
+- kubespheredev/edge-watcher:v0.1.0
