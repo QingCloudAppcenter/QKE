@@ -34,14 +34,11 @@ apiServer:
     advertise-address: 0.0.0.0
     {{- if $kubeAuditPolicy }}
     audit-policy-file: $KUBE_AUDIT_POLICY_RUNTIME_FILE
-    {{- if $kubeAuditWebhook }}
     audit-webhook-config-file: $KUBE_AUDIT_WEBHOOK_RUNTIME_FILE
-    {{- else }}
     audit-log-maxage: "{{ getv "/env/keep_audit_days" }}"
     audit-log-path: /etc/kubernetes/audit/logs/audit.log
     audit-log-maxsize: "{{ getv "/env/kube_audit_log_maxsize" "1" }}"
     audit-log-maxbackup: "{{ getv "/env/kube_audit_log_maxbackup" "100" }}"
-    {{- end }}
     {{- end }}
     etcd-prefix: {{ getv "/cluster/cluster_id" }}
     v: "{{ getv "/env/kube_log_level" }}"
