@@ -1,25 +1,24 @@
-app_version: 3.0.1
+app_version: 3.1.0
 gcr_mirror: kubesphere
-etcd_version: 3.3.12
+etcd_version: 3.4.13
 cni_version: 0.8.6
-k8s_version: 1.18.12
+k8s_version: 1.19.8
 flannel_version: 0.12.0
 coredns_version: 1.6.9
-calico_version: 3.15.1
-hostnic_version: 1.0.0
+calico_version: 3.16.3
+hostnic_version: 1.0.0-alpha4
 qingcloud_csi_version: 1.2.6
 qingcloud_ccm_version: 1.4.5
-ks_version: 3.0.0
-ks_installer_image_tag: qke-3.0.1
+ks_version: 3.1.0
+ks_installer_image_tag: v3.1.0
 helm_version: 3.2.1
 helm_2to3_version: 0.8.0
 helm_stable_repo: https://charts.kubesphere.io/mirror
 helm_main_repo: https://charts.kubesphere.io/main
 helm_test_repo: https://charts.kubesphere.io/test
-nodelocaldns_version: 1.15.5
+nodelocaldns_version: 1.15.12
 nvidia_tesla_version: 418.116.00
 nvidia_plugin_version: 1.0.0-beta4
-# 本地 images package 的位置
 local_images_path: /images
 ks_images_package: allks.tgz
 k8s_images_package: allk8s.tgz
@@ -34,46 +33,6 @@ binaries:
 
 docker_images_k8s:
 - kubesphere/cloud-controller-manager:v1.4.4
-
-docker_images_ks:
-- alpine:3.10.4
-- docker:19.03
-- haproxy:2.0.4
-- jenkins/jenkins:2.176.2
-- kubesphere/builder-base:v2.1.0
-- kubesphere/builder-go:v2.1.0
-- kubesphere/builder-maven:v2.1.0
-- kubesphere/builder-nodejs:v2.1.0
-- kubesphere/elasticsearch-oss:6.7.0-1
-- kubesphere/etcd:v3.2.18
-- kubesphere/java-11-centos7:v2.1.0
-- kubesphere/java-11-runtime:v2.1.0
-- kubesphere/java-8-centos7:v2.1.0
-- kubesphere/java-8-runtime:v2.1.0
-- kubesphere/kubectl:v1.0.0
-- kubesphere/kube-rbac-proxy:v0.4.1
-- kubesphere/nodejs-4-centos7:v2.1.0
-- kubesphere/nodejs-6-centos7:v2.1.0
-- kubesphere/nodejs-8-centos7:v2.1.0
-- kubesphere/python-27-centos7:v2.1.0
-- kubesphere/python-34-centos7:v2.1.0
-- kubesphere/python-35-centos7:v2.1.0
-- kubesphere/python-36-centos7:v2.1.0
-- kubesphere/s2i-binary:v2.1.0
-- kubesphere/s2ioperator:v2.1.1
-- kubesphere/s2irun:v2.1.1
-- kubesphere/tomcat85-java11-centos7:v2.1.0
-- kubesphere/tomcat85-java11-runtime:v2.1.0
-- kubesphere/tomcat85-java8-centos7:v2.1.0
-- kubesphere/tomcat85-java8-runtime:v2.1.0
-- minio/mc:RELEASE.2019-08-07T23-14-43Z
-- minio/minio:RELEASE.2019-08-07T01-59-21Z
-- mysql:8.0.11
-- nginx:1.14-alpine
-- osixia/openldap:1.3.0
-- redis:5.0.5-alpine
-
-docker_images_k8s_new:
 - calico/cni:v3.15.1
 - calico/kube-controllers:v3.15.1
 - calico/node:v3.15.1
@@ -86,7 +45,7 @@ docker_images_k8s_new:
 - csiplugin/csi-resizer:v0.4.0
 - csiplugin/csi-snapshotter:v2.0.1
 - csiplugin/snapshot-controller:v2.0.1
-- kubesphere/hostnic:v1.0.0
+- kubesphere/hostnic:v1.0.0-alpha4
 - nvidia/k8s-device-plugin:1.0.0-beta4
 - kubesphere/flannel:v0.12.0
 - kubesphere/kube-apiserver:v1.18.12
@@ -95,7 +54,7 @@ docker_images_k8s_new:
 - kubesphere/kube-scheduler:v1.18.12
 - kubesphere/pause:3.2
 
-docker_images_ks_new:
+docker_images_ks:
 - istio/citadel:1.4.8
 - istio/galley:1.4.8
 - istio/kubectl:1.4.8
@@ -121,7 +80,7 @@ docker_images_ks_new:
 - kubesphere/ks-console:v3.0.0
 - kubesphere/ks-controller-manager:v3.0.0
 - kubesphere/ks-devops:flyway-v3.0.0
-- kubesphere/ks-installer:qke-3.0.0
+- kubesphere/ks-installer:v3.1.0
 - kubesphere/ks-upgrade:v3.0.0
 - kubesphere/kube-auditing-operator:v0.1.2
 - kubesphere/kube-auditing-webhook:v0.1.2
@@ -149,3 +108,75 @@ docker_images_ks_new:
 - openpitrix/release-app:sha-303629d
 - prom/alertmanager:v0.21.0
 - prom/prometheus:v2.20.1
+
+docker_images_k8s_new:
+- kubesphere/kube-apiserver:v1.19.8
+- kubesphere/kube-scheduler:v1.19.8
+- kubesphere/kube-proxy:v1.19.8
+- kubesphere/kube-controller-manager:v1.19.8
+- kubesphere/pause:3.1
+- kubesphere/etcd:v3.4.13
+- calico/cni:v3.16.3
+- calico/kube-controllers:v3.16.3
+- calico/node:v3.16.3
+- calico/pod2daemon-flexvol:v3.16.3
+- kubesphere/k8s-dns-node-cache:1.15.12
+- kubesphere/nfs-client-provisioner:v3.1.0-k8s1.11
+- csiplugin/csi-neonsan:v1.2.0
+- csiplugin/csi-neonsan-ubuntu:v1.2.0
+- csiplugin/csi-neonsan-centos:v1.2.0
+
+docker_images_ks_new:
+- openebs/provisioner-localpv:2.3.0
+- openebs/linux-utils:2.3.0
+- kubesphere/ks-apiserver:v3.1.0
+- kubesphere/ks-console:v3.1.0
+- kubesphere/ks-controller-manager:v3.1.0
+- kubesphere/ks-installer:v3.1.0
+- kubesphere/kubectl:v1.19.0
+- kubesphere/nginx-ingress-controller:v0.35.0
+- kubesphere/kubefed:v0.7.0
+- kubesphere/tower:v0.2.0
+- kubesphere/prometheus-config-reloader:v0.42.1
+- kubesphere/prometheus-operator:v0.42.1
+- prom/prometheus:v2.26.0
+- prom/node-exporter:v0.18.1
+- kubesphere/ks-alerting-migration:v3.1.0
+- kubesphere/notification-manager-operator:v1.0.0
+- kubesphere/notification-manager:v1.0.0
+- kubesphere/metrics-server:v0.4.2
+- kubesphere/kube-rbac-proxy:v0.8.0
+- kubesphere/kube-state-metrics:v1.9.7
+- openebs/provisioner-localpv:2.3.0
+- thanosio/thanos:v0.18.0
+- grafana/grafana:7.4.3
+- kubesphere/fluentbit-operator:v0.5.0
+- kubesphere/fluent-bit:v1.6.9
+- elastic/filebeat:6.7.0
+- kubesphere/kube-events-ruler:v0.2.0
+- istio/pilot:1.6.10
+- istio/proxyv2:1.6.10
+- kubesphere/kiali:v1.26.1
+- kubesphere/kiali-operator:v1.26.1
+- kubesphere/ks-jenkins:2.249.1
+- kubesphere/s2ioperator:v3.1.0
+- kubesphere/openpitrix-jobs:v3.1.0
+- weaveworks/scope:1.13.0
+- kubeedge/cloudcore:v1.6.1
+- kubesphere/edge-watcher:v0.1.0
+- kubesphere/kube-rbac-proxy:v0.5.0
+- kubesphere/edge-watcher-agent:v0.1.0
+- kubesphere/examples-bookinfo-productpage-v1:1.16.2
+- kubesphere/examples-bookinfo-reviews-v1:1.16.2
+- kubesphere/examples-bookinfo-reviews-v2:1.16.2
+- kubesphere/examples-bookinfo-reviews-v3:1.16.2
+- kubesphere/examples-bookinfo-details-v1:1.16.2
+- kubesphere/examples-bookinfo-ratings-v1:1.16.3
+- busybox:1.31.1
+- joosthofman/wget:1.0
+- kubesphere/netshoot:v1.0
+- wordpress:4.8-apache
+- mirrorgooglecontainers/hpa-example:latest
+- java:openjdk-8-jre-alpine
+- fluent/fluentd:v1.4.2-2.0
+- perl:latest

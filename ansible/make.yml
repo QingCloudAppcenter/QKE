@@ -33,7 +33,7 @@
   vars:
     target_env: "{{ lookup('env', 'target') }}"
   roles:
-  - qingcloud-cli-1.0.6
+  - qingcloud-cli-1.0.7
   - docker-1.0.8
   - etcd-1.1.0
   - k8s-node

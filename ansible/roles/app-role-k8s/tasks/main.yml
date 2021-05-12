@@ -55,10 +55,10 @@
     url: https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/{{ nvidia_plugin_version }}/nvidia-device-plugin.yml
   - name: hostnic
     version: "{{ hostnic_version }}"
-    url: https://raw.githubusercontent.com/yunify/hostnic-cni/{{ hostnic_version }}/deploy/hostnic.yaml
+    url: https://raw.githubusercontent.com/yunify/hostnic-cni/v{{ hostnic_version }}/deploy/hostnic.yaml
   - name: hostnic-policy
     version: "{{ hostnic_version }}"
-    url: https://raw.githubusercontent.com/yunify/hostnic-cni/{{ hostnic_version }}/policy/calico.yaml
+    url: https://raw.githubusercontent.com/yunify/hostnic-cni/v{{ hostnic_version }}/policy/calico.yaml
   loop_control:
     loop_var: pkg
 
