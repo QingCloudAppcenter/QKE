@@ -87,9 +87,11 @@ checkKsInstallerDone() {
   local output; output="$(runKubectl -n kubesphere-system logs --tail 50 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
-  local endStrings="is successful  ($KS_MODULES_COUNT/$KS_MODULES_COUNT)"
+  #local endStrings="is successful  ($KS_MODULES_COUNT/$KS_MODULES_COUNT)"
   if $IS_UPGRADING_FROM_V2; then endStrings=" failed=0 "; fi
-  echo "$output" | grep "Welcome to KubeSphere!" -B4 | grep -oF "$endStrings" || return $EC_KS_INSTALL_DONE_WITH_ERR
+  # if tail of installer log has line like "task openpitrix status is failed", means one or more components are failed
+  # to install.
+  !(echo "$output" | grep "Welcome to KubeSphere!" -B30 | grep -q "^task.*failed") || return $EC_KS_INSTALL_DONE_WITH_ERR
 }
 
 getKsInstallerPodName() {
