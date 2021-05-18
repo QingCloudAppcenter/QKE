@@ -212,11 +212,14 @@ revive() {
   _revive
 }
 
+# in v1.19.8 metrics are changed from:
+#   kubelet_running_container_count => kubelet_running_containers
+#   kubelet_running_pod_count => kubelet_running_pods
 measure() {
   isClusterInitialized && isNodeInitialized || return 0
   local -r regex="$(sed 's/^\s*//g' <<< '
-    kubelet_running_container_count{container_state="running"}
-    kubelet_running_pod_count
+    kubelet_running_containers{container_state="running"}
+    kubelet_running_pods
   ' | paste -sd'|' | sed 's/^|/^(/; s/|$/)/')"
   runKubectl get -s https://localhost:10250 --raw /metrics --insecure-skip-tls-verify | egrep "$regex" | sed -r 's/\{[^}]+\}//g; s/ /: /g' | yq -j r -
 }

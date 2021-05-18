@@ -7,8 +7,8 @@ flannel_version: 0.12.0
 coredns_version: 1.6.9
 calico_version: 3.16.3
 hostnic_version: 1.0.0-alpha.5
-qingcloud_csi_version: 1.2.6
-qingcloud_ccm_version: 1.4.5
+qingcloud_csi_version: 1.2.7
+qingcloud_ccm_version: 1.4.6
 ks_version: 3.1.0
 ks_installer_image_tag: v3.1.0
 helm_version: 3.2.1
@@ -17,7 +17,7 @@ helm_stable_repo: https://charts.kubesphere.io/mirror
 helm_main_repo: https://charts.kubesphere.io/main
 helm_test_repo: https://charts.kubesphere.io/test
 nodelocaldns_version: 1.15.12
-nvidia_tesla_version: 418.116.00
+nvidia_tesla_version: 460.73.01
 nvidia_plugin_version: 1.0.0-beta4
 local_images_path: /images
 ks_images_package: allks.tgz
@@ -122,9 +122,11 @@ docker_images_k8s_new:
 - calico/pod2daemon-flexvol:v3.16.3
 - kubesphere/k8s-dns-node-cache:1.15.12
 - kubesphere/nfs-client-provisioner:v3.1.0-k8s1.11
-- csiplugin/csi-neonsan:v1.2.0
-- csiplugin/csi-neonsan-ubuntu:v1.2.0
-- csiplugin/csi-neonsan-centos:v1.2.0
+- csiplugin/csi-qingcloud:v1.2.1
+- csiplugin/csi-neonsan:v1.2.1
+- csiplugin/csi-neonsan-ubuntu:v1.2.1
+- csiplugin/csi-neonsan-centos:v1.2.1
+- kubesphere/cloud-controller-manager:v1.4.6
 
 docker_images_ks_new:
 - openebs/provisioner-localpv:2.3.0
