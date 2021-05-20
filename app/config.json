@@ -21,7 +21,7 @@
     }, {
       "key": "resource_group",
       "label": "Resource Configuration",
-      "description": "The resource configuration of the service. Single master cluster cannot upgrade to HA mster cluster.",
+      "description": "Resource Group Description",
       "disable_when_scale": true,
       "type": "string",
       "default": "high-performance test",

@@ -196,7 +196,7 @@ upgrade() {
 
 check() {
   _check
-  checkNodeStats '$2~/^Ready/' $MY_NODE_NAME
+  checkNodeStats '$2~/^Ready/' $(getMyNodeName)
 }
 
 checkSvc() {
@@ -557,6 +557,11 @@ setUpNodeLocalDns() {
   sed "$replaceRules" /opt/app/current/conf/k8s/nodelocaldns-$K8S_VERSION.yml | runKubectl apply -f -
 }
 
+countUnBoundPVCs() {
+  count=$(runKubectl get pvc -A --no-headers | grep -v Bound | wc -l)
+  return ${count}
+}
+
 _setUpStorage() {
   # remove previous version
   if $IS_UPGRADING_FROM_V2; then
@@ -566,6 +571,15 @@ _setUpStorage() {
   # CSI plugin
   local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
   local -r csiValuesFile=/opt/app/current/conf/k8s/csi-qingcloud-values.yml
+
+  # Need to uninstall and reinstall if upgrading, because helm upgrade will fail due to
+  #    immutable fields change during upgrade.
+  if $IS_UPGRADING; then
+    # make sure there no pending pvs, if not skip upgrading csi-qingcloud
+    retry 600 1 0 countUnBoundPVCs || return 0
+    runHelm -n kube-system uninstall csi-qingcloud
+  fi
+
   yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \
       runHelm -n kube-system upgrade --install csi-qingcloud $csiChartFile -f -
 
