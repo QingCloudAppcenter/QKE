@@ -73,6 +73,7 @@ initCluster() {
   warmUpLocalDns
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
   annotateInstanceId
+  labelTopology
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -905,6 +906,11 @@ updateApiserverCerts() {
 
 annotateInstanceId() {
   runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
+}
+
+labelTopology() {
+  runKubectl label no $(getMyNodeName) topology.kubernetes.io/zone="$MY_ZONE"
+  runKubectl label no $(getMyNodeName) topology.kubernetes.io/region="$CLUSTER_REGION"
 }
 
 markAllInOne() {
