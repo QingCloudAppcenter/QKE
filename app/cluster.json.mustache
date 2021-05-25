@@ -6,20 +6,18 @@
     "etcd_service": {{cluster.etcd_service}},
     "elk_service": {{cluster.elk_service}}
   },
-  "multi_zone_policy": "round_robin",
   "need_tag": true,
   "need_intranet_api_server": true,
   "exclude_node_columns": ["instance_class"],
   "advanced_actions": ["scale_horizontal"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-egh21tjg",
-    "appv-39iiioy3"
+    "appv-egh21tjg"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-j8mi12ws",
+      "snapshot": "ss-pned1k8r",
       "zone": "pek3"
     },
     "copy":[{
@@ -45,7 +43,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-3d9hmkwk",
+      "snapshot": "ss-mixs6spp",
       "zone": "pek3"
     },
     "copy":[{
@@ -59,7 +57,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-1sx7y8fs",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -145,7 +143,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-1sx7y8fs",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -207,7 +205,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-1sx7y8fs",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
