@@ -909,8 +909,10 @@ annotateInstanceId() {
 }
 
 labelTopology() {
-  runKubectl label no $(getMyNodeName) topology.kubernetes.io/zone="$MY_ZONE"
-  runKubectl label no $(getMyNodeName) topology.kubernetes.io/region="$CLUSTER_REGION"
+  runKubectl label no $(getMyNodeName) topology.kubernetes.io/zone="$MY_ZONE" --overwrite
+  if [ ! -z "${CLUSTER_REGION}" ]; then
+    runKubectl label no $(getMyNodeName) topology.kubernetes.io/region="$CLUSTER_REGION" --overwrite
+  fi
 }
 
 markAllInOne() {
