@@ -645,7 +645,12 @@ launchKs() {
 
 buildKsDynamicConf() {
   local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
-  yq p $ksCfgDynamicFile spec
+  if $IS_UPGRADING; then
+    # components could be manually enabled
+    runKubectl -n kubesphere-system get cc ks-installer -o yaml | yq r - 'spec' | yq p - spec
+  else
+    yq p $ksCfgDynamicFile spec
+  fi
 }
 
 buildKsConf() {

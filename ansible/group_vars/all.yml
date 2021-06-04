@@ -8,7 +8,7 @@ coredns_version: 1.6.9
 calico_version: 3.16.3
 hostnic_version: 1.0.0-alpha.5
 qingcloud_csi_version: 1.2.7
-qingcloud_ccm_version: 1.4.6
+qingcloud_ccm_version: 1.4.7
 ks_version: 3.1.0
 ks_installer_image_tag: v3.1.0
 helm_version: 3.2.1
@@ -32,7 +32,6 @@ binaries:
 - /opt/k8s
 
 docker_images_k8s:
-- kubesphere/cloud-controller-manager:v1.4.4
 - coredns/coredns:1.6.9
 - csiplugin/csi-attacher:v2.1.1
 - csiplugin/csi-node-driver-registrar:v1.2.0
@@ -43,7 +42,7 @@ docker_images_k8s:
 - csiplugin/snapshot-controller:v2.0.1
 - nvidia/k8s-device-plugin:1.0.0-beta4
 - kubesphere/flannel:v0.12.0
-- kubesphere/pause:3.2
+- kubesphere/pause:3.1
 
 docker_images_ks:
 - jaegertracing/jaeger-agent:1.17
@@ -64,13 +63,14 @@ docker_images_ks:
 - kubesphere/node-exporter:ks-v0.18.1
 - mirrorgooglecontainers/defaultbackend-amd64:1.4
 - prom/alertmanager:v0.21.0
+- docker:19.03
 
 docker_images_k8s_new:
 - kubesphere/kube-apiserver:v1.19.8
 - kubesphere/kube-scheduler:v1.19.8
 - kubesphere/kube-proxy:v1.19.8
 - kubesphere/kube-controller-manager:v1.19.8
-- kubesphere/pause:3.1
+- kubesphere/pause:3.2
 - kubesphere/etcd:v3.4.13
 - calico/cni:v3.16.3
 - calico/kube-controllers:v3.16.3
@@ -145,7 +145,6 @@ docker_images_ks_new:
 - minio/minio:RELEASE.2019-08-07T01-59-21Z
 - minio/mc:RELEASE.2019-08-07T23-14-43Z
 - kubesphere/elasticsearch-oss:6.7.0-1
-- docker:19.03
 - kubesphere/s2irun:v2.1.1
 - kubesphere/builder-base:v3.1.0
 - kubesphere/builder-nodejs:v3.1.0
