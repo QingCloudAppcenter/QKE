@@ -12,13 +12,12 @@
   "advanced_actions": ["scale_horizontal"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-egh21tjg",
-    "appv-39iiioy3"
+    "appv-egh21tjg"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-z9w1oyol",
+      "snapshot": "ss-pned1k8r",
       "zone": "pek3"
     },
     "copy":[{
@@ -44,7 +43,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-n50f95x6",
+      "snapshot": "ss-mixs6spp",
       "zone": "pek3"
     },
     "copy":[{
@@ -58,7 +57,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-gtc2f1o7",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -144,7 +143,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-gtc2f1o7",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -206,7 +205,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-gtc2f1o7",
+      "image": "img-sve8d2fj",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -268,7 +267,7 @@
     "role": "node_gpu",
     "container": {
       "type": "kvm",
-      "image": "img-2tsq1fsz",
+      "image": "img-kirp1glw",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_gpu.instance_class}},
@@ -329,7 +328,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-2gfk2szm",
+      "image": "img-swxveyde",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
@@ -382,13 +381,13 @@
     "enable": true,
     "cmd": "appctl measure",
     "items": {
-      "kubelet_running_container_count": {
+      "kubelet_running_containers": {
         "unit": "",
         "value_type": "int",
         "statistics_type": "latest",
         "scale_factor_when_display": 1
       },
-      "kubelet_running_pod_count": {
+      "kubelet_running_pods": {
         "unit": "",
         "value_type": "int",
         "statistics_type": "latest",
@@ -396,10 +395,10 @@
       }
     },
     "groups": {
-      "kubelet": ["kubelet_running_pod_count", "kubelet_running_container_count"]
+      "kubelet": ["kubelet_running_pods", "kubelet_running_containers"]
     },
     "display": ["kubelet"],
-    "alarm": ["kubelet_running_container_count"]
+    "alarm": ["kubelet_running_containers"]
   },
   "endpoints": {
     "nodeport": {

@@ -28,7 +28,8 @@ common:
 logging:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "logging")) 0) }}
 openpitrix:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
+  store:
+    enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "openpitrix")) 0) }}
 devops:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "devops")) 0) }}
 servicemesh:

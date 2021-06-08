@@ -73,6 +73,7 @@ initCluster() {
   warmUpLocalDns
   if isFirstMaster; then initFirstNode; else initOtherNode; fi
   annotateInstanceId
+  labelTopology
   rm -rf $JOIN_CMD_FILE
   log --debug "done initializing cluster!"
 }
@@ -196,7 +197,7 @@ upgrade() {
 
 check() {
   _check
-  checkNodeStats '$2~/^Ready/' $MY_NODE_NAME
+  checkNodeStats '$2~/^Ready/' $(getMyNodeName)
 }
 
 checkSvc() {
@@ -212,11 +213,14 @@ revive() {
   _revive
 }
 
+# in v1.19.8 metrics are changed from:
+#   kubelet_running_container_count => kubelet_running_containers
+#   kubelet_running_pod_count => kubelet_running_pods
 measure() {
   isClusterInitialized && isNodeInitialized || return 0
   local -r regex="$(sed 's/^\s*//g' <<< '
-    kubelet_running_container_count{container_state="running"}
-    kubelet_running_pod_count
+    kubelet_running_containers{container_state="running"}
+    kubelet_running_pods
   ' | paste -sd'|' | sed 's/^|/^(/; s/|$/)/')"
   runKubectl get -s https://localhost:10250 --raw /metrics --insecure-skip-tls-verify | egrep "$regex" | sed -r 's/\{[^}]+\}//g; s/ /: /g' | yq -j r -
 }
@@ -554,6 +558,11 @@ setUpNodeLocalDns() {
   sed "$replaceRules" /opt/app/current/conf/k8s/nodelocaldns-$K8S_VERSION.yml | runKubectl apply -f -
 }
 
+countUnBoundPVCs() {
+  count=$(runKubectl get pvc -A --no-headers | grep -v Bound | wc -l)
+  return ${count}
+}
+
 _setUpStorage() {
   # remove previous version
   if $IS_UPGRADING_FROM_V2; then
@@ -563,6 +572,15 @@ _setUpStorage() {
   # CSI plugin
   local -r csiChartFile=/opt/app/current/conf/k8s/csi-qingcloud-$QINGCLOUD_CSI_VERSION.tgz
   local -r csiValuesFile=/opt/app/current/conf/k8s/csi-qingcloud-values.yml
+
+  # Need to uninstall and reinstall if upgrading, because helm upgrade will fail due to
+  #    immutable fields change during upgrade.
+  if $IS_UPGRADING; then
+    # make sure there no pending pvs, if not skip upgrading csi-qingcloud
+    retry 600 1 0 countUnBoundPVCs || return 0
+    runHelm -n kube-system uninstall csi-qingcloud
+  fi
+
   yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \
       runHelm -n kube-system upgrade --install csi-qingcloud $csiChartFile -f -
 
@@ -627,7 +645,12 @@ launchKs() {
 
 buildKsDynamicConf() {
   local -r ksCfgDynamicFile=/opt/app/current/conf/k8s/ks-config.dynamic.yml
-  yq p $ksCfgDynamicFile spec
+  if $IS_UPGRADING; then
+    # components could be manually enabled
+    runKubectl -n kubesphere-system get cc ks-installer -o yaml | yq r - 'spec' | yq p - spec
+  else
+    yq p $ksCfgDynamicFile spec
+  fi
 }
 
 buildKsConf() {
@@ -888,6 +911,13 @@ updateApiserverCerts() {
 
 annotateInstanceId() {
   runKubectl annotate no $(getMyNodeName) node.beta.kubernetes.io/instance-id="$MY_INSTANCE_ID"
+}
+
+labelTopology() {
+  runKubectl label no $(getMyNodeName) topology.kubernetes.io/zone="$MY_ZONE" --overwrite
+  if [ ! -z "${CLUSTER_REGION}" ]; then
+    runKubectl label no $(getMyNodeName) topology.kubernetes.io/region="$CLUSTER_REGION" --overwrite
+  fi
 }
 
 markAllInOne() {
