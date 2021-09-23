@@ -12,6 +12,8 @@
     "count": "数量",
     "Number of master for the cluster to create": "主节点数量",
     "resource type": "资源类型",
+    "volume class": "持久存储卷类型",
+    "The volume class": "持久存储卷类型",
     "volume size": "硬盘大小",
     "The volume size for each instance": "每个机器的硬盘大小",
     "load balancer": "负载均衡器",

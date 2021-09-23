@@ -117,6 +117,14 @@
         "required": "yes",
         "resource_group": [8192, 8192, 16384, 16384]
       }, {
+        "key": "volume_class",
+        "label": "volume class",
+        "description": "The volume class",
+        "type": "integer",
+        "default": 6,
+        "range": [6],
+        "required": "yes"
+      }, {
         "key": "volume_size",
         "label": "volume size",
         "description": "The volume size for each instance",
