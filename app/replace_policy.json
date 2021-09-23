@@ -21,42 +21,16 @@
       "dst": 3
     }]
   },
-  "pek3b": {
-    "volume_class": [{
-      "src": "6",
-      "dst": 5
-    }]
-  },
-  "pek3c": {
-    "volume_class": [{
-      "src": "6",
-      "dst": 5
-    }]
-  },
-  "sh1a": {
-    "volume_class": [{
-      "src": "6",
-      "dst": 5
-    }]
-  },
   "gd2a": {
     "instance_class": [{
       "src": "202",
       "dst": 201
-    }],
-    "volume_class": [{
-      "src": "6",
-      "dst": 5
     }]
   },
   "gd2b": {
     "instance_class": [{
       "src": "202",
       "dst": 201
-    }],
-    "volume_class": [{
-      "src": "6",
-      "dst": 5
     }]
   },
   "ap2a": {

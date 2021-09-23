@@ -1,5 +1,7 @@
 [Unit]
 Description=create kube-apiserver load balancer
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/appctl setUpKubeLb

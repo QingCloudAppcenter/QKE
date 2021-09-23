@@ -175,6 +175,8 @@ upgrade() {
         retry 10 1 0 fixDns
       fi
       applyKubeProxyLogLevel
+      # restart metrics-server to be ready to avoid https://github.com/kubernetes/kubernetes/pull/96371
+      runKubectl -n kube-system rollout restart deploy metrics-server
       setUpNetwork
       setUpCloudControllerMgr
       execute setUpStorage
@@ -579,6 +581,7 @@ _setUpStorage() {
     # make sure there no pending pvs, if not skip upgrading csi-qingcloud
     retry 600 1 0 countUnBoundPVCs || return 0
     runHelm -n kube-system uninstall csi-qingcloud
+    runKubectl delete -f /opt/app/current/conf/k8s/csi-sc.yml
   fi
 
   yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \

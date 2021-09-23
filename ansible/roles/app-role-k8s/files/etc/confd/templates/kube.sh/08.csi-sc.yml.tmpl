@@ -1,7 +1,7 @@
 {{- $volume0 := map "min"  10 "max"  2000 "step"  10 }}
 {{- $volume2 := map "min" 100 "max"  5000 "step" 100 }}
-{{- $volume5 := map "min" 100 "max" 20000 "step" 100 }}
-{{- $volume6 := map "min" 100 "max" 10000 "step" 100 }}
+{{- $volume5 := map "min" 20 "max" 20000 "step" 10 }}
+{{- $volume6 := map "min" 20 "max" 10000 "step" 10 }}
 {{- $volumeClassMaps := map "0" $volume0 "2" $volume2 "3" $volume0 "5" $volume5 "6" $volume6 "100" $volume0 "200" $volume0 }}
 {{- $volumeNamesMap := map "0" "high-perf" "2" "high-capacity-legacy" "3" "super-high-perf" "5" "neonsan" "6" "high-capacity" "100" "standard" "200" "ssd-enterprise" }}
 
