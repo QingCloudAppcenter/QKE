@@ -4,3 +4,6 @@ driver:
 
 sc:
   enable: false
+
+snapshotter:
+  tag: v2.0.1

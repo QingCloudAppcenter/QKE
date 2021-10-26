@@ -19,7 +19,7 @@ printHostEntry() {
 {{- $iaasApiServer := map "pek3" "10.140.24.6" "pek3a" "10.91.84.7" "pek3b" "10.140.24.6" "pek3c" "10.140.24.6" "pek3d" "10.140.24.6" "pekt3" "10.181.0.34" "pekt3d" "10.181.0.34" "sh1" "10.120.47.8" "sh1a" "10.120.47.8" "sh1b" "10.120.47.8" "gd2" "10.150.21.8" "gd2a" "10.150.21.8" "gd2b" "10.150.21.8" "ap2a" "10.160.3.4" "ap3a" "10.200.1.13"}}
 staticApiIp={{ index $iaasApiServer $myZone }}
 apiServer={{ getv "/cluster/api_server/host" "ks.api.qingcloud.com" }}
-dynamicApiIp=$(dig +timeout=2 +short $apiServer | grep -o "^[0-9.]\+")
+dynamicApiIp=$(dig +timeout=2 +short $apiServer | head -n 1)
 
 flush >> $hostsFile.swap << HOSTS_FILE
 # >> QKE nodes. WARNING: this is managed by script and please don't touch manually.

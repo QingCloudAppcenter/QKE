@@ -6,6 +6,8 @@ etcd:
 
 ks_image_pull_policy: IfNotPresent
 
+openpitrix_job_repo: "kubesphere/openpitrix-jobs"
+
 {{- with $customRegistry }}
 local_registry: {{ . }}
 {{- end }}
@@ -34,8 +36,6 @@ devops:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "devops")) 0) }}
 servicemesh:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "servicemesh")) 0) }}
-notification:
-  enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "notification")) 0) }}
 alerting:
   enabled: {{ or (and $upgradedFromV1 $upgrading) (gt (len ($extraModules | filter "alerting")) 0) }}
 auditing:

@@ -745,7 +745,7 @@
       "description": "parameters for kubelet",
       "type": "string",
       "multiline": true,
-      "default": "--eviction-hard=memory.available<5%\n--eviction-soft=memory.available<10%\n--eviction-soft-grace-period=memory.available=2m\n--eviction-max-pod-grace-period=120\n--eviction-pressure-transition-period=30s",
+      "default": "--eviction-hard=memory.available<5%,pid.available<10%\n--eviction-soft=memory.available<10%\n--eviction-soft-grace-period=memory.available=2m\n--eviction-max-pod-grace-period=120\n--eviction-pressure-transition-period=30s",
       "changeable": true,
       "required": "no",
       "pattern": "^$|^--[a-z][a-z0-9-]*=.+(\\n--[a-z][a-z0-9-]*=.+)*$"

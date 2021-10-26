@@ -29,7 +29,8 @@ initCluster() {
   _initCluster
   if ! $IS_JOINING; then
     local filePath=$APISERVER_LB_FILE && $IS_HA_CLUSTER || filePath=$KUBE_CONFIG
-    retry 1200 1 0 test -s $filePath
+    # 8 minute: kube-lb slow?
+    retry 48 10 0 test -s $filePath
     if $KS_ENABLED && ! $IS_UPGRADING; then waitKsReady; fi
   fi
   setUpConfigs
@@ -54,7 +55,7 @@ setUpConfigs() {
     prepareFile $APISERVER_LB_FILE
     local lbIp; lbIp="$(awk -F/ '{print $2}' $APISERVER_LB_FILE | grep '^[0-9.]\+$')"
     if test -z "$lbIp"; then return; fi
-    log --debug "updating lb ip with '$lbIp' ..."
+    log "updating lb ip with '$lbIp' ..."
     sed -ri "s/^.*(\sloadbalancer)/$lbIp\1/" /etc/hosts
   fi
 }
@@ -64,11 +65,13 @@ prepareFile() {
 }
 
 waitKsReady() {
-  retry 1800 2 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
+  # 15 minute
+  retry 60 15 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
 }
 
 waitKsUpgraded() {
-  retry 18000 2 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
+  # 15 minute
+  retry 60 15 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
 }
 
 keepKsInstallerRunningTillDone() {
