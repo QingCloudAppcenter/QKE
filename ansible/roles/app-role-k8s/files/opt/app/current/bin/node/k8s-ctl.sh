@@ -1049,3 +1049,13 @@ getKsUrl() {
     renderJson "Something went wrong, but you should ensure ks-console service in kubesphere-system is of type 'LoadBalancer' or 'NodePort'."
   fi
 }
+
+# appctl podnetshoot coredns
+podnetshoot() {
+  docker run --rm -it --net container:$(docker ps | grep k8s_POD_$1 | head -n 1 | awk '{print $NF}') kubesphere/netshoot:v1.0 bash
+}
+
+# appctl podnsenter coredns
+podnsenter() {
+  nsenter -n -t `docker inspect -f {{.State.Pid}} $(docker ps | grep k8s_POD_$1 | head -n 1 | awk '{ print $1 }')`
+}
