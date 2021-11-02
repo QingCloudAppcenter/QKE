@@ -51,11 +51,11 @@ initNode() {
 }
 
 start() {
-  log --debug "starting node ..."
+  log "starting node ..."
   isNodeInitialized || initNode
   prepareKubeletEnv
   _start
-  log --debug "started node."
+  log "started node."
 }
 
 startSvc() {
@@ -67,7 +67,7 @@ startSvc() {
 }
 
 initCluster() {
-  log --debug "initializing cluster ..."
+  log "initializing cluster ..."
   _initCluster
   log "warm up DNS ..."
   warmUpLocalDns
@@ -75,7 +75,7 @@ initCluster() {
   annotateInstanceId
   labelTopology
   rm -rf $JOIN_CMD_FILE
-  log --debug "done initializing cluster!"
+  log "done initializing cluster!"
 }
 
 preScaleOut() {
@@ -124,38 +124,38 @@ initControlPlane() {
 }
 
 upgrade() {
+  log "upgrading node ..."
   $IS_UPGRADING || return $UPGRADE_VERSION_DETECTED_ERR
   upgradeCniConf
-  if ! isDev; then
-    if $IS_UPGRADING_FROM_V2; then
-      docker load -qi $UPGRADE_DIR/docker-images/k8s-v2.tgz
-      if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks-v2.tgz; fi
-    fi
-    docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
-    if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
-    fixOverlays
+
+  if $IS_UPGRADING_FROM_V2; then
+    docker load -qi $UPGRADE_DIR/docker-images/k8s-v2.tgz
+    if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks-v2.tgz; fi
   fi
+  docker load -qi $UPGRADE_DIR/docker-images/k8s.tgz
+  if $KS_ENABLED; then docker load -qi $UPGRADE_DIR/docker-images/ks.tgz; fi
+  fixOverlays
+
   initNode
   start
   if isMaster; then
-    log --debug "I am master node"
+    log "upgrading master node..."
     waitPreviousMastersUpgraded
     updateApiserverCerts
-    log --debug "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
+    log "$KUBEADM_CONFIG contents: $(cat $KUBEADM_CONFIG)"
     initControlPlane
     if isFirstMaster && $IS_UPGRADING; then
       log --debug "fix kubelet.conf issue: https://github.com/QingCloudAppcenter/QKE/issues/294"
       runKubeadm init phase kubelet-finalize experimental-cert-rotation
     fi
-    log --debug "init phase kubelet-start"
+    log "init phase kubelet-start"
     runKubeadm init phase kubelet-start
-    log --debug "restart kubelet"
     restartSvc kubelet
 
     if isFirstMaster; then
-      log --debug "distributeFile"
+      log "distributeFile from first master"
       local path; for path in $(ls /var/lib/kubelet/{config.yaml,kubeadm-flags.env}); do
-        log --debug "$path:$(cat $path)"
+        log "$path:$(cat $path)"
         distributeFile $path $STABLE_WORKER_NODES
       done
       distributeKubeConfig
@@ -175,18 +175,18 @@ upgrade() {
         retry 10 1 0 fixDns
       fi
       applyKubeProxyLogLevel
-      # restart metrics-server to be ready to avoid https://github.com/kubernetes/kubernetes/pull/96371
+      # restart metrics-server to avoid https://github.com/kubernetes/kubernetes/pull/96371
       runKubectl -n kube-system rollout restart deploy metrics-server
       setUpNetwork
       setUpCloudControllerMgr
       execute setUpStorage
     fi
-    log --debug "I am master node end"
+    log "upgraded master node."
   else
-    log --debug "I am worker node"
+    log "upgrading worker node..."
     waitAllMasterNodesUpgradedAndReady
     restartSvc kubelet
-    log --debug "worker node end"
+    log "upgraded worker node."
   fi
   if isFirstMaster && $KS_ENABLED; then
     if $IS_UPGRADING_FROM_V3; then
@@ -195,6 +195,7 @@ upgrade() {
     launchKs
   fi
   _initCluster
+  log "upgraded node."
 }
 
 check() {
@@ -244,60 +245,60 @@ prepareKubeletEnv() {
 
 initFirstNode() {
   if hasKubeLb; then
-    log --debug "creating lb ..."
+    log "creating lb ..."
     startSvc kube-lb
   fi
-  log --debug "botstraping first master ..."
+  log "botstraping first master ..."
   bootstrap
-  log --debug "distributing join command to other nodes ..."
+  log "distributing join command to other nodes ..."
   distributeJoinCmd
-  log --debug "distributing kube.config to worker and client nodes ..."
+  log "distributing kube.config to worker and client nodes ..."
   distributeKubeConfig
   if hasKubeLb; then
-    log --debug "wait all master node joined"
+    log "wait all master node joined"
     waitAllMasterNodesJoined
-    log --debug "waiting kube lb is created ..."
+    log "waiting kube lb is created ..."
     waitKubeLbJobDone
-    log --debug "applying lb ..."
+    log "applying lb ..."
     updateLbIp
-    log --debug "waiting for LB becomes stable ..."
+    log "waiting for LB becomes stable ..."
     waitLbIpAppliedToAllMasters
   fi
-  log --debug "applying kube-proxy log level ..."
+  log "applying kube-proxy log level ..."
   applyKubeProxyLogLevel
-  log --debug "setting up cloud secret ..."
+  log "setting up cloud secret ..."
   setUpCloudSecret
-  log --debug "setting up network ..."
+  log "setting up network ..."
   setUpNetwork
   if test -z "$STABLE_WORKER_NODES"; then
-    log --debug "marking master-only cluster nodes ..."
+    log "marking master-only cluster nodes ..."
     markAllInOne
   fi
-  log --debug "setting up DNS ..."
+  log "setting up DNS ..."
   setUpDns
   log "checking if hostnic vxnets healthy ..."
   local hostnicStatus=0
   checkHostnicHealthy || hostnicStatus=$?
   if [ "$hostnicStatus" -eq 0 ]; then
-    log --debug "waiting for kube-dns resolving qingcloud api server ..."
+    log "waiting for kube-dns resolving qingcloud api server ..."
     warmUpDns
   fi
 
-  log --debug "waiting for all nodes to be ready ..."
+  log "waiting for all nodes to be ready ..."
   waitAllNodesReady
 
   if $NODELOCALDNS_ENABLED; then
-    log --debug "setting up nodelocaldns ..."
+    log "setting up nodelocaldns ..."
     setUpNodeLocalDns
   fi
-  log --debug "setting up cloud controller manager ..."
+  log "setting up cloud controller manager ..."
   setUpCloudControllerMgr
 
-  log --debug "setting up storage ..."
+  log "setting up storage ..."
   execute setUpStorage
   removeTokens
   if $KS_ENABLED; then
-    log --debug "launch ks-installer ..."
+    log "launch ks-installer ..."
     startSvc ks-installer
   fi
   return $hostnicStatus
@@ -305,38 +306,40 @@ initFirstNode() {
 
 initOtherNode() {
   local -r joining="$JOINING_MASTER_NODES$JOINING_WORKER_NODES" firstMasterIp="$(getFirstMasterIp)"
-  log --debug "preparing join command file ..."
-  if [ -n "$joining" ]; then scp $firstMasterIp:$JOIN_CMD_FILE $JOIN_CMD_FILE; else retry 240 1 0 test -s $JOIN_CMD_FILE; fi
+  log "preparing join command file ..."
+  # wait kubeAdmin: 3 minutes
+  if [ -n "$joining" ]; then scp $firstMasterIp:$JOIN_CMD_FILE $JOIN_CMD_FILE; else retry 18 10 0 test -s $JOIN_CMD_FILE; fi
   if isMaster; then
-    log --debug "joining cluster as master ..."
-    retry 3 1 0 bash $JOIN_CMD_FILE
+    log "joining cluster as master ..."
+    retry 3 2 0 bash $JOIN_CMD_FILE
   fi
   if hasKubeLb; then
     if [ -z "$joining" ]; then
-      log --debug "wait all master node joined"
+      log "wait all master node joined"
       waitAllMasterNodesJoined
     fi
-    log --debug "preparing apiserver lb file ..."
-    if [ -n "$joining" ]; then scp $firstMasterIp:$APISERVER_LB_FILE $APISERVER_LB_FILE; else retry 600 1 0 test -s $APISERVER_LB_FILE; fi
-    log --debug "updating lb ip ..."
+    log "preparing apiserver lb file ..."
+    # wait setUpKubeLb: 8 minutes
+    if [ -n "$joining" ]; then scp $firstMasterIp:$APISERVER_LB_FILE $APISERVER_LB_FILE; else retry 48 10 0 test -s $APISERVER_LB_FILE; fi
+    log "updating lb ip ..."
     updateLbIp
     if [ -z "$joining" ]; then
-      log --debug "waiting for LB becomes stable ..."
+      log "waiting for LB becomes stable ..."
       waitLbIpAppliedToAllMasters
     fi
   fi
   if ! isMaster; then
-    log --debug "joining cluster as worker ..."
-    retry 60 1 0 bash $JOIN_CMD_FILE
+    log "joining cluster as worker ..."
+    retry 3 2 0 bash $JOIN_CMD_FILE
   fi
-  log --debug "preparing kubeconfig file ..."
-  if [ -n "$joining" ]; then scp $firstMasterIp:$KUBE_CONFIG $KUBE_CONFIG; else retry 60 1 0 test -s $KUBE_CONFIG; fi
-  log --debug "waiting joined cluster ..."
-  retry 30 1 0 runKubectl get no $(getMyNodeName) --no-headers
-  log --debug "labeling ..."
+  log "preparing kubeconfig file ..."
+  if [ -n "$joining" ]; then scp $firstMasterIp:$KUBE_CONFIG $KUBE_CONFIG; else retry 6 10 0 test -s $KUBE_CONFIG; fi
+  log "waiting joined cluster ..."
+  retry 15 2 0 runKubectl get no $(getMyNodeName) --no-headers
+  log "labeling ..."
   if isMaster; then
     if test -z "$STABLE_WORKER_NODES"; then
-      log --debug "marking master-only cluster nodes ..."
+      log "marking master-only cluster nodes ..."
       markAllInOne
     fi
   else
@@ -400,7 +403,7 @@ generateJoinCmd() {
 waitLbIpAppliedToAllMasters() {
   local lbIp; lbIp="$(getLbIpFromFile)" || return $EC_IAAS_FAILED
   local master; for master in $(getColumns $INDEX_NODE_IP "$STABLE_MASTER_NODES"); do
-    retry 30 1 0 checkLbIpAppliedToMaster $lbIp $master
+    retry 15 2 0 checkLbIpAppliedToMaster $lbIp $master
   done
 }
 
@@ -409,28 +412,28 @@ checkLbIpAppliedToMaster() {
 }
 
 waitAllNodesReady() {
-  retry 300 1 0 checkNodeStats '$2=="Ready"'
+  retry 60 5 0 checkNodeStats '$2=="Ready"'
 }
 
 waitPreviousMastersUpgraded() {
   local nodes="$(echo $STABLE_MASTER_NODES | awk -F"stable/master/$MY_SID/" '{print $1}')"
-  test -z "$nodes" || retry 1800 2 0 checkNodeStats '$5=="v'$K8S_VERSION'"' $nodes
+  test -z "$nodes" || retry 2 30 0 checkNodeStats '$5=="v'$K8S_VERSION'"' $nodes
 }
 
 waitAllNodesUpgraded() {
-  retry 3600 2 0 checkNodeStats '$5=="v'$K8S_VERSION'"'
+  retry 60 5 0 checkNodeStats '$5=="v'$K8S_VERSION'"'
 }
 
 waitAllMasterNodesUpgradedAndReady() {
-  retry 3600 2 0 checkNodeStats '$2~/^Ready/&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 60 5 0 checkNodeStats '$2~/^Ready/&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 waitAllNodesUpgradedAndReady() {
-  retry 600 1 0 checkNodeStats '$2~/^Ready/&&$5=="v'$K8S_VERSION'"'
+  retry 60 5 0 checkNodeStats '$2~/^Ready/&&$5=="v'$K8S_VERSION'"'
 }
 
 waitAllMasterNodesJoined(){
-  retry 90 2 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 30 5 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 checkNodeStats() {
@@ -579,9 +582,9 @@ _setUpStorage() {
   #    immutable fields change during upgrade.
   if $IS_UPGRADING; then
     # make sure there no pending pvs, if not skip upgrading csi-qingcloud
-    retry 600 1 0 countUnBoundPVCs || return 0
+    retry 60 10 0 countUnBoundPVCs || return 0
     runHelm -n kube-system uninstall csi-qingcloud
-    runKubectl delete -f /opt/app/current/conf/k8s/csi-sc.yml
+    runKubectl delete -f /opt/app/current/conf/k8s/csi-sc.yml || return 0
   fi
 
   yq p $QINGCLOUD_CONFIG config | cat - $csiValuesFile | \
@@ -620,9 +623,9 @@ setUpCloudControllerMgr() {
 
 # called by systemd
 setUpKs() {
-  log --debug "launching kubesphere ..."
+  log "launching kubesphere ..."
   launchKs
-  log --debug "wating kubesphere to be ready ..."
+  log "wating kubesphere to be ready ..."
   waitKsReady
 }
 
@@ -666,7 +669,8 @@ reloadExternalElk() {
 }
 
 waitKsReady() {
-  retry 1800 2 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
+  # 12 minute
+  retry 60 12 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
 }
 
 keepKsInstallerRunningTillDone() {
@@ -685,9 +689,11 @@ checkKsInstallerDone() {
   local output; output="$(runKubectl -n kubesphere-system logs --tail 50 $podName)" || return $EC_KS_INSTALL_LOGS_ERR
   if echo "$output" | grep "^PLAY RECAP **" -A1 | egrep -o "failed=[1-9]"; then return $EC_KS_INSTALL_FAILED; fi
   echo "$output" | grep -oF 'Welcome to KubeSphere!' || return $EC_KS_INSTALL_RUNNING
-  local endStrings="total: $KS_MODULES_COUNT     completed:$KS_MODULES_COUNT"
+  #local endStrings="is successful  ($KS_MODULES_COUNT/$KS_MODULES_COUNT)"
   if $IS_UPGRADING_FROM_V2; then endStrings=" failed=0 "; fi
-  echo "$output" | grep "Welcome to KubeSphere!" -B4 | grep -oF "$endStrings" || return $EC_KS_INSTALL_DONE_WITH_ERR
+  # if tail of installer log has line like "task openpitrix status is failed", means one or more components are failed
+  # to install.
+  !(echo "$output" | grep "Welcome to KubeSphere!" -B30 | grep -q "^task.*failed") || return $EC_KS_INSTALL_DONE_WITH_ERR
 }
 
 getKsInstallerPodName() {
@@ -743,12 +749,13 @@ setUpKubeLb() {
   local lbId; lbId="$(iaasCreateLb $CLUSTER_ID $(execute getKubeLbVxnet) $sg)"
   iaasTagResource $CLUSTER_TAG loadbalancer $lbId
   sleep 30
-  retry 300 2 0 checkLbActive $lbId
+  # 5 minutes is enough?
+  retry 30 10 0 checkLbActive $lbId
   local listener; listener="$(iaasCreateListener $lbId)"
   local -r instanceIds="$(getColumns $INDEX_NODE_INSTANCE_ID $STABLE_MASTER_NODES $JOINING_MASTER_NODES)"
   iaasAddLbBackends $listener $instanceIds
   iaasApplyLb $lbId
-  retry 120 1 0 checkLbApplied $lbId
+  retry 12 10 0 checkLbApplied $lbId
   local lbIp; lbIp="$(iaasDescribeLb $lbId vxnet.private_ip)"
   if [ -n "$KUBE_EIP_ID" ]; then
     local lbEip; lbEip="$(iaasRunCli describe-eips -e $KUBE_EIP_ID | jq -er '.eip_set[0].eip_addr')"
@@ -787,7 +794,8 @@ distributeKubeLbFile() {
 }
 
 waitKubeLbJobDone() {
-  retry 600 1 0 checkKubeLbJobDone
+  # wait setUpKubeLb: 8 minutes
+  retry 48 10 0 checkKubeLbJobDone
 }
 
 checkKubeLbJobDone() {
@@ -1040,4 +1048,14 @@ getKsUrl() {
   else
     renderJson "Something went wrong, but you should ensure ks-console service in kubesphere-system is of type 'LoadBalancer' or 'NodePort'."
   fi
+}
+
+# appctl podnetshoot coredns
+podnetshoot() {
+  docker run --rm -it --net container:$(docker ps | grep k8s_POD_$1 | head -n 1 | awk '{print $NF}') kubesphere/netshoot:v1.0 bash
+}
+
+# appctl podnsenter coredns
+podnsenter() {
+  nsenter -n -t `docker inspect -f {{.State.Pid}} $(docker ps | grep k8s_POD_$1 | head -n 1 | awk '{ print $1 }')`
 }
