@@ -17,16 +17,44 @@ printHostEntry() {
 
 {{- $myZone := getv "/host/zone" }}
 {{- $iaasApiServer := map "pek3" "10.140.24.6" "pek3a" "10.91.84.7" "pek3b" "10.140.24.6" "pek3c" "10.140.24.6" "pek3d" "10.140.24.6" "pekt3" "10.181.0.34" "pekt3d" "10.181.0.34" "sh1" "10.120.47.8" "sh1a" "10.120.47.8" "sh1b" "10.120.47.8" "gd2" "10.150.21.8" "gd2a" "10.150.21.8" "gd2b" "10.150.21.8" "ap2a" "10.160.3.4" "ap3a" "10.200.1.13"}}
-staticApiIp={{ index $iaasApiServer $myZone }}
-apiServer={{ getv "/cluster/api_server/host" "ks.api.qingcloud.com" }}
-dynamicApiIp=$(dig +timeout=2 +short $apiServer | head -n 1)
+
+ipvalid() {
+  # Set up local variables
+  local ip=${1:-1.2.3.4}
+  local IFS=.; local -a a=($ip)
+  # Start with a regex format test
+  [[ $ip =~ ^[0-9]+(\.[0-9]+){3}$ ]] || return 1
+  # Test values of quads
+  local quad
+  for quad in {0..3}; do
+    [[ "${a[$quad]}" -gt 255 ]] && return 1
+  done
+  return 0
+}
+
+printApiServerHost() {
+  local staticApiIp="{{ index $iaasApiServer $myZone }}"
+  local apiServer="{{ getv "/cluster/api_server/host" "ks.api.qingcloud.com" }}"
+  if ipvalid "$apiServer"; then
+    return
+  else
+    local dynamicApiIp=$(dig +timeout=2 +short $apiServer | head -n 1)
+    if [ -n "${dynamicApiIp}" ]; then
+      echo ${dynamicApiIp}$'\t'$apiServer
+    else
+      if ipvalid "$staticApiIp"; then
+        echo ${staticApiIp}$'\t'$apiServer
+      fi
+    fi
+  fi
+}
 
 flush >> $hostsFile.swap << HOSTS_FILE
 # >> QKE nodes. WARNING: this is managed by script and please don't touch manually.
 $(printHostEntry 127.0.1.1 $myNodeName)
 $(printHostEntry 0.0.0.0 dl.k8s.io)
-$(printHostEntry ${dynamicApiIp:-$staticApiIp} $apiServer)
 $(printHostEntry ${lbIp:-$firstMasterIp} loadbalancer)
+$(printApiServerHost)
 $(echo "$allNodes" | awk -F/ '{printf("%s\t%s %s%s\n", $7, $4, $5, $2~/^n/ ? " "$2$3 : "")}')
 
 {{- with (getv "/env/host_aliases" "") }}
