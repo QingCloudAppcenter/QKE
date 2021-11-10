@@ -93,7 +93,7 @@ preScaleIn() {
   isFirstMaster && test -n "$LEAVING_WORKER_NODES" || return 0
   test $(echo $STABLE_WORKER_NODES | wc -w) -ge 2 || return $EC_BELOW_MIN_WORKERS_COUNT
   local -r nodes="$(getNodeNames $LEAVING_WORKER_NODES)"
-  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
+  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --delete-emptydir-data --timeout=6m --force && runKubectl delete no --timeout=3m $nodes) 2>&1)" || {
     log "ERROR: failed to remove nodes '$nodes' ($?): '$result'. Reverting changes ..."
     runKubectl uncordon $nodes || return $EC_UNCORDON_FAILED
     return $EC_DRAIN_FAILED
