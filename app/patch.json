@@ -1,0 +1,60 @@
+{
+  "patch_policy": [""],
+  "patch_nodes": [{
+    "container": {
+      "snapshot": "ss-yoyvs52o",
+      "zone": "pek3a"
+    },
+    "patch": [{
+      "mount_role": "master",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "cmd": "cp /upgrade/vm-flies/opt/app/current/conf/confd/templates/kube.sh.tmpl  /etc/confd/templates/kube.sh.tmpl"
+    },{
+      "mount_role": "node_perf",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "cmd": "cp /upgrade/vm-flies/opt/app/current/conf/confd/templates/kube.sh.tmpl  /etc/confd/templates/kube.sh.tmpl"
+    },{
+      "mount_role": "node_super_perf",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "cmd": "cp /upgrade/vm-flies/opt/app/current/conf/confd/templates/kube.sh.tmpl  /etc/confd/templates/kube.sh.tmpl"
+    },{
+      "mount_role": "node_gpu",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "cmd": "cp /upgrade/vm-flies/opt/app/current/conf/confd/templates/kube.sh.tmpl  /etc/confd/templates/kube.sh.tmpl"
+    }],
+    "rollback": [{
+      "mount_role": "master",
+      "mount_point": "/upgrade",
+      "mount_options": "defaults,noatime",
+      "filesystem": "ext4",
+      "cmd": "echo"
+    },
+      {
+        "mount_role": "node_perf",
+        "mount_point": "/upgrade",
+        "mount_options": "defaults,noatime",
+        "filesystem": "ext4",
+        "cmd": "echo"
+      },{
+        "mount_role": "node_super_perf",
+        "mount_point": "/upgrade",
+        "mount_options": "defaults,noatime",
+        "filesystem": "ext4",
+        "cmd": "echo"
+      },{
+        "mount_role": "node_gpu",
+        "mount_point": "/upgrade",
+        "mount_options": "defaults,noatime",
+        "filesystem": "ext4",
+        "cmd": "echo"
+      }]
+  }]
+}

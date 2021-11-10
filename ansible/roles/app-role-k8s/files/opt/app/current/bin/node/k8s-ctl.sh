@@ -93,7 +93,7 @@ preScaleIn() {
   isFirstMaster && test -n "$LEAVING_WORKER_NODES" || return 0
   test $(echo $STABLE_WORKER_NODES | wc -w) -ge 2 || return $EC_BELOW_MIN_WORKERS_COUNT
   local -r nodes="$(getNodeNames $LEAVING_WORKER_NODES)"
-  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --timeout=2h && runKubectl delete no --timeout=10m $nodes) 2>&1)" || {
+  local result; result="$( (runKubectl drain $nodes --ignore-daemonsets --delete-emptydir-data --timeout=6m --force && runKubectl delete no --timeout=3m $nodes) 2>&1)" || {
     log "ERROR: failed to remove nodes '$nodes' ($?): '$result'. Reverting changes ..."
     runKubectl uncordon $nodes || return $EC_UNCORDON_FAILED
     return $EC_DRAIN_FAILED
@@ -412,28 +412,24 @@ checkLbIpAppliedToMaster() {
 }
 
 waitAllNodesReady() {
-  retry 60 5 0 checkNodeStats '$2=="Ready"'
+  retry 60 10 0 checkNodeStats '$2=="Ready"'
 }
 
 waitPreviousMastersUpgraded() {
   local nodes="$(echo $STABLE_MASTER_NODES | awk -F"stable/master/$MY_SID/" '{print $1}')"
-  test -z "$nodes" || retry 2 30 0 checkNodeStats '$5=="v'$K8S_VERSION'"' $nodes
-}
-
-waitAllNodesUpgraded() {
-  retry 60 5 0 checkNodeStats '$5=="v'$K8S_VERSION'"'
+  test -z "$nodes" || retry 20 30 0 checkNodeStats '$5=="v'$K8S_VERSION'"' $nodes
 }
 
 waitAllMasterNodesUpgradedAndReady() {
-  retry 60 5 0 checkNodeStats '$2~/^Ready/&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 60 10 0 checkNodeStats '$2~/^Ready/&&$3~/master/&&$5=="v'$K8S_VERSION'"' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 waitAllNodesUpgradedAndReady() {
-  retry 60 5 0 checkNodeStats '$2~/^Ready/&&$5=="v'$K8S_VERSION'"'
+  retry 60 20 0 checkNodeStats '$2~/^Ready/&&$5=="v'$K8S_VERSION'"'
 }
 
 waitAllMasterNodesJoined(){
-  retry 30 5 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
+  retry 30 10 0 checkNodeStats '$3~/master/' $STABLE_MASTER_NODES $JOINING_MASTER_NODES
 }
 
 checkNodeStats() {
@@ -669,8 +665,8 @@ reloadExternalElk() {
 }
 
 waitKsReady() {
-  # 12 minute
-  retry 60 12 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
+  # 20 minute
+  retry 60 20 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
 }
 
 keepKsInstallerRunningTillDone() {

@@ -65,13 +65,13 @@ prepareFile() {
 }
 
 waitKsReady() {
-  # 15 minute
-  retry 60 15 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
+  # 20 minute
+  retry 60 20 $EC_KS_INSTALL_DONE_WITH_ERR keepKsInstallerRunningTillDone
 }
 
 waitKsUpgraded() {
-  # 15 minute
-  retry 60 15 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
+  # 20 minute
+  retry 60 20 $EC_KS_INSTALL_FAILED,$EC_KS_INSTALL_DONE_WITH_ERR checkKsInstallerDone
 }
 
 keepKsInstallerRunningTillDone() {
