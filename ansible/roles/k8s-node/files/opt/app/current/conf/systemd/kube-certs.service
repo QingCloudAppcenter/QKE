@@ -3,7 +3,7 @@ Description=check and rotate kube certs if neccessary
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/kubeadm alpha certs renew all
+ExecStart=/usr/bin/kubeadm certs renew all
 
 [Install]
 WantedBy=multi-user.target

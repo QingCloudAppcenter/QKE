@@ -176,7 +176,6 @@ upgrade() {
       fi
       applyKubeProxyLogLevel
       # restart metrics-server to avoid https://github.com/kubernetes/kubernetes/pull/96371
-      runKubectl -n kube-system rollout restart deploy metrics-server
       setUpNetwork
       setUpCloudControllerMgr
       execute setUpStorage
@@ -192,6 +191,7 @@ upgrade() {
     if $IS_UPGRADING_FROM_V3; then
       resetAuditingModule
     fi
+    runKubectl -n kube-system rollout restart deploy metrics-server
     launchKs
   fi
   _initCluster
@@ -962,13 +962,13 @@ checkCertDaysBeyond() {
 }
 
 getCertValidDays() {
-  local earliestExpireDate; earliestExpireDate="$(runKubeadm alpha certs check-expiration | awk '$1!~/^$|^CERTIFICATE/ {print "date -d\"",$2,$3,$4,$5,"\" +%s" | "/bin/bash"}' | sort -n | head -1)"
+  local earliestExpireDate; earliestExpireDate="$(runKubeadm certs check-expiration | awk '$1!~/^$|^CERTIFICATE/ {print "date -d\"",$2,$3,$4,$5,"\" +%s" | "/bin/bash"}' | sort -n | head -1)"
   local today; today="$(date +%s)"
   echo -n $(( ($earliestExpireDate - $today) / (24 * 60 * 60) ))
 }
 
 renewCerts() {
-  local crt; for crt in ${@:-admin.conf apiserver apiserver-kubelet-client controller-manager.conf front-proxy-client scheduler.conf}; do kubeadm alpha certs renew $crt; done
+  local crt; for crt in ${@:-admin.conf apiserver apiserver-kubelet-client controller-manager.conf front-proxy-client scheduler.conf}; do kubeadm  certs renew $crt; done
   reloadKubeMasterProcs
   if isFirstMaster; then distributeKubeConfig; fi
 }
