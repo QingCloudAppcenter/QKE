@@ -10,17 +10,15 @@
   "need_intranet_api_server": true,
   "exclude_node_columns": ["instance_class"],
   "advanced_actions": ["scale_horizontal"],
-  "custom_tags": ["del_node_force_level_ignore_error"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-doh2u06i",
-    "appv-egh21tjg",
-    "appv-0exsrgnh"
+    "appv-p07y3ld8",
+    "appv-doh2u06i"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-yoyvs52o",
+      "snapshot": "ss-ial72b2d",
       "zone": "pek3"
     },
     "copy":[{
@@ -46,7 +44,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-j6lj3m67",
+      "snapshot": "ss-fvzpy0t8",
       "zone": "pek3"
     },
     "copy":[{
@@ -60,7 +58,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-5zuf22r7",
+      "image": "img-9cdypymv",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -147,7 +145,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-5zuf22r7",
+      "image": "img-9cdypymv",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -181,9 +179,8 @@
       },
       "destroy": {
         "post_stop_service": true,
-        "allow_force": true,
-        "cmd": "true",
-        "timeout": 1200
+        "allow_force": false,
+        "cmd": "true"
       },
       "restart": {
         "cmd": "appctl restart"
@@ -210,7 +207,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-5zuf22r7",
+      "image": "img-9cdypymv",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -244,9 +241,8 @@
       },
       "destroy": {
         "post_stop_service": true,
-        "allow_force": true,
-        "cmd": "true",
-        "timeout": 1200
+        "allow_force": false,
+        "cmd": "true"
       },
       "restart": {
         "cmd": "appctl restart"
@@ -273,7 +269,7 @@
     "role": "node_gpu",
     "container": {
       "type": "kvm",
-      "image": "img-b1mwsrtk",
+      "image": "img-lv1ts5gs",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_gpu.instance_class}},
@@ -309,9 +305,8 @@
       },
       "destroy": {
         "post_stop_service": true,
-        "allow_force": true,
-        "cmd": "true",
-        "timeout": 1200
+        "allow_force": false,
+        "cmd": "true"
       },
       "restart": {
         "cmd": "appctl restart"
@@ -335,7 +330,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-6u9kpu76",
+      "image": "img-u7twid3l",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
@@ -382,7 +377,7 @@
     "action_timeout_sec": 30,
     "healthy_threshold": 3,
     "unhealthy_threshold": 3,
-    "check_cmd": "appctl check",
+    "check_cmd": "appctl check && appctl reloadKsEip",
     "action_cmd": "appctl revive"
   },
   "monitor": {
@@ -472,3 +467,4 @@
     }
   }
 }
+
