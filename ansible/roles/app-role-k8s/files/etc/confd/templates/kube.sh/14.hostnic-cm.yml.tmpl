@@ -1,3 +1,7 @@
+{{- $hostnicIPAM := replace (replace (join (getvs "/env/hostnic-ipam") "") "\r" "" -1) "\n"  " " -1 }}
+{{- $hostnicVxnets := split (replace (replace (join (getvs "/env/hostnic-vxnets") "") "\r" "" -1) "\n"  " " -1) " " }}
+{{- $enableAutoAssign := eq (join (getvs "/env/hostnic-autoassign") "") "true" }}
+
 flush > /opt/app/current/conf/k8s/hostnic-cm.yml << HOSTNIC_CM_EOF
 apiVersion: v1
 kind: ConfigMap
@@ -10,9 +14,10 @@ data:
       "pool": {
         "poolHigh": 5,
         "poolLow": 3,
-        "tag": "{{ getv "/cluster/cluster_tag" "" }}",
-        "maxNic": {{ $hostnicMaxNics }},
-        "vxNets": {{ with $hostnicVxnets }}{{ split . " " | filter "^vxnet-[a-z0-9]+$" | toJson }}{{ else }}[]{{ end }}
+        "maxNic": {{ $hostnicMaxNics }}
+      },
+      "server": {
+        "networkPolicy": "{{ getv "/env/hostnic-networkpolicy" "" }}"
       }
     }
   hostnic-cni: |
@@ -20,9 +25,29 @@ data:
       "cniVersion": "0.3.0",
       "name": "hostnic",
       "type": "hostnic",
-      {{- if eq $proxyMode "iptables" }}
-      "hairpin": {{ getv "/env/hostnic-hairpin" "false" }},
-      {{- end }}
       "serviceCIDR" : "{{ $serviceSubnet }}"
     }
+---
+apiVersion: network.qingcloud.com/v1alpha1
+kind: VxNetPool
+metadata:
+  name: v-pool
+spec:
+  vxnets:
+  {{- range $hostnicVxnets }}
+    - name: {{ . }}
+  {{- end }}
+  blockSize: {{ getv "/env/hostnic-blocksize" "26" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hostnic-ipam-config
+  namespace: kube-system
+data:
+  {{- if $enableAutoAssign }}
+  subnet-auto-assign: "on"
+  {{- end }}
+  ipam: |
+    {{ $hostnicIPAM }}
 HOSTNIC_CM_EOF

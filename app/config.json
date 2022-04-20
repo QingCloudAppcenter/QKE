@@ -727,6 +727,21 @@
           "required": "no"
         },
         {
+          "key": "hostnic-blocksize",
+          "label": "hostnic ipam subnet size",
+          "description": "subnet size of hostnic ipam",
+          "type": "integer",
+          "dependencies": [{
+            "refkey": "network_plugin",
+            "values": ["hostnic"],
+            "operator": "in" }],
+            "default": 26,
+            "min": 24,
+            "max": 28,
+            "changeable": false,
+            "required": "no"
+        },
+        {
           "key": "hostnic-max-nics",
           "label": "hostnic maxNic",
           "description": "hostnic max nics per host",
@@ -767,10 +782,11 @@
           "required": "no"
         },
         {
-          "key": "hostnic-hairpin",
-          "label": "hostnic hairpin",
-          "description": "setting hairpin to true to forward pod traffic on the same virtual machine to physical machine; default to false, indicating pod traffic of the same virtual machine will not be forwarded to physical machines",
-          "type": "boolean",
+          "key": "hostnic-ipam",
+          "label": "hostnic ipam",
+          "description": "hostnic ipam config for subnets",
+          "type": "json",
+          "multiline": true,
           "dependencies": [
             {
               "refkey": "network_plugin",
@@ -778,18 +794,37 @@
                 "hostnic"
               ],
               "operator": "in"
-            },
-            {
-              "refkey": "proxy_mode",
-              "values": [
-                "iptables"
-              ],
-              "operator": "in"
             }
           ],
-          "changeable": false,
-          "default": false,
+          "changeable": true,
+          "default": "{\n  \"Default\": []\n}",
           "required": "no"
+          }, {
+            "key": "hostnic-networkpolicy",
+            "label": "hostnic networkpolicy",
+            "description": "networkpolicy for hostnic",
+            "type": "string",
+            "changeable": false,
+            "default": "calico",
+            "dependencies": [{
+              "refkey": "network_plugin",
+              "values": ["hostnic"],
+              "operator": "in"
+            }],
+            "required": "no"
+          }, {
+            "key": "hostnic-autoassign",
+            "label": "autoAssign Enabled",
+            "description": "whether to enable subnet autoAssign for namespace",
+            "changeable": false,
+            "type": "boolean",
+            "default": true,
+            "dependencies": [{
+              "refkey": "network_plugin",
+              "values": ["hostnic"],
+              "operator": "in"
+            }],
+            "required": "no"
         },
         {
           "key": "host_aliases",
