@@ -125,6 +125,7 @@
     "hostnic vxnets, one vxnet per line": "一个 vxnet 最多能够容纳 252 张网卡，hostnic 根据最大网卡数将 vxnet 均分给 K8s 节点；此处可填写多个私有网络 ID（以 `vxnet-` 开头），每行一个；请在此处填写与此 QKE 集群处于同一个 VPC 下的私有网络以避免网络不通；建议准备未被使用的私有网络专门供此 QKE 集群使用，并填写至少两个私有网络以避免容器组无法分配到足够的网卡而无法启动，具体计算方法为：hostnic 最大网卡数 * K8s 节点数 <= 私有网络数 * 252（单个网络最大网卡数）；更多说明可参考 [hostnic 官网](https://github.com/yunify/hostnic-cni)",
     "setting hairpin to true to forward pod traffic on the same virtual machine to physical machine; default to false, indicating pod traffic of the same virtual machine will not be forwarded to physical machines": "默认情况下，同节点上的 pod 流量只在虚拟机内部转发， 如果希望同节点 pod 流量经过宿主机转发，那么设置为 true",
     "SSD node label": "企业型节点标记",
+    "hostnic ipam config for subnets": "这里可以配置 namespace 与 subnet 的映射关系，指定容器组 IP 的分配方式。其中 Default 中填写可用的 vxnets ，未配置映射关系时会从这里的 vxnets 中分配。注：当开启自动映射时，后续更新映射配置要注意填写最新的映射关系，避免与自动映射相冲突。",
     "HDD node label": "基础型节点标记",
     "Port range of each node": "NodePort 范围",
     "A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range, it is important to include 30880 port when `Install KubeSphere` is `true`." : "每个节点可分配的 NodePort 范围，例如 ‘30000-32767’，由于 kubesphere 的对外端口号是 30880，在 `安装 KubeSphere` 为 `true` 的情况下，请保证 30880 在该范围内。",
@@ -172,5 +173,14 @@
     "Service Subnet, using standard CIDR notation. For example: 10.96.0.0/16": "Service 网段，请按照标准的 CIDR 格式填写。例如：10.96.0.0/16",
     "K8s audit policy in YAML format; if it is empty, no events are logged": "K8s audit policy，以 YAML 格式表示，留空此项表示禁用 K8s 审计功能，详细配置请参考文档 [Audit policy](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#audit-policy)",
     "K8s audit webhook configurations in YAML format; if it is empty, events will be logged into files under /etc/kubernetes/audit/logs/": "K8s audit webhook，以 YAML 格式表示，留空此项表示把日志存储在主节点本地目录 /etc/kubernetes/audit/logs/ 下，详细配置请参考文档 [Webhook backend](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#webhook-backend)",
-    "External port for accessing remote Kubernetes cluster, default value 6443": "Kubernetes 的外网访问端口，默认是 6443"
+    "External port for accessing remote Kubernetes cluster, default value 6443": "Kubernetes 的外网访问端口，默认是 6443",
+    "hostnic networkpolicy": "hostnic 网络策略",
+    "networkpolicy for hostnic": "hostnic 支持通过 calico 进行网络策略控制。填写后才会开启 calico ，否则不开启。",
+    "autoAssign Enabled": "启用自动映射",
+    "whether to enable subnet autoAssign for namespace": "是否开启 namespace 与 subnet 的自动映射。开启自动映射后，IPAM 配置的 Default 将失效。",
+    "hostnic vxnets, one vxnet per line": "此处可填写多个私有网络 ID（以 `vxnet-` 开头），每行一个；请在此处填写与此 QKE 集群处于同一个 VPC 下的私有网络以避免网络不通；建议准备未被使用的私有网络专门供此 QKE 集群使用，并填写至少两个私有网络以避免容器组无法分配到足够的网卡而无法启动；IPAM 模块会依据 vxnets 自动创建对应的 ippool ，并将 ippool 依据 blocksize 切割为 subnet。通过 IPAM 的设置，可以实现 namespace 与 subnet 的映射，相关 POD 的 IP 都会有对应 subnet 中进行分配",
+    "hostnic ipam": "hostnic IPAM 配置",
+    "hostnic ipam config for subnets": "这里可以配置 namespace 与 subnet 的映射关系，指定容器组 IP 的分配方式。其中 Default 中填写可用的vxnets，未配置映射关系时会从这里的 vxnets 中分配。",
+    "hostnic ipam subnet size": "hostnic 子网大小",
+    "subnet size of hostnic ipam": "IPAM 模块会依据子网大小进行 vxnet 的切割。比如 vxnet 网段是 172.16.0.0/24，指定子网大小为26后，会将 vxnet 切割为4个子网，用户可以通过 hostnic IPAM 配置 namespace 与 subnet 的映射关系。"
 }

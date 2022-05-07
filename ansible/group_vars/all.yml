@@ -6,7 +6,7 @@ k8s_version: 1.21.5
 flannel_version: 0.12.0
 coredns_version: 1.6.9
 calico_version: 3.16.3
-hostnic_version: 1.0.0-alpha.5
+hostnic_version: 1.0.3
 qingcloud_csi_version: 1.3.0
 qingcloud_ccm_version: 1.4.8
 ks_version: 3.2.1
@@ -159,7 +159,7 @@ docker_images_k8s_new:
 - csiplugin/csi-snapshotter:v2.0.1
 - kubesphere/pause:3.5
 - kubesphere/pause:3.4.1
-
+- qingcloud/hostnic-plus:v1.0.3
 docker_images_ks_new:
 
 - kubesphere/ks-installer:v3.2.1

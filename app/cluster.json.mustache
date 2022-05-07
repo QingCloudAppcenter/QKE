@@ -10,6 +10,7 @@
   "need_intranet_api_server": true,
   "exclude_node_columns": ["instance_class"],
   "advanced_actions": ["scale_horizontal"],
+  "custom_tags": ["del_node_force_level_ignore_error"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
     "appv-p07y3ld8",
@@ -18,7 +19,7 @@
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-ial72b2d",
+      "snapshot": "ss-rbtg0pwl",
       "zone": "pek3"
     },
     "copy":[{
@@ -58,7 +59,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-9cdypymv",
+      "image": "img-ko0p5hy6",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -145,7 +146,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-9cdypymv",
+      "image": "img-ko0p5hy6",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -179,8 +180,9 @@
       },
       "destroy": {
         "post_stop_service": true,
-        "allow_force": false,
-        "cmd": "true"
+        "allow_force": true,
+        "cmd": "true",
+        "timeout": 1200
       },
       "restart": {
         "cmd": "appctl restart"
@@ -207,7 +209,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-9cdypymv",
+      "image": "img-ko0p5hy6",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -269,7 +271,7 @@
     "role": "node_gpu",
     "container": {
       "type": "kvm",
-      "image": "img-lv1ts5gs",
+      "image": "img-2amemm7m",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_gpu.instance_class}},
@@ -330,7 +332,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-u7twid3l",
+      "image": "img-aq7wtc7y",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
@@ -424,7 +426,10 @@
     "network_plugin": {{env.network_plugin}},
     "hostnic-max-nics": {{env.hostnic-max-nics}},
     "hostnic-vxnets": {{env.hostnic-vxnets}},
-    "hostnic-hairpin": {{env.hostnic-hairpin}},
+    "hostnic-networkpolicy": {{env.hostnic-networkpolicy}},
+    "hostnic-autoassign": {{env.hostnic-autoassign}},
+    "hostnic-ipam": {{env.hostnic-ipam}},
+    "hostnic-blocksize": {{env.hostnic-blocksize}},
     "proxy_mode": {{env.proxy_mode}},
     "host_aliases": {{env.host_aliases}},
     "registry_mirrors": {{env.registry_mirrors}},
