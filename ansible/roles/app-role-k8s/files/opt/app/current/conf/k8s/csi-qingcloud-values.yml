@@ -1,6 +1,7 @@
 driver:
   name: csi-qingcloud
   kubeletDir: /data/var/lib/kubelet
+  tag: v1.3.3
 
 sc:
   enable: false
