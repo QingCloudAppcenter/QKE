@@ -98,7 +98,7 @@ checkKsInstallerDone() {
 }
 
 getKsInstallerPodName() {
-  runKubectl -n kubesphere-system get pod -l app=ks-install --field-selector status.phase=Running -ojsonpath='{.items[0].metadata.name}' | grep ks-installer
+  runKubectl -n kubesphere-system get pod -l app=ks-installer --field-selector status.phase=Running -ojsonpath='{.items[0].metadata.name}' | grep ks-installer
 }
 
 runKubectl() {

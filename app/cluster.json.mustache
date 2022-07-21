@@ -13,13 +13,12 @@
   "custom_tags": ["del_node_force_level_ignore_error"],
   "unsupported_actions": ["rollback"],
   "upgrade_policy": [
-    "appv-p07y3ld8",
-    "appv-doh2u06i"
+    "appv-ur19kw19"
   ],
   "upgrading_policy": "in-place-parallel",
   "in-place-upgrade-nodes": [{
     "container":{
-      "snapshot": "ss-rbtg0pwl",
+      "snapshot": "ss-da0ntedb",
       "zone": "pek3"
     },
     "copy":[{
@@ -45,7 +44,7 @@
     }]
   }, {
     "container":{
-      "snapshot": "ss-fvzpy0t8",
+      "snapshot": "ss-2lo9x6g3",
       "zone": "pek3"
     },
     "copy":[{
@@ -59,7 +58,7 @@
     "role": "master",
     "container": {
       "type": "kvm",
-      "image": "img-ko0p5hy6",
+      "image": "img-djutup1a",
       "zone": "pek3"
     },
     "instance_class": {{cluster.master.instance_class}},
@@ -146,7 +145,7 @@
     "role": "node_perf",
     "container": {
       "type": "kvm",
-      "image": "img-ko0p5hy6",
+      "image": "img-djutup1a",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_perf.instance_class}},
@@ -209,7 +208,7 @@
     "role": "node_super_perf",
     "container": {
       "type": "kvm",
-      "image": "img-ko0p5hy6",
+      "image": "img-djutup1a",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_super_perf.instance_class}},
@@ -271,7 +270,7 @@
     "role": "node_gpu",
     "container": {
       "type": "kvm",
-      "image": "img-2amemm7m",
+      "image": "img-f3u3m8h1",
       "zone": "pek3"
     },
     "instance_class": {{cluster.node_gpu.instance_class}},
@@ -332,7 +331,7 @@
     "role": "client",
     "container": {
       "type": "kvm",
-      "image": "img-aq7wtc7y",
+      "image": "img-k18ddaty",
       "zone": "pek3"
     },
     "instance_class": {{cluster.client.instance_class}},
