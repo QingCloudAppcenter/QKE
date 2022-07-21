@@ -52,7 +52,7 @@
     url: https://raw.githubusercontent.com/kubernetes/kubernetes/v{{ k8s_version }}/cluster/addons/dns/nodelocaldns/nodelocaldns.yaml
   - name: nvidia-plugin
     version: "{{ nvidia_plugin_version }}"
-    url: https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/{{ nvidia_plugin_version }}/nvidia-device-plugin.yml
+    url: https://qketest.pek3b.qingstor.com/nvidia_plugin/nvidia-device-plugin.yml
   - name: hostnic
     version: "{{ hostnic_version }}"
     url: https://raw.githubusercontent.com/cumirror/hostnic-cni/master/deploy/hostnic.yaml
