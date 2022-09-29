@@ -60,6 +60,11 @@ $(echo "$allNodes" | awk -F/ '{printf("%s\t%s %s%s\n", $7, $4, $5, $2~/^n/ ? " "
 {{- with (getv "/env/host_aliases" "") }}
 {{ replace . "," "\n" -1 }}
 {{- end }}
+
+{{ if "/links/etcd_service/env/etcd_node/enable_TLS"}}
+$(echo {{ getv (printf "/links/etcd_service/env/etcd_node/hostsDomain") }}| xargs -n2 )
+{{ end }}
+
 # << QKE nodes. WARNING: this is managed by script and please don't touch manually.
 HOSTS_FILE
 mv $hostsFile.swap $hostsFile

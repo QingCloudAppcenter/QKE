@@ -486,8 +486,9 @@ isUsingHostnic() {
 setUpNetwork() {
   local readonly baseDir=/opt/app/current/conf/k8s
   sed -r "s@192\.168\.0\.0/16@$POD_SUBNET@; s@# (- name: CALICO_IPV4POOL_CIDR)@\1@; s@# (  value: \"$POD_SUBNET\")@\1@" \
-      $baseDir/calico-$CALICO_VERSION.yml > $baseDir/calico.yml
+      $baseDir/calico-$CALICO_VERSION.yml > $baseDir/calico.yml  
   sed "s@10\.244\.0\.0/16@$POD_SUBNET@" $baseDir/flannel-$FLANNEL_VERSION.yml > $baseDir/flannel.yml
+  cp $baseDir/hostnic-$HOSTNIC_VERSION.yml $baseDir/hostnic.yml
   runKubectl apply -f $baseDir/$NET_PLUGIN.yml
   if isUsingHostnic; then
     runKubectlCreate -n kube-system configmap clusterconfig --from-file=/opt/app/current/conf/qingcloud/qingcloud.yaml

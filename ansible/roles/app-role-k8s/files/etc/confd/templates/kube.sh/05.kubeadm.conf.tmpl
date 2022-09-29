@@ -1,6 +1,21 @@
 {{- $ipDigits := split (getv "/host/ip") "." }}
 {{- $hostnicCidr := printf "%s.%s.0.0/16" (index $ipDigits 0) (index $ipDigits 1) }}
 
+{{ if "/links/etcd_service/env/etcd_node/enable_TLS"}}
+
+flush /data/etcd/ca.pem << ETCD_CA_PEM_EOF
+{{getv "/links/etcd_service/env/etcd_node/caPem" |base64Decode }}
+ETCD_CA_PEM_EOF
+
+flush /data/etcd/client-key.pem << ETCD_CK_PEM_EOF
+{{getv "/links/etcd_service/env/etcd_node/clientKeyPem" |base64Decode }}
+ETCD_CK_PEM_EOF
+
+flush /data/etcd/client.pem << ETCD_CLIENT_PEM_EOF
+{{getv "/links/etcd_service/env/etcd_node/clientPem" |base64Decode }}
+ETCD_CLIENT_PEM_EOF
+{{ end }}
+
 flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
@@ -14,11 +29,20 @@ useHyperKubeImage: false
 etcd:
   external:
     endpoints:
+{{- if  eq "/links/etcd_service/env/etcd_node/enable_TLS" "true"}}
+    {{- range getvs "/links/etcd_service/hosts/etcd_node/*/sid"  }}
+    - https://etcd{{ . }}{{ getv (printf "/links/etcd_service/env/etcd_proxy/cluster_DNS") }}:2379
+    caFile: /data/etcd/ca.pem
+    certFile: /data/etcd/client.pem
+    keyFile: /data/etcd/client-key.pem
+    {{- end }}
+    {{- else }}
     {{- range getvs "/links/etcd_service/hosts/etcd_node/*/ip" }}
     - http://{{ . }}:2379
     {{- else }}
     - http://127.0.0.1:2379
     {{- end }}
+{{- end }}
 dns:
   imageRepository: coredns
   imageTag: $COREDNS_VERSION

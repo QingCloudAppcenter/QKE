@@ -7,7 +7,7 @@ flannel_version: 0.12.0
 coredns_version: 1.8.6
 calico_version: 3.20.0
 hostnic_version: 1.0.3
-qingcloud_csi_version: 1.3.3
+qingcloud_csi_version: 1.3.5
 qingcloud_ccm_version: 1.4.12
 ks_version: 3.3.0
 ks_installer_image_tag: v3.3.0
