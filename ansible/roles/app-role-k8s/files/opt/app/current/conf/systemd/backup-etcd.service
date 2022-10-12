@@ -1,0 +1,5 @@
+[Unit]
+Description=Backup ETCD
+[Service]
+Type=oneshot
+ExecStart=/opt/app/current/bin/node/etcd-backup.sh

@@ -31,7 +31,7 @@ generateDockerLayerLinks() {
 initNode() {
   _initNode
   generateDockerLayerLinks
-  mkdir -p /data/{backup/csi,kubernetes/{audit/{logs,policies,webhooks},manifests,backup/manifests}} /data/var/lib/etcd
+  mkdir -p /data/{backup/csi,kubernetes/{audit/{logs,policies,webhooks},manifests,backup/manifests}} /data/var/lib/etcd /data/etcd
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/{hostnic,kubelet}; do
     if test -d /data/$migratingPath; then
@@ -48,6 +48,7 @@ initNode() {
   syncKubeAuditFiles --init
   ln -snf $KUBE_CONFIG /root/.kube/config
   chown -R etcd /data/var/lib/etcd
+  chmod 755 /opt/app/current/bin/node/etcd-backup.sh
 }
 
 start() {
