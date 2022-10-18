@@ -2,4 +2,5 @@
 Description=Backup ETCD
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 ExecStart=/opt/app/current/bin/node/etcd-backup.sh

@@ -1,7 +1,7 @@
 {{- $ipDigits := split (getv "/host/ip") "." }}
 {{- $hostnicCidr := printf "%s.%s.0.0/16" (index $ipDigits 0) (index $ipDigits 1) }}
 
-{{ if "/links/etcd_service/env/etcd_node/enable_TLS"}}
+{{ if （exists "/links/etcd_service/env/etcd_node/enable_TLS") ß}}
 flush /data/etcd/ca.pem << ETCD_CA_PEM_EOF
 {{getv "/links/etcd_service/env/etcd_node/caPem" |base64Decode }}
 ETCD_CA_PEM_EOF
@@ -28,7 +28,10 @@ useHyperKubeImage: false
 etcd:
   external:
     endpoints:
-    {{- if eq (getv "/links/etcd_service/env/etcd_node/enable_TLS") "true" }}
+    {{- if not (exists "/links/etcd_service/env/etcd_node/enable_TLS") }}
+    - http://127.0.0.1:2379
+    {{- else }}
+    {{- if (eq (getv "/links/etcd_service/env/etcd_node/enable_TLS") "true")}}
     {{- range getvs "/links/etcd_service/hosts/etcd_node/*/sid" }}
     - https://etcd{{ . }}{{ getv (printf "/links/etcd_service/env/etcd_proxy/cluster_DNS") }}:2379
     {{- end }}
@@ -38,10 +41,9 @@ etcd:
     {{- else }}
     {{- range getvs "/links/etcd_service/hosts/etcd_node/*/ip" }}
     - http://{{ . }}:2379
-    {{- else }}
-    - http://127.0.0.1:2379
     {{- end }}
-{{- end }}
+    {{- end }}
+    {{- end }}
 dns:
   imageRepository: coredns
   imageTag: $COREDNS_VERSION
@@ -102,6 +104,10 @@ kubeReserved:
 systemReserved:
   cpu: 200m
   memory: 512M
+systemReservedCgroup: /system.slice
+enforceNodeAllocatable:
+  - pods
+  - system-reserved
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration

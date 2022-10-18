@@ -61,7 +61,7 @@ $(echo "$allNodes" | awk -F/ '{printf("%s\t%s %s%s\n", $7, $4, $5, $2~/^n/ ? " "
 {{ replace . "," "\n" -1 }}
 {{- end }}
 
-{{ if "/links/etcd_service/env/etcd_node/enable_TLS"}}
+{{ if (exists "/links/etcd_service/env/etcd_node/hostsDomain") }}
 $(echo {{ getv (printf "/links/etcd_service/env/etcd_node/hostsDomain") }}| xargs -n2 )
 {{ end }}
 

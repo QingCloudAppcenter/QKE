@@ -152,9 +152,9 @@ k8s_images_new:
 - library/haproxy:2.3
 - kubesphere/nfs-subdir-external-provisioner:v4.0.2
 - kubesphere/k8s-dns-node-cache:1.15.12
-- qingcloud/cloud-controller-manager:v1.4.12
+- qingcloud/cloud-controller-manager:v1.4.13
 - csiplugin/csi-node-driver-registrar:v2.2.0
-- csiplugin/csi-qingcloud:v1.3.3
+ß- csiplugin/csi-qingcloud:v1.3.6
 - csiplugin/csi-provisioner:v2.2.2
 - csiplugin/csi-attacher:v3.2.1
 - csiplugin/csi-resizer:v1.2.0

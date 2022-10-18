@@ -32,6 +32,9 @@ initNode() {
   _initNode
   generateDockerLayerLinks
   mkdir -p /data/{backup/csi,kubernetes/{audit/{logs,policies,webhooks},manifests,backup/manifests}} /data/var/lib/etcd /data/etcd
+  mkdir -p /sys/fs/cgroup/hugetlb/system.slice
+  mkdir -p /sys/fs/cgroup/cpuset/system.slice
+  mkdir -p /sys/fs/cgroup/systemd/system.slice 
   ln -snf /data/kubernetes /etc/kubernetes
   local migratingPath; for migratingPath in root/{.docker,.kube,.config,.cache,.local,.helm} var/lib/{hostnic,kubelet}; do
     if test -d /data/$migratingPath; then
