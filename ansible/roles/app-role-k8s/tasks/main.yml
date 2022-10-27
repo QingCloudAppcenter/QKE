@@ -21,6 +21,12 @@
     state: present
     update_cache: yes
 
+- name: install net-tools
+  apt:
+    name: [ 'net-tools' ]
+    state: present
+    update_cache: yes
+
 - name: download plugins
   include_role:
     name: install-1.0.6

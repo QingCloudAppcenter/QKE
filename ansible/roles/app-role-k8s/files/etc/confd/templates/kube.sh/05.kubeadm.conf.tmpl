@@ -1,7 +1,8 @@
 {{- $ipDigits := split (getv "/host/ip") "." }}
 {{- $hostnicCidr := printf "%s.%s.0.0/16" (index $ipDigits 0) (index $ipDigits 1) }}
 
-{{ if （exists "/links/etcd_service/env/etcd_node/enable_TLS") ß}}
+{{ if (exists "/links/etcd_service/env/etcd_node/enable_TLS") }}
+{{ if (eq (getv "/links/etcd_service/env/etcd_node/enable_TLS") "true") }}
 flush /data/etcd/ca.pem << ETCD_CA_PEM_EOF
 {{getv "/links/etcd_service/env/etcd_node/caPem" |base64Decode }}
 ETCD_CA_PEM_EOF
@@ -13,6 +14,7 @@ ETCD_CK_PEM_EOF
 flush /data/etcd/client.pem << ETCD_CLIENT_PEM_EOF
 {{getv "/links/etcd_service/env/etcd_node/clientPem" |base64Decode }}
 ETCD_CLIENT_PEM_EOF
+{{ end }}
 {{ end }}
 
 flush /opt/app/current/conf/k8s/kubeadm.conf << KUBEADM_CONFIG_EOF
@@ -103,7 +105,7 @@ kubeReserved:
   memory: 512M
 systemReserved:
   cpu: 200m
-  memory: 512M
+  memory: 1Gi
 systemReservedCgroup: /system.slice
 enforceNodeAllocatable:
   - pods

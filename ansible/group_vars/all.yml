@@ -4,7 +4,7 @@ etcd_version: 3.4.13
 cni_version: 0.8.6
 k8s_version: 1.22.10
 flannel_version: 0.12.0
-coredns_version: 1.8.6
+coredns_version: 1.8.4
 calico_version: 3.20.0
 hostnic_version: 1.0.3
 qingcloud_csi_version: 1.3.6
@@ -154,7 +154,7 @@ k8s_images_new:
 - kubesphere/k8s-dns-node-cache:1.15.12
 - qingcloud/cloud-controller-manager:v1.4.13
 - csiplugin/csi-node-driver-registrar:v2.2.0
-ß- csiplugin/csi-qingcloud:v1.3.6
+- csiplugin/csi-qingcloud:v1.3.6
 - csiplugin/csi-provisioner:v2.2.2
 - csiplugin/csi-attacher:v3.2.1
 - csiplugin/csi-resizer:v1.2.0

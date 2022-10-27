@@ -173,6 +173,7 @@ upgrade() {
       if $IS_UPGRADING_FROM_V3; then
         ignoredErrors="$ignoredErrors,CoreDNSMigration"
       fi
+      runKubectl set image -n kube-system deployment/coredns coredns=coredns/coredns:1.8.4
       kubeadm upgrade apply v$K8S_VERSION --ignore-preflight-errors=$ignoredErrors -f
       if $IS_UPGRADING_FROM_V3; then
         # TODO: remove this after K8s 1.19.0: https://github.com/kubernetes/kubernetes/issues/88725

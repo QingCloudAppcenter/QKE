@@ -19,6 +19,13 @@
       APISERVER_LB_FILE=/data/appctl/data/apiserver-lb
       KUBE_CONFIG=/data/kubernetes/admin.conf
 
+- name: install net-tools
+  apt:
+    name: [ 'net-tools' ]
+    state: present
+    update_cache: yes
+      
+
 - name: prepare upgrade snapshot
   vars:
     snapshot_sources:
