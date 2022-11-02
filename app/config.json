@@ -785,7 +785,7 @@
           "key": "hostnic-ipam",
           "label": "hostnic ipam",
           "description": "hostnic ipam config for subnets",
-          "type": "json",
+          "type": "string",
           "multiline": true,
           "dependencies": [
             {
